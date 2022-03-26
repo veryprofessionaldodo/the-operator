@@ -142,10 +142,32 @@ end
 -- updates
 function update()
     FRAME_COUNTER = FRAME_COUNTER + 1
+
     if has_value(SKIPPABLE_STATES, CUR_STATE) and keyp(Z_KEYCODE) then
         update_state_machine()
     elseif has_value(PLAYABLE_STATES, CUR_STATE) then
         update_mouse()
+    end
+    
+    --UPDATE STATES
+    for _, knob in pairs(KNOBS) do
+        if knob.state ~= KNOB_STATE.INCOMING then
+            knob.state = KNOB_STATE.OFF
+        end
+    end
+    
+    OPERATOR_KNOB.state = KNOB_STATE.OFF
+
+    for _, call in pairs(CALLS) do
+        if call.state ~= CALL_STATE.INTERRUPTED then
+            if call.src ~= OPERATOR_KNOB and call.dst ~= OPERATOR_KNOB then
+                call.src.state = KNOB_STATE.CONNECTED
+                call.dst.state = KNOB_STATE.CONNECTED
+            else
+                call.src.state = KNOB_STATE.DISPATCHING
+                call.dst.state = KNOB_STATE.DISPATCHING
+            end
+        end
     end
 
     -- DEBUG: see if selected
@@ -156,10 +178,10 @@ function update()
         if message.timestamp == SECONDS_PASSED and not message.processed then
             src_knob = get_available_knob()
             src_knob.state = KNOB_STATE.INCOMING
-
+            
             dst_knob = get_available_knob()
-            dst_knob.state = KNOB_STATE.DISPATCHING
-
+            --dst_knob.state = KNOB_STATE.DISPATCHING
+            
             message.src = src_knob
             message.dst = dst_knob
             message.processed = true
@@ -258,7 +280,6 @@ function on_mouse_up(mx, my, md)
 
     if dst_knob == OPERATOR_KNOB and not is_same_node and not overlaps and
         message ~= nil then
-        dst_knob.state = KNOB_STATE.DISPATCHING
         table.insert(CALLS, {
             src = KNOB_SELECTED,
             dst = dst_knob,
@@ -267,7 +288,6 @@ function on_mouse_up(mx, my, md)
         DISPATCH = message.dst.coords
     elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and not is_same_node and
         not overlaps then
-        dst_knob.state = KNOB_STATE.CONNECTED
         table.insert(CALLS, {
             src = KNOB_SELECTED,
             dst = dst_knob,
@@ -356,16 +376,22 @@ end
 function draw_knobs()
     for i = 1, #KNOBS do
         -- TODO: this blinking should be calculated based on state and timer of the knob
-        local knob = KNOBS[i]
-        local is_blinking = knob.state == KNOB_STATE.INCOMING
-        if is_blinking then
-            spr(0 + FRAME_COUNTER % 60 // 30 * 2, knob.x, knob.y, -1, KNOB_SCALE)
-        else
-            spr(0, knob.x, knob.y, -1, KNOB_SCALE)
-        end
+        draw_knob(KNOBS[i])
     end
-    spr(0, OPERATOR_KNOB.x, OPERATOR_KNOB.y, -1, KNOB_SCALE)
+    draw_knob(OPERATOR_KNOB)
 end
+
+function draw_knob(knob)
+    local is_blinking = knob.state == KNOB_STATE.INCOMING
+    if is_blinking then
+        spr(0 + FRAME_COUNTER % 60 // 30 * 2, knob.x, knob.y, -1, KNOB_SCALE)
+    elseif knob.state == KNOB_STATE.DISPATCHING then
+        spr(3, knob.x, knob.y, -1, KNOB_SCALE)
+    else
+        spr(0, knob.x, knob.y, -1, KNOB_SCALE)
+    end
+end
+
 
 function draw_calls()
     for _, call in pairs(CALLS) do
