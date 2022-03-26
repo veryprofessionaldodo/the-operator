@@ -205,8 +205,14 @@ function update()
 end
 
 function get_available_knob()
+    local allocated_srcs = map(MESSAGES,
+                               function(message) return message.src end)
+    local allocated_dsts = map(MESSAGES,
+                               function(message) return message.dst end)
     local usable_knobs = filter(KNOBS, function(knob)
-        return knob.state == KNOB_STATE.OFF
+        return knob.state == KNOB_STATE.OFF and
+                   not has_value(allocated_srcs, knob) and
+                   not has_value(allocated_dsts, knob)
     end)
     local index = math.random(1, #usable_knobs)
     return usable_knobs[index]
