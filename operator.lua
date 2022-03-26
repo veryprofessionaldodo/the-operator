@@ -37,8 +37,7 @@ LEVELS = {
                 src = {"D", 4},
                 timestamp = 10,
                 processed = false
-            },
-            {
+            }, {
                 caller = "Slim Shady",
                 receiver = "Diogo Dores",
                 content = "Wazuuuuuuuuuup",
@@ -195,12 +194,6 @@ function generate_messages(messages_meta)
         message.content = meta.content
         message.receiver = meta.receiver
         message.timestamp = meta.timestamp
-
-        message.src = ifthenelse(meta.src ~= nil, meta.src,
-                                 {generate_col(), generate_row()})
-        message.dst = ifthenelse(meta.dst ~= nil, meta.dst,
-                                 {generate_col(), generate_row()})
-
         table.insert(messages, message)
     end
 
@@ -238,15 +231,22 @@ end
 
 function on_mouse_up(mx, my, md)
     local dst_knob = get_hovered_knob(mx, my)
+
     local is_same_node = dst_knob ~= nil and dst_knob.x == KNOB_SELECTED.x and
                              dst_knob.y == KNOB_SELECTED.y
-
     local overlaps = #filter(CALLS, function(call)
         return call.state ~= CALL_STATE.INTERRUPTED and
                    (call.src == dst_knob or call.dst == dst_knob)
     end) > 0
 
-    if dst_knob ~= nil and not is_same_node and not overlaps then
+    if dst_knob == OPERATOR_KNOB then
+        dst_knob.state = KNOB_STATE.CONNECTED
+        table.insert(CALLS, {
+            src = KNOB_SELECTED,
+            dst = dst_knob,
+            state = CALL_STATE.ONGOING
+        })
+    elseif dst_knob ~= nil and not is_same_node and not overlaps then
         dst_knob.state = KNOB_STATE.CONNECTED
         table.insert(CALLS, {
             src = KNOB_SELECTED,
@@ -260,13 +260,25 @@ function on_mouse_up(mx, my, md)
 end
 
 function get_hovered_knob(mx, my)
+    -- check if its hovering the operator knob
+    if contains(OPERATOR_KNOB.x, OPERATOR_KNOB.y,
+                OPERATOR_KNOB.x + KNOB_WIDTH * KNOB_SCALE,
+                OPERATOR_KNOB.y + KNOB_HEIGHT * KNOB_SCALE, mx, my) then
+        return OPERATOR_KNOB
+    end
+
     local ranges = filter(KNOBS, function(knob)
-        local inside_x = mx >= knob.x and mx <= knob.x + KNOB_WIDTH * KNOB_SCALE
-        local inside_y = my >= knob.y and my <= knob.y + KNOB_HEIGHT *
-                             KNOB_SCALE
-        return inside_x and inside_y
+        return contains(knob.x, knob.y, knob.x + KNOB_WIDTH * KNOB_SCALE,
+                        knob.y + KNOB_HEIGHT * KNOB_SCALE, mx, my)
     end)
+
     return ifthenelse(#ranges > 0, ranges[1], nil)
+end
+
+function contains(x0, y0, x1, y1, x, y)
+    local inside_x = x >= x0 and x <= x1
+    local inside_y = y >= y0 and y <= y1
+    return inside_x and inside_y
 end
 
 function get_knob(coord) return KNOBS[get_knob_pos(coord)] end
