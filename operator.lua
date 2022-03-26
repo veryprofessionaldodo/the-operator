@@ -4,12 +4,12 @@
 -- script: lua
 -- Viewport 240x136
 SWITCHBOARD = {
-    start_x = 10,
-    start_y = 10,
-    row_num = 3,
-    col_num = 7,
-    col_spacing = 35,
-    row_spacing = 25
+    X = 10,
+    Y = 10,
+    N_ROWS = 3,
+    N_COLS = 7,
+    COL_SPACING = 35,
+    ROW_SPACING = 25
 }
 
 FRAME_COUNTER = 0
@@ -33,6 +33,8 @@ KNOB_SELECTED, CALL_SELECTED = nil, nil
 -- calls from knob to knob
 CALLS = {}
 
+LEVELS = {ONE = {}}
+
 function TIC()
     update()
     draw()
@@ -48,10 +50,10 @@ function init_knobs()
     local knobs = {}
 
     -- switchboard knobs
-    for i = 0, SWITCHBOARD.row_num - 1 do
-        for j = 0, SWITCHBOARD.col_num - 1 do
-            local x = SWITCHBOARD.start_x + (j * SWITCHBOARD.col_spacing)
-            local y = SWITCHBOARD.start_y + (i * SWITCHBOARD.row_spacing)
+    for i = 0, SWITCHBOARD.N_ROWS - 1 do
+        for j = 0, SWITCHBOARD.N_COLS - 1 do
+            local x = SWITCHBOARD.X + (j * SWITCHBOARD.COL_SPACING)
+            local y = SWITCHBOARD.Y + (i * SWITCHBOARD.ROW_SPACING)
             local knob = {x = x, y = y, state = KNOB_STATE.OFF, timer = 0}
             table.insert(knobs, knob)
         end
@@ -167,28 +169,26 @@ function draw()
 end
 
 function draw_message_box()
-    rectb(5, SWITCHBOARD.row_num * SWITCHBOARD.row_spacing + 8, 230, 25, 5)
+    rectb(5, SWITCHBOARD.N_ROWS * SWITCHBOARD.ROW_SPACING + 8, 230, 25, 5)
 end
 
 function draw_switchboard()
-    -- rectb(2, 2, (SWITCHBOARD.col_num * SWITCHBOARD.col_spacing) - 8,
-    --       SWITCHBOARD.row_num * SWITCHBOARD.row_spacing, 1)
+    -- rectb(2, 2, (SWITCHBOARD.N_COLS * SWITCHBOARD.COL_SPACING) - 8,
+    --       SWITCHBOARD.N_ROWS * SWITCHBOARD.ROW_SPACING, 1)
     draw_header()
     draw_sidebar()
 end
 
 function draw_header()
-    for i = 0, SWITCHBOARD.col_num - 1 do
-        local x = SWITCHBOARD.start_x + KNOB_WIDTH - 3 + i *
-                      SWITCHBOARD.col_spacing
+    for i = 0, SWITCHBOARD.N_COLS - 1 do
+        local x = SWITCHBOARD.X + KNOB_WIDTH - 3 + i * SWITCHBOARD.COL_SPACING
         print(string.char(65 + i), x, 0, 1)
     end
 end
 
 function draw_sidebar()
-    for i = 0, SWITCHBOARD.row_num - 1 do
-        local y = SWITCHBOARD.start_y + KNOB_HEIGHT - 3 + i *
-                      SWITCHBOARD.row_spacing
+    for i = 0, SWITCHBOARD.N_ROWS - 1 do
+        local y = SWITCHBOARD.Y + KNOB_HEIGHT - 3 + i * SWITCHBOARD.ROW_SPACING
         print(i + 1, 0, y, 1)
     end
 end
