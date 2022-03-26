@@ -6,13 +6,14 @@
 SWITCHBOARD = {
     start_x = 10,
     start_y = 10,
-    row_num = 3,
+    row_num = 4,
     col_num = 7,
-    col_spacing = 35,
-    row_spacing = 25
+    col_spacing = 34,
+    row_spacing = 23
 }
 
 FRAME_COUNTER = 0
+SECONDS_PASSED = 0
 
 -- knobs are computed based on switch board params
 KNOBS = {}
@@ -116,10 +117,10 @@ function draw()
     cls()
     rectb(0, 0, 240, 136, 2)
     draw_switchboard()
-    draw_message_box()
     draw_knobs()
     draw_calls()
-
+    draw_timer()
+    
     -- DEBUG
     print(KNOB_SELECTED, 10, 50)
 
@@ -129,10 +130,6 @@ function draw()
         draw_call(KNOB_SELECTED.x + KNOB_WIDTH, KNOB_SELECTED.y + KNOB_HEIGHT,
                   mx, my)
     end
-end
-
-function draw_message_box()
-    rectb(5, SWITCHBOARD.row_num * SWITCHBOARD.row_spacing + 8, 230, 25, 5)
 end
 
 function draw_switchboard()
@@ -180,6 +177,24 @@ end
 
 function draw_call(x0, y0, x1, y1) line(x0, y0, x1, y1, 1) end
 
+function draw_timer()
+    clock_x = 214
+    clock_y = 119
+    clock_radius = 10
+
+    print("Time Left", clock_x - 14, clock_y - 17, 3, false, 1, true)
+    circ(clock_x, clock_y, clock_radius, 1)
+    if(FRAME_COUNTER%60 == 0) then
+        SECONDS_PASSED = SECONDS_PASSED + 1
+    end
+
+    for i = 0, SECONDS_PASSED, 0.3 do
+        line_increment = deg_to_rad(-90 + i * 6)
+        line(clock_x, clock_y, round(clock_x+clock_radius*math.cos(line_increment)), round(clock_y+clock_radius*math.sin(line_increment)), 2)
+    end
+    
+end
+
 -- utils
 function has_value(tab, val)
     for _i, value in ipairs(tab) do if value == val then return true end end
@@ -205,6 +220,15 @@ function filter(tbl, func)
     for i, v in pairs(tbl) do if func(v) then table.insert(newtbl, v) end end
     return newtbl
 end
+
+function deg_to_rad(angle)
+    return angle * math.pi / 180
+end
+
+function round(x)
+    return x>=0 and math.floor(x+0.5) or math.ceil(x-0.5)
+  end
+  
 
 -- starts the game
 init()
