@@ -3,6 +3,48 @@
 -- desc:   RetroJam 2022 organized by IEEE UP SB
 -- script: lua
 -- Viewport 240x136
+STATES = {
+    MAIN_MENU = 'main_menu',
+    CUTSCENE_ZERO = 'cutscene_zero',
+    LEVEL_ONE = 'level_one',
+    RESULT_ONE = 'result_one',
+    RESULT_FINAL = 'result_final'
+}
+
+SKIPPABLE_STATES = {
+    STATES.MAIN_MENU, STATES.CUTSCENE_ZERO, STATES.RESULT_ONE,
+    STATES.RESULT_FINAL
+}
+
+PLAYABLE_STATES = {STATES.LEVEL_ONE}
+
+CUR_STATE = STATES.MAIN_MENU
+
+LEVELS = {
+    level_one = {
+        messages = {
+            {
+                caller = "Shake Spear",
+                receiver = "BigZ",
+                content = "Hello World",
+                dst = {"A", 3}
+            }, {
+                caller = "Tom Segura",
+                receiver = "João Conde",
+                content = "Auuuch where is the hospital I played basketball",
+                src = {"D", 4}
+            },
+            {
+                caller = "Slim Shady",
+                receiver = "Diogo Dores",
+                content = "Wazuuuuuuuuuup"
+            }
+        }
+    }
+}
+
+MESSAGES = {}
+
 SWITCHBOARD = {
     X = 10,
     Y = 10,
@@ -14,6 +56,8 @@ SWITCHBOARD = {
 
 FRAME_COUNTER = 0
 SECONDS_PASSED = 0
+ASCII_UPPER_A = 65
+Z_KEYCODE = 26
 
 -- knobs are computed based on switch board params
 KNOBS = {}
@@ -34,8 +78,6 @@ KNOB_SELECTED, CALL_SELECTED = nil, nil
 -- calls from knob to knob
 CALLS = {}
 
-LEVELS = {ONE = {}}
-
 function TIC()
     update()
     draw()
@@ -43,8 +85,11 @@ end
 
 -- inits
 function init()
+    CUR_STATE = STATES.LEVEL_ONE
     KNOBS = init_knobs()
     CALLS = init_calls()
+
+    setup_level()
 end
 
 function init_knobs()
@@ -85,20 +130,78 @@ end
 
 -- updates
 function update()
-    update_mouse()
+    FRAME_COUNTER = FRAME_COUNTER + 1
+    if has_value(SKIPPABLE_STATES, CUR_STATE) and keyp(Z_KEYCODE) then
+        update_state_machine()
+    elseif has_value(PLAYABLE_STATES, CUR_STATE) then
+        update_mouse()
+    end
 
     -- DEBUG: see if selected
     -- if knob then knob.state = KNOB_STATE.INCOMING end
-
-    FRAME_COUNTER = FRAME_COUNTER + 1
+    -- local knob = get_knob(LEVELS.ONE.CALLS[1].src)
+    -- knob.state = KNOB_STATE.INCOMING
+    for _, message in pairs(MESSAGES) do
+        local knob = get_knob(message.src)
+        knob.state = KNOB_STATE.INCOMING
+    end
 end
+
+function update_state_machine()
+    -- stops all SFX
+    -- sfx(-1)
+
+    -- advances state machine to next state
+    -- may run additional logic in between
+    if CUR_STATE == STATES.MAIN_MENU then
+        CUR_STATE = STATES.CUTSCENE_ZERO
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO then
+        CUR_STATE = STATES.LEVEL_ONE
+    elseif CUR_STATE == STATES.LEVEL_ONE then
+        CUR_STATE = STATES.RESULT_ONE
+    elseif CUR_STATE == STATES.RESULT_ONE then
+        CUR_STATE = STATES.RESULT_FINAL
+    elseif CUR_STATE == STATES.RESULT_FINAL then
+        init()
+    end
+
+    if has_value(PLAYABLE_STATES, CUR_STATE) then setup_level() end
+end
+
+function setup_level() MESSAGES = generate_messages(LEVELS[CUR_STATE].messages) end
+
+function generate_messages(messages_meta)
+    local messages = {}
+
+    for _, meta in pairs(messages_meta) do
+        local message = {}
+        message.caller = meta.caller
+        message.content = meta.content
+        message.receiver = meta.receiver
+
+        message.src = ifthenelse(meta.src ~= nil, meta.src,
+                                 {generate_col(), generate_row()})
+        message.dst = ifthenelse(meta.dst ~= nil, meta.dst,
+                                 {generate_col(), generate_row()})
+
+        table.insert(messages, message)
+    end
+
+    return messages
+end
+
+function generate_col()
+    return string.char(ASCII_UPPER_A + math.random(1, SWITCHBOARD.N_COLS) - 1)
+end
+
+function generate_row() return math.random(1, SWITCHBOARD.N_ROWS) end
 
 function update_mouse()
     local mx, my, md = mouse()
 
     -- select knob to drag
     if md and KNOB_SELECTED == nil then
-        local knob_hovered = get_knob(mx, my)
+        local knob_hovered = get_hovered_knob(mx, my)
         for i = 1, #CALLS do
             if CALLS[i].src == knob_hovered then
                 CALL_SELECTED = CALLS[i]
@@ -117,7 +220,7 @@ function update_mouse()
 end
 
 function on_mouse_up(mx, my, md)
-    local dst_knob = get_knob(mx, my)
+    local dst_knob = get_hovered_knob(mx, my)
     local is_same_node = dst_knob ~= nil and dst_knob.x == KNOB_SELECTED.x and
                              dst_knob.y == KNOB_SELECTED.y
 
@@ -139,7 +242,7 @@ function on_mouse_up(mx, my, md)
     CALL_SELECTED, KNOB_SELECTED = nil, nil
 end
 
-function get_knob(mx, my)
+function get_hovered_knob(mx, my)
     local ranges = filter(KNOBS, function(knob)
         local inside_x = mx >= knob.x and mx <= knob.x + KNOB_WIDTH * KNOB_SCALE
         local inside_y = my >= knob.y and my <= knob.y + KNOB_HEIGHT *
@@ -147,6 +250,14 @@ function get_knob(mx, my)
         return inside_x and inside_y
     end)
     return ifthenelse(#ranges > 0, ranges[1], nil)
+end
+
+function get_knob(coord) return KNOBS[get_knob_pos(coord)] end
+
+function get_knob_pos(coord)
+    col = string.byte(coord[1]) - ASCII_UPPER_A + 1
+    row = tonumber(coord[2])
+    return SWITCHBOARD.N_COLS * (row - 1) + col
 end
 
 -- draws
@@ -157,7 +268,7 @@ function draw()
     draw_knobs()
     draw_calls()
     draw_timer()
-    
+
     -- DEBUG
     -- print(KNOB_SELECTED, 10, 50)
 
@@ -179,7 +290,7 @@ end
 function draw_header()
     for i = 0, SWITCHBOARD.N_COLS - 1 do
         local x = SWITCHBOARD.X + KNOB_WIDTH - 3 + i * SWITCHBOARD.COL_SPACING
-        print(string.char(65 + i), x, 0, 1)
+        print(string.char(ASCII_UPPER_A + i), x, 0, 1)
     end
 end
 
@@ -221,15 +332,15 @@ function draw_timer()
 
     print("Time Left", clock_x - 14, clock_y - 17, 3, false, 1, true)
     circ(clock_x, clock_y, clock_radius, 1)
-    if(FRAME_COUNTER%60 == 0) then
-        SECONDS_PASSED = SECONDS_PASSED + 1
-    end
+    if (FRAME_COUNTER % 60 == 0) then SECONDS_PASSED = SECONDS_PASSED + 1 end
 
     for i = 0, SECONDS_PASSED, 0.3 do
         line_increment = deg_to_rad(-90 + i * 6)
-        line(clock_x, clock_y, round(clock_x+clock_radius*math.cos(line_increment)), round(clock_y+clock_radius*math.sin(line_increment)), 2)
+        line(clock_x, clock_y,
+             round(clock_x + clock_radius * math.cos(line_increment)),
+             round(clock_y + clock_radius * math.sin(line_increment)), 2)
     end
-    
+
 end
 
 -- utils
@@ -258,14 +369,9 @@ function filter(tbl, func)
     return newtbl
 end
 
-function deg_to_rad(angle)
-    return angle * math.pi / 180
-end
+function deg_to_rad(angle) return angle * math.pi / 180 end
 
-function round(x)
-    return x>=0 and math.floor(x+0.5) or math.ceil(x-0.5)
-  end
-  
+function round(x) return x >= 0 and math.floor(x + 0.5) or math.ceil(x - 0.5) end
 
 -- starts the game
 init()
