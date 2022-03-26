@@ -6,8 +6,8 @@
 SWITCHBOARD = {
     start_x = 10,
     start_y = 10,
-    row_num = 4,
-    col_num = 5,
+    row_num = 3,
+    col_num = 7,
     col_spacing = 35,
     row_spacing = 25
 }
@@ -34,19 +34,41 @@ function TIC()
 end
 
 -- inits
-function init() KNOBS = init_knobs() end
+function init()
+    KNOBS = init_knobs()
+    CALLS = init_calls()
+end
 
 function init_knobs()
     local knobs = {}
+
+    -- switchboard knobs
     for i = 0, SWITCHBOARD.row_num - 1 do
         for j = 0, SWITCHBOARD.col_num - 1 do
-            x = SWITCHBOARD.start_x + (j * SWITCHBOARD.col_spacing)
-            y = SWITCHBOARD.start_y + (i * SWITCHBOARD.row_spacing)
-            knob = {x = x, y = y, state = KNOB_STATE.OFF, timer = 0}
+            local x = SWITCHBOARD.start_x + (j * SWITCHBOARD.col_spacing)
+            local y = SWITCHBOARD.start_y + (i * SWITCHBOARD.row_spacing)
+            local knob = {x = x, y = y, state = KNOB_STATE.OFF, timer = 0}
             table.insert(knobs, knob)
         end
     end
+
+    -- add operator knob
+    local op_knob = {x = 10, y = 115, state = KNOB_STATE.OFF, timer = 0}
+    table.insert(knobs, op_knob)
+
     return knobs
+end
+
+function init_calls()
+    local calls = {}
+
+    -- TODO: generate random
+    table.insert(calls, {src = KNOBS[1], dst = KNOBS[2]})
+    table.insert(calls, {src = KNOBS[5], dst = KNOBS[15]})
+    table.insert(calls, {src = KNOBS[8], dst = KNOBS[12]})
+    table.insert(calls, {src = KNOBS[9], dst = KNOBS[4]})
+
+    return calls
 end
 
 -- updates
@@ -72,7 +94,8 @@ end
 
 function on_mouse_up(mx, my, md)
     local dst_knob = get_knob(mx, my)
-    if dst_knob ~= nil then
+    if dst_knob ~= nil and
+        (dst_knob.x ~= KNOB_SELECTED.x or dst_knob.y ~= KNOB_SELECTED.y) then
         table.insert(CALLS, {src = KNOB_SELECTED, dst = dst_knob})
     end
     KNOB_SELECTED = nil
@@ -103,8 +126,8 @@ function draw()
     -- drag knob line
     local mx, my, md = mouse()
     if md and KNOB_SELECTED ~= nil then
-        line(KNOB_SELECTED.x + KNOB_WIDTH, KNOB_SELECTED.y + KNOB_HEIGHT, mx,
-             my, 1)
+        draw_call(KNOB_SELECTED.x + KNOB_WIDTH, KNOB_SELECTED.y + KNOB_HEIGHT,
+                  mx, my)
     end
 end
 
@@ -150,10 +173,12 @@ end
 
 function draw_calls()
     for _, call in pairs(CALLS) do
-        line(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
-             call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT, 1)
+        draw_call(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
+                  call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
     end
 end
+
+function draw_call(x0, y0, x1, y1) line(x0, y0, x1, y1, 1) end
 
 -- utils
 function has_value(tab, val)
