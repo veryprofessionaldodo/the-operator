@@ -4,12 +4,12 @@
 -- script: lua
 -- Viewport 240x136
 SWITCHBOARD = {
-    start_x = 10,
-    start_y = 10,
-    row_num = 4,
-    col_num = 7,
-    col_spacing = 34,
-    row_spacing = 23
+    X = 10,
+    Y = 10,
+    N_ROWS = 4,
+    N_COLS = 7,
+    COL_SPACING = 34,
+    ROW_SPACING = 23
 }
 
 FRAME_COUNTER = 0
@@ -23,11 +23,18 @@ KNOB_STATE = {
     DISPATCHING = "dispatching",
     CONNECTED = "connected"
 }
+CALL_STATE = {
+    ONGOING = 'ongoing',
+    FINISHED = 'finished',
+    INTERRUPTED = 'interrupted'
+}
 KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
-KNOB_SELECTED = nil
+KNOB_SELECTED, CALL_SELECTED = nil, nil
 
 -- calls from knob to knob
 CALLS = {}
+
+LEVELS = {ONE = {}}
 
 function TIC()
     update()
@@ -44,10 +51,10 @@ function init_knobs()
     local knobs = {}
 
     -- switchboard knobs
-    for i = 0, SWITCHBOARD.row_num - 1 do
-        for j = 0, SWITCHBOARD.col_num - 1 do
-            local x = SWITCHBOARD.start_x + (j * SWITCHBOARD.col_spacing)
-            local y = SWITCHBOARD.start_y + (i * SWITCHBOARD.row_spacing)
+    for i = 0, SWITCHBOARD.N_ROWS - 1 do
+        for j = 0, SWITCHBOARD.N_COLS - 1 do
+            local x = SWITCHBOARD.X + (j * SWITCHBOARD.COL_SPACING)
+            local y = SWITCHBOARD.Y + (i * SWITCHBOARD.ROW_SPACING)
             local knob = {x = x, y = y, state = KNOB_STATE.OFF, timer = 0}
             table.insert(knobs, knob)
         end
@@ -64,17 +71,20 @@ function init_calls()
     local calls = {}
 
     -- TODO: generate random
-    table.insert(calls, {src = KNOBS[1], dst = KNOBS[2]})
-    table.insert(calls, {src = KNOBS[5], dst = KNOBS[15]})
-    table.insert(calls, {src = KNOBS[8], dst = KNOBS[12]})
-    table.insert(calls, {src = KNOBS[9], dst = KNOBS[4]})
+    table.insert(calls,
+                 {src = KNOBS[1], dst = KNOBS[2], state = CALL_STATE.ONGOING})
+    table.insert(calls,
+                 {src = KNOBS[5], dst = KNOBS[15], state = CALL_STATE.ONGOING})
+    table.insert(calls,
+                 {src = KNOBS[8], dst = KNOBS[12], state = CALL_STATE.ONGOING})
+    table.insert(calls,
+                 {src = KNOBS[9], dst = KNOBS[4], state = CALL_STATE.ONGOING})
 
     return calls
 end
 
 -- updates
 function update()
-
     update_mouse()
 
     -- DEBUG: see if selected
@@ -87,7 +97,20 @@ function update_mouse()
     local mx, my, md = mouse()
 
     -- select knob to drag
-    if md and KNOB_SELECTED == nil then KNOB_SELECTED = get_knob(mx, my) end
+    if md and KNOB_SELECTED == nil then
+        local knob_hovered = get_knob(mx, my)
+        for i = 1, #CALLS do
+            if CALLS[i].src == knob_hovered then
+                CALL_SELECTED = CALLS[i]
+                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
+                KNOB_SELECTED = CALL_SELECTED.dst
+            elseif CALLS[i].dst == knob_hovered then
+                CALL_SELECTED = CALLS[i]
+                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
+                KNOB_SELECTED = CALL_SELECTED.src
+            end
+        end
+    end
 
     -- mouse up
     if not md and KNOB_SELECTED ~= nil then on_mouse_up(mx, my, md) end
@@ -95,11 +118,25 @@ end
 
 function on_mouse_up(mx, my, md)
     local dst_knob = get_knob(mx, my)
-    if dst_knob ~= nil and
-        (dst_knob.x ~= KNOB_SELECTED.x or dst_knob.y ~= KNOB_SELECTED.y) then
-        table.insert(CALLS, {src = KNOB_SELECTED, dst = dst_knob})
+    local is_same_node = dst_knob ~= nil and dst_knob.x == KNOB_SELECTED.x and
+                             dst_knob.y == KNOB_SELECTED.y
+
+    local overlaps = #filter(CALLS, function(call)
+        return call.state ~= CALL_STATE.INTERRUPTED and
+                   (call.src == dst_knob or call.dst == dst_knob)
+    end) > 0
+
+    if dst_knob ~= nil and not is_same_node and not overlaps then
+        dst_knob.state = KNOB_STATE.CONNECTED
+        table.insert(CALLS, {
+            src = KNOB_SELECTED,
+            dst = dst_knob,
+            state = CALL_STATE.ONGOING
+        })
+    else
+        CALL_SELECTED.state = CALL_STATE.ONGOING
     end
-    KNOB_SELECTED = nil
+    CALL_SELECTED, KNOB_SELECTED = nil, nil
 end
 
 function get_knob(mx, my)
@@ -115,14 +152,14 @@ end
 -- draws
 function draw()
     cls()
-    rectb(0, 0, 240, 136, 2)
+    -- rectb(0, 0, 240, 136, 2)
     draw_switchboard()
     draw_knobs()
     draw_calls()
     draw_timer()
     
     -- DEBUG
-    print(KNOB_SELECTED, 10, 50)
+    -- print(KNOB_SELECTED, 10, 50)
 
     -- drag knob line
     local mx, my, md = mouse()
@@ -133,24 +170,22 @@ function draw()
 end
 
 function draw_switchboard()
-    rectb(5, 5, (SWITCHBOARD.col_num * SWITCHBOARD.col_spacing) - 8,
-          SWITCHBOARD.row_num * SWITCHBOARD.row_spacing, 1)
+    -- rectb(2, 2, (SWITCHBOARD.N_COLS * SWITCHBOARD.COL_SPACING) - 8,
+    --       SWITCHBOARD.N_ROWS * SWITCHBOARD.ROW_SPACING, 1)
     draw_header()
     draw_sidebar()
 end
 
 function draw_header()
-    for i = 0, SWITCHBOARD.col_num - 1 do
-        local x = SWITCHBOARD.start_x + KNOB_WIDTH - 3 + i *
-                      SWITCHBOARD.col_spacing
+    for i = 0, SWITCHBOARD.N_COLS - 1 do
+        local x = SWITCHBOARD.X + KNOB_WIDTH - 3 + i * SWITCHBOARD.COL_SPACING
         print(string.char(65 + i), x, 0, 1)
     end
 end
 
 function draw_sidebar()
-    for i = 0, SWITCHBOARD.row_num - 1 do
-        local y = SWITCHBOARD.start_y + KNOB_HEIGHT - 3 + i *
-                      SWITCHBOARD.row_spacing
+    for i = 0, SWITCHBOARD.N_ROWS - 1 do
+        local y = SWITCHBOARD.Y + KNOB_HEIGHT - 3 + i * SWITCHBOARD.ROW_SPACING
         print(i + 1, 0, y, 1)
     end
 end
@@ -170,8 +205,10 @@ end
 
 function draw_calls()
     for _, call in pairs(CALLS) do
-        draw_call(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
-                  call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
+        if call.state == CALL_STATE.ONGOING then
+            draw_call(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
+                      call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
+        end
     end
 end
 
