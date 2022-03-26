@@ -16,8 +16,17 @@ FRAME_COUNTER = 0
 
 -- knobs are computed based on switch board params
 KNOBS = {}
-KNOB_STATE = {OFF = "off", INCOMING = "incoming", CONNECTED = "connected"}
+KNOB_STATE = {
+    OFF = "off",
+    INCOMING = "incoming",
+    DISPATCHING = "dispatching",
+    CONNECTED = "connected"
+}
 KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
+KNOB_SELECTED = nil
+
+-- calls from knob to knob
+CALLS = {}
 
 function TIC()
     update()
@@ -42,28 +51,40 @@ end
 
 -- updates
 function update()
-    local knob = get_hovered_knob()
 
-    if knob then knob.state = KNOB_STATE.INCOMING end
+    update_mouse()
+
+    -- DEBUG: see if selected
+    -- if knob then knob.state = KNOB_STATE.INCOMING end
 
     FRAME_COUNTER = FRAME_COUNTER + 1
 end
 
-function get_hovered_knob()
-    local mx, my, _md = mouse()
+function update_mouse()
+    local mx, my, md = mouse()
 
+    -- select knob to drag
+    if md and KNOB_SELECTED == nil then KNOB_SELECTED = get_knob(mx, my) end
+
+    -- mouse up
+    if not md and KNOB_SELECTED ~= nil then on_mouse_up(mx, my, md) end
+end
+
+function on_mouse_up(mx, my, md)
+    local dst_knob = get_knob(mx, my)
+    if dst_knob ~= nil then
+        table.insert(CALLS, {src = KNOB_SELECTED, dst = dst_knob})
+    end
+    KNOB_SELECTED = nil
+end
+
+function get_knob(mx, my)
     local ranges = filter(KNOBS, function(knob)
         local inside_x = mx >= knob.x and mx <= knob.x + KNOB_WIDTH * KNOB_SCALE
         local inside_y = my >= knob.y and my <= knob.y + KNOB_HEIGHT *
                              KNOB_SCALE
         return inside_x and inside_y
     end)
-
-    -- -- DEBUG ONLY
-    -- if #ranges > 0 then 
-    --     rectb(ranges[1].x, ranges[1].y, KNOB_WIDTH * KNOB_SCALE, KNOB_HEIGHT * KNOB_SCALE, 3)
-    -- end
-
     return ifthenelse(#ranges > 0, ranges[1], nil)
 end
 
@@ -74,6 +95,21 @@ function draw()
     draw_switchboard()
     draw_message_box()
     draw_knobs()
+    draw_calls()
+
+    -- DEBUG
+    print(KNOB_SELECTED, 10, 50)
+
+    -- drag knob line
+    local mx, my, md = mouse()
+    if md and KNOB_SELECTED ~= nil then
+        line(KNOB_SELECTED.x + KNOB_WIDTH, KNOB_SELECTED.y + KNOB_HEIGHT, mx,
+             my, 1)
+    end
+end
+
+function draw_message_box()
+    rectb(5, SWITCHBOARD.row_num * SWITCHBOARD.row_spacing + 8, 230, 25, 5)
 end
 
 function draw_switchboard()
@@ -112,8 +148,11 @@ function draw_knobs()
     end
 end
 
-function draw_message_box()
-    rectb(5, SWITCHBOARD.row_num * SWITCHBOARD.row_spacing + 8, 230, 25, 5)
+function draw_calls()
+    for _, call in pairs(CALLS) do
+        line(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
+             call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT, 1)
+    end
 end
 
 -- utils
