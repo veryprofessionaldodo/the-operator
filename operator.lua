@@ -158,7 +158,7 @@ function update()
             src_knob.state = KNOB_STATE.INCOMING
 
             dst_knob = get_available_knob()
-            dst_knob.state = KNOB_STATE.INCOMING
+            dst_knob.state = KNOB_STATE.DISPATCHING
 
             message.src = src_knob
             message.dst = dst_knob
