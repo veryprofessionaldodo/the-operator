@@ -27,14 +27,12 @@ LEVELS = {
                 caller = "Shake Spear",
                 receiver = "BigZ",
                 content = "Hello World",
-                dst = {"A", 3},
                 timestamp = 5,
                 processed = false
             }, {
                 caller = "Tom Segura",
                 receiver = "João Conde",
                 content = "Auuuch where is the hospital I played basketball",
-                src = {"D", 4},
                 timestamp = 10,
                 processed = false
             }, {
@@ -74,6 +72,7 @@ KNOB_STATE = {
 }
 CALL_STATE = {
     ONGOING = 'ongoing',
+    DISPATCHING = "dispatching",
     FINISHED = 'finished',
     INTERRUPTED = 'interrupted'
 }
@@ -82,6 +81,8 @@ KNOB_SELECTED, CALL_SELECTED, OPERATOR_KNOB = nil, nil, nil
 
 -- calls from knob to knob
 CALLS = {}
+
+DISPATCH = nil
 
 function TIC()
     update()
@@ -105,7 +106,13 @@ function init_knobs()
         for j = 0, SWITCHBOARD.N_COLS - 1 do
             local x = SWITCHBOARD.X + (j * SWITCHBOARD.COL_SPACING)
             local y = SWITCHBOARD.Y + (i * SWITCHBOARD.ROW_SPACING)
-            local knob = {x = x, y = y, state = KNOB_STATE.OFF, timer = 0}
+            local knob = {
+                coords = {string.char(ASCII_UPPER_A + j), i + 1},
+                x = x,
+                y = y,
+                state = KNOB_STATE.OFF,
+                timer = 0
+            }
             table.insert(knobs, knob)
         end
     end
@@ -147,8 +154,14 @@ function update()
     -- knob.state = KNOB_STATE.INCOMING
     for _, message in pairs(MESSAGES) do
         if message.timestamp == SECONDS_PASSED and not message.processed then
-            knob = get_available_knob()
-            knob.state = KNOB_STATE.INCOMING
+            src_knob = get_available_knob()
+            src_knob.state = KNOB_STATE.INCOMING
+
+            dst_knob = get_available_knob()
+            dst_knob.state = KNOB_STATE.INCOMING
+
+            message.src = src_knob
+            message.dst = dst_knob
             message.processed = true
         end
     end
@@ -239,7 +252,21 @@ function on_mouse_up(mx, my, md)
                    (call.src == dst_knob or call.dst == dst_knob)
     end) > 0
 
-    if dst_knob ~= nil and not is_same_node and not overlaps then
+    local message = filter(MESSAGES, function(message)
+        return message.src == KNOB_SELECTED
+    end)[1]
+
+    if dst_knob == OPERATOR_KNOB and not is_same_node and not overlaps and
+        message ~= nil then
+        dst_knob.state = KNOB_STATE.DISPATCHING
+        table.insert(CALLS, {
+            src = KNOB_SELECTED,
+            dst = dst_knob,
+            state = CALL_STATE.DISPATCHING
+        })
+        DISPATCH = message.dst.coords
+    elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and not is_same_node and
+        not overlaps then
         dst_knob.state = KNOB_STATE.CONNECTED
         table.insert(CALLS, {
             src = KNOB_SELECTED,
@@ -249,6 +276,7 @@ function on_mouse_up(mx, my, md)
     else
         CALL_SELECTED.state = CALL_STATE.ONGOING
     end
+
     CALL_SELECTED, KNOB_SELECTED = nil, nil
 end
 
@@ -300,6 +328,8 @@ function draw()
         draw_call(KNOB_SELECTED.x + KNOB_WIDTH, KNOB_SELECTED.y + KNOB_HEIGHT,
                   mx, my)
     end
+
+    if DISPATCH ~= nil then print(DISPATCH[1] .. DISPATCH[2], 100, 120, 1) end
 end
 
 function draw_switchboard()
@@ -339,7 +369,8 @@ end
 
 function draw_calls()
     for _, call in pairs(CALLS) do
-        if call.state == CALL_STATE.ONGOING then
+        if call.state == CALL_STATE.ONGOING or call.state ==
+            CALL_STATE.DISPATCHING then
             draw_call(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
                       call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
         end
