@@ -28,8 +28,7 @@ CALL_STATE = {
     INTERRUPTED = 'interrupted'
 }
 KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
-KNOB_SELECTED = nil
-CALL_SELECTED = nil
+KNOB_SELECTED, CALL_SELECTED = nil, nil
 
 -- calls from knob to knob
 CALLS = {}
@@ -118,7 +117,13 @@ function on_mouse_up(mx, my, md)
     local dst_knob = get_knob(mx, my)
     local is_same_node = dst_knob ~= nil and dst_knob.x == KNOB_SELECTED.x and
                              dst_knob.y == KNOB_SELECTED.y
-    if dst_knob ~= nil and not is_same_node then
+
+    local overlaps = #filter(CALLS, function(call)
+        return call.state ~= CALL_STATE.INTERRUPTED and
+                   (call.src == dst_knob or call.dst == dst_knob)
+    end) > 0
+
+    if dst_knob ~= nil and not is_same_node and not overlaps then
         dst_knob.state = KNOB_STATE.CONNECTED
         table.insert(CALLS, {
             src = KNOB_SELECTED,
