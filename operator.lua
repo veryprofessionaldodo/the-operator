@@ -27,17 +27,23 @@ LEVELS = {
                 caller = "Shake Spear",
                 receiver = "BigZ",
                 content = "Hello World",
-                dst = {"A", 3}
+                dst = {"A", 3},
+                timestamp = 5,
+                processed = false
             }, {
                 caller = "Tom Segura",
                 receiver = "João Conde",
                 content = "Auuuch where is the hospital I played basketball",
-                src = {"D", 4}
+                src = {"D", 4},
+                timestamp = 10,
+                processed = false
             },
             {
                 caller = "Slim Shady",
                 receiver = "Diogo Dores",
-                content = "Wazuuuuuuuuuup"
+                content = "Wazuuuuuuuuuup",
+                timestamp = 15,
+                processed = false
             }
         }
     }
@@ -73,7 +79,7 @@ CALL_STATE = {
     INTERRUPTED = 'interrupted'
 }
 KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
-KNOB_SELECTED, CALL_SELECTED = nil, nil
+KNOB_SELECTED, CALL_SELECTED, OPERATOR_KNOB = nil, nil, nil
 
 -- calls from knob to knob
 CALLS = {}
@@ -106,8 +112,7 @@ function init_knobs()
     end
 
     -- add operator knob
-    local op_knob = {x = 10, y = 115, state = KNOB_STATE.OFF, timer = 0}
-    table.insert(knobs, op_knob)
+    OPERATOR_KNOB = {x = 10, y = 115, state = KNOB_STATE.OFF, timer = 0}
 
     return knobs
 end
@@ -142,9 +147,20 @@ function update()
     -- local knob = get_knob(LEVELS.ONE.CALLS[1].src)
     -- knob.state = KNOB_STATE.INCOMING
     for _, message in pairs(MESSAGES) do
-        local knob = get_knob(message.src)
-        knob.state = KNOB_STATE.INCOMING
+        if message.timestamp == SECONDS_PASSED and not message.processed then
+            knob = get_available_knob()
+            knob.state = KNOB_STATE.INCOMING
+            message.processed = true
+        end
     end
+end
+
+function get_available_knob()
+    local usable_knobs = filter(KNOBS, function(knob)
+        return knob.state == KNOB_STATE.OFF
+    end)
+    local index = math.random(1, #usable_knobs)
+    return usable_knobs[index]
 end
 
 function update_state_machine()
@@ -178,6 +194,7 @@ function generate_messages(messages_meta)
         message.caller = meta.caller
         message.content = meta.content
         message.receiver = meta.receiver
+        message.timestamp = meta.timestamp
 
         message.src = ifthenelse(meta.src ~= nil, meta.src,
                                  {generate_col(), generate_row()})
@@ -312,6 +329,7 @@ function draw_knobs()
             spr(0, knob.x, knob.y, -1, KNOB_SCALE)
         end
     end
+    spr(0, OPERATOR_KNOB.x, OPERATOR_KNOB.y, -1, KNOB_SCALE)
 end
 
 function draw_calls()
