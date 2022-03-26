@@ -239,14 +239,7 @@ function on_mouse_up(mx, my, md)
                    (call.src == dst_knob or call.dst == dst_knob)
     end) > 0
 
-    if dst_knob == OPERATOR_KNOB then
-        dst_knob.state = KNOB_STATE.CONNECTED
-        table.insert(CALLS, {
-            src = KNOB_SELECTED,
-            dst = dst_knob,
-            state = CALL_STATE.ONGOING
-        })
-    elseif dst_knob ~= nil and not is_same_node and not overlaps then
+    if dst_knob ~= nil and not is_same_node and not overlaps then
         dst_knob.state = KNOB_STATE.CONNECTED
         table.insert(CALLS, {
             src = KNOB_SELECTED,
