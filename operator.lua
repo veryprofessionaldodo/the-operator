@@ -49,35 +49,47 @@ function draw()
     rectb(0, 0, 240, 136, 2)
     draw_switchboard()
     draw_message_box()
-    -- draw_knob(SWITCHBOARD.start_x, SWITCHBOARD.start_y)
-
-    draw_knob(KNOBS[5].x, KNOBS[5].y)
+    draw_knobs()
 end
 
 function draw_switchboard()
     rectb(5, 5, (SWITCHBOARD.col_num * SWITCHBOARD.col_spacing) - 8,
           SWITCHBOARD.row_num * SWITCHBOARD.row_spacing, 1)
+    draw_header()
+    draw_sidebar()
+end
 
-    -- draw letters header
+function draw_header()
     for i = 0, SWITCHBOARD.col_num - 1 do
-        x = SWITCHBOARD.start_x + KNOB_WIDTH - 3 + i * SWITCHBOARD.col_spacing
-        print(string.char(65 + i), x, 0)
+        local x = SWITCHBOARD.start_x + KNOB_WIDTH - 3 + i *
+                      SWITCHBOARD.col_spacing
+        print(string.char(65 + i), x, 0, 1)
     end
+end
 
-    -- draw numbers sidebar
+function draw_sidebar()
     for i = 0, SWITCHBOARD.row_num - 1 do
-        y = SWITCHBOARD.start_y + KNOB_HEIGHT - 3 + i * SWITCHBOARD.row_spacing
-        print(i + 1, 0, y)
+        local y = SWITCHBOARD.start_y + KNOB_HEIGHT - 3 + i *
+                      SWITCHBOARD.row_spacing
+        print(i + 1, 0, y, 1)
     end
+end
 
-    for i = 1, #KNOBS do spr(0, KNOBS[i].x, KNOBS[i].y, -1, 2) end
+function draw_knobs()
+    for i = 1, #KNOBS do
+        -- TODO: this blinking should be calculated based on state and timer of the knob
+        local is_blinking = i == 2
+        if is_blinking then
+            spr(0 + FRAME_COUNTER % 60 // 30 * 2, KNOBS[i].x, KNOBS[i].y, -1, 2)
+        else
+            spr(0, KNOBS[i].x, KNOBS[i].y, -1, 2)
+        end
+    end
 end
 
 function draw_message_box()
     rectb(5, SWITCHBOARD.row_num * SWITCHBOARD.row_spacing + 8, 230, 25, 5)
 end
-
-function draw_knob(x, y) spr(0 + FRAME_COUNTER % 60 // 30 * 2, x, y, -1, 2) end
 
 -- utils
 function has_value(tab, val)
