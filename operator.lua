@@ -17,6 +17,7 @@ FRAME_COUNTER = 0
 -- knobs are computed based on switch board params
 KNOBS = {}
 KNOB_STATE = {OFF = "off", INCOMING = "incoming", CONNECTED = "connected"}
+KNOB_WIDTH, KNOB_HEIGHT = 8, 8
 
 function TIC()
     update()
@@ -51,18 +52,25 @@ function draw()
     -- draw_knob(SWITCHBOARD.start_x, SWITCHBOARD.start_y)
 
     draw_knob(KNOBS[5].x, KNOBS[5].y)
-
 end
 
 function draw_switchboard()
     rectb(5, 5, (SWITCHBOARD.col_num * SWITCHBOARD.col_spacing) - 8,
           SWITCHBOARD.row_num * SWITCHBOARD.row_spacing, 1)
-    for i = 0, SWITCHBOARD.row_num - 1 do
-        for j = 0, SWITCHBOARD.col_num - 1 do
-            spr(0, SWITCHBOARD.start_x + (j * SWITCHBOARD.col_spacing),
-                SWITCHBOARD.start_y + (i * SWITCHBOARD.row_spacing), -1, 2)
-        end
+
+    -- draw letters header
+    for i = 0, SWITCHBOARD.col_num - 1 do
+        x = SWITCHBOARD.start_x + KNOB_WIDTH - 3 + i * SWITCHBOARD.col_spacing
+        print(string.char(65 + i), x, 0)
     end
+
+    -- draw numbers sidebar
+    for i = 0, SWITCHBOARD.row_num - 1 do
+        y = SWITCHBOARD.start_y + KNOB_HEIGHT - 3 + i * SWITCHBOARD.row_spacing
+        print(i + 1, 0, y)
+    end
+
+    for i = 1, #KNOBS do spr(0, KNOBS[i].x, KNOBS[i].y, -1, 2) end
 end
 
 function draw_message_box()
