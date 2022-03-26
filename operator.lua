@@ -1,5 +1,8 @@
+-- title:  The Operator
+-- author: Team "It's about drive"
+-- desc:   RetroJam 2022 organized by IEEE UP SB
+-- script: lua
 -- Viewport 240x136
-
 -- Switchboard properties
 sb = {
     start_x = 10,
@@ -7,35 +10,55 @@ sb = {
     row_num = 4,
     col_num = 5,
     col_spacing = 35,
-    row_spacing = 25,
+    row_spacing = 25
 }
 
 t = 0
 
 function TIC()
+    update()
+    draw()
+end
+
+-- updates
+function update() t = t + 1 end
+
+-- draws
+function draw()
     cls()
     rectb(0, 0, 240, 136, 2)
     draw_switchboard()
     draw_message_box()
-    knob_blink(sb.start_x, sb.start_y)
-    t = t + 1
+    draw_knob(sb.start_x, sb.start_y)
 end
 
 function draw_switchboard()
-    rectb(5, 5, (sb.col_num * sb.col_spacing) - 8, sb.row_num * sb.row_spacing, 1)
+    rectb(5, 5, (sb.col_num * sb.col_spacing) - 8, sb.row_num * sb.row_spacing,
+          1)
     for i = 0, sb.row_num - 1, 1 do
         for j = 0, sb.col_num - 1, 1 do
-            spr(0, sb.start_x + (j * sb.col_spacing), sb.start_y + (i * sb.row_spacing), -1, 2)
+            spr(0, sb.start_x + (j * sb.col_spacing),
+                sb.start_y + (i * sb.row_spacing), -1, 2)
         end
     end
 end
 
-function draw_message_box()
-    rectb(5, sb.row_num * sb.row_spacing + 8, 230, 25, 5)
+function draw_message_box() rectb(5, sb.row_num * sb.row_spacing + 8, 230, 25, 5) end
+
+function draw_knob(x, y) spr(0 + t % 60 // 30 * 2, x, y, -1, 2) end
+
+-- utils
+function has_value(tab, val)
+    for _i, value in ipairs(tab) do if value == val then return true end end
+    return false
 end
 
-function knob_blink(x, y)
-    spr(0+t%60//30*2, x, y, -1, 2)
+function ifthenelse(cond, t, f)
+    if cond then
+        return t
+    else
+        return f
+    end
 end
 
 -- <TILES>
