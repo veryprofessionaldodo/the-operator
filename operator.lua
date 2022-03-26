@@ -17,7 +17,7 @@ FRAME_COUNTER = 0
 -- knobs are computed based on switch board params
 KNOBS = {}
 KNOB_STATE = {OFF = "off", INCOMING = "incoming", CONNECTED = "connected"}
-KNOB_WIDTH, KNOB_HEIGHT = 8, 8
+KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
 
 function TIC()
     update()
@@ -25,9 +25,9 @@ function TIC()
 end
 
 -- inits
-function init() KNOBS = get_knobs() end
+function init() KNOBS = init_knobs() end
 
-function get_knobs()
+function init_knobs()
     local knobs = {}
     for i = 0, SWITCHBOARD.row_num - 1 do
         for j = 0, SWITCHBOARD.col_num - 1 do
@@ -41,7 +41,31 @@ function get_knobs()
 end
 
 -- updates
-function update() FRAME_COUNTER = FRAME_COUNTER + 1 end
+function update()
+    local knob = get_hovered_knob()
+
+    if knob then knob.state = KNOB_STATE.INCOMING end
+
+    FRAME_COUNTER = FRAME_COUNTER + 1
+end
+
+function get_hovered_knob()
+    local mx, my, _md = mouse()
+
+    local ranges = filter(KNOBS, function(knob)
+        local inside_x = mx >= knob.x and mx <= knob.x + KNOB_WIDTH * KNOB_SCALE
+        local inside_y = my >= knob.y and my <= knob.y + KNOB_HEIGHT *
+                             KNOB_SCALE
+        return inside_x and inside_y
+    end)
+
+    -- -- DEBUG ONLY
+    -- if #ranges > 0 then 
+    --     rectb(ranges[1].x, ranges[1].y, KNOB_WIDTH * KNOB_SCALE, KNOB_HEIGHT * KNOB_SCALE, 3)
+    -- end
+
+    return ifthenelse(#ranges > 0, ranges[1], nil)
+end
 
 -- draws
 function draw()
@@ -78,11 +102,12 @@ end
 function draw_knobs()
     for i = 1, #KNOBS do
         -- TODO: this blinking should be calculated based on state and timer of the knob
-        local is_blinking = i == 2
+        local knob = KNOBS[i]
+        local is_blinking = knob.state == KNOB_STATE.INCOMING
         if is_blinking then
-            spr(0 + FRAME_COUNTER % 60 // 30 * 2, KNOBS[i].x, KNOBS[i].y, -1, 2)
+            spr(0 + FRAME_COUNTER % 60 // 30 * 2, knob.x, knob.y, -1, KNOB_SCALE)
         else
-            spr(0, KNOBS[i].x, KNOBS[i].y, -1, 2)
+            spr(0, knob.x, knob.y, -1, KNOB_SCALE)
         end
     end
 end
@@ -103,6 +128,18 @@ function ifthenelse(cond, t, f)
     else
         return f
     end
+end
+
+function map(tbl, func)
+    local newtbl = {}
+    for i, v in pairs(tbl) do newtbl[i] = func(v) end
+    return newtbl
+end
+
+function filter(tbl, func)
+    local newtbl = {}
+    for i, v in pairs(tbl) do if func(v) then table.insert(newtbl, v) end end
+    return newtbl
 end
 
 -- starts the game
