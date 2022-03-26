@@ -149,14 +149,14 @@ end
 -- draws
 function draw()
     cls()
-    rectb(0, 0, 240, 136, 2)
+    -- rectb(0, 0, 240, 136, 2)
     draw_switchboard()
     draw_message_box()
     draw_knobs()
     draw_calls()
 
     -- DEBUG
-    print(KNOB_SELECTED, 10, 50)
+    -- print(KNOB_SELECTED, 10, 50)
 
     -- drag knob line
     local mx, my, md = mouse()
@@ -171,8 +171,8 @@ function draw_message_box()
 end
 
 function draw_switchboard()
-    rectb(5, 5, (SWITCHBOARD.col_num * SWITCHBOARD.col_spacing) - 8,
-          SWITCHBOARD.row_num * SWITCHBOARD.row_spacing, 1)
+    -- rectb(2, 2, (SWITCHBOARD.col_num * SWITCHBOARD.col_spacing) - 8,
+    --       SWITCHBOARD.row_num * SWITCHBOARD.row_spacing, 1)
     draw_header()
     draw_sidebar()
 end
