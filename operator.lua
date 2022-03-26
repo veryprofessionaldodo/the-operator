@@ -83,7 +83,6 @@ end
 
 -- updates
 function update()
-
     update_mouse()
 
     -- DEBUG: see if selected
