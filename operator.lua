@@ -69,10 +69,14 @@ function init_calls()
     local calls = {}
 
     -- TODO: generate random
-    table.insert(calls, {src = KNOBS[1], dst = KNOBS[2], state = CALL_STATE.ONGOING})
-    table.insert(calls, {src = KNOBS[5], dst = KNOBS[15], state = CALL_STATE.ONGOING})
-    table.insert(calls, {src = KNOBS[8], dst = KNOBS[12], state = CALL_STATE.ONGOING})
-    table.insert(calls, {src = KNOBS[9], dst = KNOBS[4], state = CALL_STATE.ONGOING})
+    table.insert(calls,
+                 {src = KNOBS[1], dst = KNOBS[2], state = CALL_STATE.ONGOING})
+    table.insert(calls,
+                 {src = KNOBS[5], dst = KNOBS[15], state = CALL_STATE.ONGOING})
+    table.insert(calls,
+                 {src = KNOBS[8], dst = KNOBS[12], state = CALL_STATE.ONGOING})
+    table.insert(calls,
+                 {src = KNOBS[9], dst = KNOBS[4], state = CALL_STATE.ONGOING})
 
     return calls
 end
@@ -92,11 +96,8 @@ function update_mouse()
     local mx, my, md = mouse()
 
     -- select knob to drag
-    if md and KNOB_SELECTED == nil then 
+    if md and KNOB_SELECTED == nil then
         local knob_hovered = get_knob(mx, my)
-        -- CALL_SELECTED = filter(CALLS, function(call)
-        --     return call.dst == knob_hovered or call.src == knob_hovered
-        -- end)[1]
         for i = 1, #CALLS do
             if CALLS[i].src == knob_hovered then
                 CALL_SELECTED = CALLS[i]
@@ -116,15 +117,19 @@ end
 
 function on_mouse_up(mx, my, md)
     local dst_knob = get_knob(mx, my)
-    local is_same_node = dst_knob ~= nil and dst_knob.x == KNOB_SELECTED.x and dst_knob.y == KNOB_SELECTED.y
+    local is_same_node = dst_knob ~= nil and dst_knob.x == KNOB_SELECTED.x and
+                             dst_knob.y == KNOB_SELECTED.y
     if dst_knob ~= nil and not is_same_node then
         dst_knob.state = KNOB_STATE.CONNECTED
-        table.insert(CALLS, {src = KNOB_SELECTED, dst = dst_knob, state = CALL_STATE.ONGOING})
+        table.insert(CALLS, {
+            src = KNOB_SELECTED,
+            dst = dst_knob,
+            state = CALL_STATE.ONGOING
+        })
     else
         CALL_SELECTED.state = CALL_STATE.ONGOING
     end
-    CALL_SELECTED = nil
-    KNOB_SELECTED = nil
+    CALL_SELECTED, KNOB_SELECTED = nil, nil
 end
 
 function get_knob(mx, my)
@@ -201,7 +206,7 @@ function draw_calls()
     for _, call in pairs(CALLS) do
         if call.state == CALL_STATE.ONGOING then
             draw_call(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
-                  call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
+                      call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
         end
     end
 end
