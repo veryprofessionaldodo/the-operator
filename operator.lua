@@ -74,7 +74,8 @@ CALL_STATE = {
     ONGOING = 'ongoing',
     DISPATCHING = "dispatching",
     FINISHED = 'finished',
-    INTERRUPTED = 'interrupted'
+    INTERRUPTED = 'interrupted',
+    UNUSED = "unused"
 }
 KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
 KNOB_SELECTED, CALL_SELECTED, OPERATOR_KNOB = nil, nil, nil
@@ -128,13 +129,13 @@ function init_calls()
 
     -- TODO: generate random
     table.insert(calls,
-                 {src = KNOBS[1], dst = KNOBS[2], state = CALL_STATE.ONGOING})
+                 {src = KNOBS[1], dst = KNOBS[2], state = CALL_STATE.UNUSED})
     table.insert(calls,
-                 {src = KNOBS[5], dst = KNOBS[15], state = CALL_STATE.ONGOING})
+                 {src = KNOBS[5], dst = KNOBS[15], state = CALL_STATE.UNUSED})
     table.insert(calls,
-                 {src = KNOBS[8], dst = KNOBS[12], state = CALL_STATE.ONGOING})
+                 {src = KNOBS[8], dst = KNOBS[12], state = CALL_STATE.UNUSED})
     table.insert(calls,
-                 {src = KNOBS[9], dst = KNOBS[4], state = CALL_STATE.ONGOING})
+                 {src = KNOBS[9], dst = KNOBS[4], state = CALL_STATE.UNUSED})
 
     return calls
 end
@@ -148,23 +149,23 @@ function update()
     elseif has_value(PLAYABLE_STATES, CUR_STATE) then
         update_mouse()
     end
-    
-    --UPDATE STATES
-    --TODO: perhaps not needed
+
+    -- UPDATE STATES
+    -- TODO: perhaps not needed
+    OPERATOR_KNOB.state = KNOB_STATE.OFF
     for _, knob in pairs(KNOBS) do
         if knob.state ~= KNOB_STATE.INCOMING then
             knob.state = KNOB_STATE.OFF
         end
     end
-    
-    OPERATOR_KNOB.state = KNOB_STATE.OFF
 
     for _, call in pairs(CALLS) do
         if call.state == CALL_STATE.DISPATCHING then
             call.src.state = KNOB_STATE.DISPATCHING
             call.dst.state = KNOB_STATE.DISPATCHING
         elseif call.state == CALL_STATE.ONGOING then
-            if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~= KNOB_STATE.INCOMING then 
+            if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~=
+                KNOB_STATE.INCOMING then
                 call.src.state = KNOB_STATE.CONNECTED
                 call.dst.state = KNOB_STATE.CONNECTED
             end
@@ -192,10 +193,10 @@ function update()
         if message.timestamp == SECONDS_PASSED and not message.processed then
             src_knob = get_available_knob()
             src_knob.state = KNOB_STATE.INCOMING
-            
+
             dst_knob = get_available_knob()
-            --dst_knob.state = KNOB_STATE.DISPATCHING
-            
+            -- dst_knob.state = KNOB_STATE.DISPATCHING
+
             message.src = src_knob
             message.dst = dst_knob
             message.processed = true
@@ -408,11 +409,9 @@ function draw_knob(knob)
     end
 end
 
-
 function draw_calls()
     for _, call in pairs(CALLS) do
-        if call.state == CALL_STATE.ONGOING or call.state ==
-            CALL_STATE.DISPATCHING then
+        if call.state ~= CALL_STATE.INTERRUPTED then
             draw_call(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
                       call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
         end
