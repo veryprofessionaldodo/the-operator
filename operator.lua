@@ -150,6 +150,7 @@ function update()
     end
     
     --UPDATE STATES
+    --TODO: perhaps not needed
     for _, knob in pairs(KNOBS) do
         if knob.state ~= KNOB_STATE.INCOMING then
             knob.state = KNOB_STATE.OFF
@@ -159,15 +160,28 @@ function update()
     OPERATOR_KNOB.state = KNOB_STATE.OFF
 
     for _, call in pairs(CALLS) do
-        if call.state ~= CALL_STATE.INTERRUPTED then
-            if call.src ~= OPERATOR_KNOB and call.dst ~= OPERATOR_KNOB then
+        if call.state == CALL_STATE.DISPATCHING then
+            call.src.state = KNOB_STATE.DISPATCHING
+            call.dst.state = KNOB_STATE.DISPATCHING
+        elseif call.state == CALL_STATE.ONGOING then
+            if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~= KNOB_STATE.INCOMING then 
                 call.src.state = KNOB_STATE.CONNECTED
                 call.dst.state = KNOB_STATE.CONNECTED
-            else
-                call.src.state = KNOB_STATE.DISPATCHING
-                call.dst.state = KNOB_STATE.DISPATCHING
             end
+        else
+            call.src.state = KNOB_STATE.OFF
+            call.dst.state = KNOB_STATE.OFF
         end
+
+        -- if call.state ~= CALL_STATE.INTERRUPTED then
+        --     if call.src ~= OPERATOR_KNOB and call.dst ~= OPERATOR_KNOB then
+        --         call.src.state = KNOB_STATE.CONNECTED
+        --         call.dst.state = KNOB_STATE.CONNECTED
+        --     else
+        --         call.src.state = KNOB_STATE.DISPATCHING
+        --         call.dst.state = KNOB_STATE.DISPATCHING
+        --     end
+        -- end
     end
 
     -- DEBUG: see if selected
@@ -387,6 +401,8 @@ function draw_knob(knob)
         spr(0 + FRAME_COUNTER % 60 // 30 * 2, knob.x, knob.y, -1, KNOB_SCALE)
     elseif knob.state == KNOB_STATE.DISPATCHING then
         spr(3, knob.x, knob.y, -1, KNOB_SCALE)
+    elseif knob.state == KNOB_STATE.CONNECTED then
+        spr(5, knob.x, knob.y, -1, KNOB_SCALE)
     else
         spr(0, knob.x, knob.y, -1, KNOB_SCALE)
     end
@@ -462,6 +478,7 @@ init()
 -- 002:00ffff000ff66ff0ff6666fff666665ff666665fff6665ff0ff65ff000ffff00
 -- 003:00ffff000ff44ff0ff4444fff444441ff444441fff4441ff0ff41ff000ffff00
 -- 004:00ffff000ffffff0ffffffffffffffffffffffffffffffff0ffffff000ffff00
+-- 005:00ffff000ff99ff0ff9999fff999998ff999998fff9998ff0ff98ff000ffff00
 -- </TILES>
 
 -- <WAVES>
