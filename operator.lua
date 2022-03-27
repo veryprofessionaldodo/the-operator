@@ -101,11 +101,9 @@ end
 
 -- inits
 function init()
-    CUR_STATE = STATES.LEVEL_ONE
+    CUR_STATE = STATES.MAIN_MENU
     KNOBS = init_knobs()
     CALLS = init_calls()
-
-    setup_level()
 end
 
 function init_knobs()
@@ -369,8 +367,6 @@ function update_state_machine()
     -- advances state machine to next state
     -- may run additional logic in between
     if CUR_STATE == STATES.MAIN_MENU then
-        CUR_STATE = STATES.CUTSCENE_ZERO
-    elseif CUR_STATE == STATES.CUTSCENE_ZERO then
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
         CUR_STATE = STATES.RESULT_ONE
@@ -568,7 +564,11 @@ end
 -- draws
 function draw()
     -- rectb(0, 0, 240, 136, 2)
-    draw_game()
+    if has_value(PLAYABLE_STATES, CUR_STATE) then
+        draw_game()
+    elseif (CUR_STATE == STATES.MAIN_MENU) then
+        draw_main_menu()
+    end
 end
 
 function draw_game()
@@ -658,6 +658,8 @@ function draw_timer()
     end
 
 end
+
+function draw_main_menu() print("Main Menu") end
 
 -- utils
 function has_value(tab, val)
