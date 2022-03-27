@@ -45,6 +45,7 @@ LEVELS = {
         },
         missed = 0,
         interrupted = 0
+        
     }
 }
 
@@ -73,12 +74,11 @@ KNOB_STATE = {
     CONNECTED = "connected"
 }
 CALL_STATE = {
-    UNUSED = "unused",
-    DISPATCHING = "dispatching",
     ONGOING = 'ongoing',
+    DISPATCHING = "dispatching",
     FINISHED = 'finished',
     INTERRUPTED = 'interrupted',
-    DELETED = "deleted"
+    UNUSED = "unused"
 }
 KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
 KNOB_SELECTED, CALL_SELECTED, OPERATOR_KNOB = nil, nil, nil
@@ -279,26 +279,12 @@ function update_mouse()
         for i = 1, #CALLS do
             if CALLS[i].src == knob_hovered then
                 CALL_SELECTED = CALLS[i]
+                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
                 KNOB_SELECTED = CALL_SELECTED.dst
-
-                if CALL_SELECTED.state == CALL_STATE.ONGOING then
-                    CALL_SELECTED.state = CALL_STATE.INTERRUPTED
-                    LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
-                                                        .interrupted + 1
-                else
-                    CALL_SELECTED.state = CALL_STATE.DELETED
-                end
             elseif CALLS[i].dst == knob_hovered then
                 CALL_SELECTED = CALLS[i]
+                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
                 KNOB_SELECTED = CALL_SELECTED.src
-
-                if CALL_SELECTED.state == CALL_STATE.ONGOING then
-                    CALL_SELECTED.state = CALL_STATE.INTERRUPTED
-                    LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
-                                                        .interrupted + 1
-                else
-                    CALL_SELECTED.state = CALL_STATE.DELETED
-                end
             end
         end
     end
@@ -330,8 +316,7 @@ function on_mouse_up(mx, my, md)
         })
         DISPATCH = message.dst.coords
     elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and not is_same_node and
-        not overlaps and KNOB_SELECTED.state ~= KNOB_STATE.OFF and
-        dst_knob.state ~= KNOB_STATE.OFF then
+        not overlaps then
         table.insert(CALLS, {
             src = KNOB_SELECTED,
             dst = dst_knob,
@@ -340,13 +325,8 @@ function on_mouse_up(mx, my, md)
             duration = 5
         })
     else
-        table.insert(CALLS, {
-            src = KNOB_SELECTED,
-            dst = dst_knob,
-            state = CALL_STATE.UNUSED,
-            message = message,
-            duration = 5
-        })
+        CALL_SELECTED.state = CALL_STATE.ONGOING
+        CALL_SELECTED.duration = 5
     end
 
     CALL_SELECTED, KNOB_SELECTED = nil, nil
@@ -425,7 +405,9 @@ function draw_sidebar()
 end
 
 function draw_knobs()
-    for i = 1, #KNOBS do draw_knob(KNOBS[i]) end
+    for i = 1, #KNOBS do
+        draw_knob(KNOBS[i])
+    end
     draw_knob(OPERATOR_KNOB)
 end
 
@@ -444,8 +426,7 @@ end
 
 function draw_calls()
     for _, call in pairs(CALLS) do
-        if call.state ~= CALL_STATE.INTERRUPTED and call.state ~=
-            CALL_STATE.DELETED then
+        if call.state ~= CALL_STATE.INTERRUPTED then
             draw_call(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
                       call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
         end
