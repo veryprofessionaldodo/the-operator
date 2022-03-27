@@ -1101,6 +1101,7 @@ function draw_cutscene_final()
         draw_victory()
     else 
         draw_lost()
+    end
 
 
 end
