@@ -8,10 +8,10 @@ STATES = {
     CUTSCENE_ZERO_2 = 'cutscene_zero_2',
     CUTSCENE_ZERO_3 = 'cutscene_zero_3',
     CUTSCENE_ZERO_4 = 'cutscene_zero_4',
-    SELECT_MENU = "select_menu",
     LEVEL_ONE = 'level_one',
-    RESULT_ONE = 'result_one',
-    RESULT_FINAL = 'result_final'
+    SELECT_MENU_1 = "select_menu_1",
+    LEVEL_TWO = "level_two",
+    SELECT_MENU_2 = "select_menu_2"
 }
 
 SKIPPABLE_STATES = {
@@ -20,17 +20,14 @@ SKIPPABLE_STATES = {
     STATES.RESULT_FINAL
 }
 
-PLAYABLE_STATES = {STATES.LEVEL_ONE}
+PLAYABLE_STATES = {STATES.LEVEL_ONE, STATES.LEVEL_TWO}
 
 CUR_STATE = STATES.MAIN_MENU
 
 SELECT_MENU = {selected = 0, options = {}}
 
 LEVELS = {
-    level_zero = {
-        time = 30,
-        max_messages = 5
-    },
+    level_zero = {time = 30, max_messages = 5},
     level_one = {
         time = 30,
         max_messages = 5,
@@ -49,7 +46,7 @@ LEVELS = {
                 content = "I can't with this heap of a car! Call @receiver for me, will'ya doll?",
                 timestamp = 8
             }
-        },
+        }
     },
     level_two = {
         time = 30,
@@ -63,7 +60,7 @@ LEVELS = {
                 solution = true,
                 timestamp = 4
             }
-        },
+        }
     },
     level_three = {
         time = 30,
@@ -84,7 +81,7 @@ LEVELS = {
                 solution = true,
                 timestamp = 8
             }
-        },
+        }
     },
     level_four = {
         time = 30,
@@ -101,8 +98,8 @@ LEVELS = {
                 solution = true,
                 timestamp = 6
             }
-        },
-    },
+        }
+    }
 }
 
 MESSAGE_POOL = {
@@ -296,7 +293,13 @@ function update()
         update_knobs()
         update_calls()
         update_messages()
-    elseif CUR_STATE == STATES.SELECT_MENU then
+
+        -- timeout go next
+        if SECONDS_PASSED == 10 then
+            SECONDS_PASSED = 0
+            update_state_machine()
+        end
+    elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
         update_select_menu()
     end
 end
@@ -391,7 +394,9 @@ function update_messages()
                     first_option, second_option
                 })
                 SELECT_MENU.options = {
-                    first_option, second_option, third_option
+                    first_option[1] .. first_option[2],
+                    second_option[1] .. second_option[2],
+                    third_option[1] .. third_option[2]
                 }
             end
         end
@@ -507,17 +512,16 @@ function update_state_machine()
     elseif CUR_STATE == STATES.CUTSCENE_ZERO_4 then
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
-        CUR_STATE = STATES.RESULT_ONE
-    elseif CUR_STATE == STATES.RESULT_ONE then
-        CUR_STATE = STATES.RESULT_FINAL
-    elseif CUR_STATE == STATES.SELECT_MENU then
-        for _, level in LEVELS do
-            if level.chosen == nil then
-                level.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
-                break
-            end
-        end
-    elseif CUR_STATE == STATES.RESULT_FINAL then
+        CUR_STATE = STATES.SELECT_MENU_1
+    elseif CUR_STATE == STATES.SELECT_MENU_1 then
+        LEVELS.level_one.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
+        CUR_STATE = STATES.LEVEL_TWO
+    elseif CUR_STATE == STATES.LEVEL_TWO then
+        CUR_STATE = STATES.SELECT_MENU_2
+    elseif CUR_STATE == STATES.SELECT_MENU_2 then
+        LEVELS.level_two.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
+        CUR_STATE = STATES.MAIN_MENU
+    else
         init()
     end
 
@@ -787,7 +791,7 @@ function draw()
         draw_cutscene_zero_three()
     elseif (CUR_STATE == STATES.CUTSCENE_ZERO_4) then
         draw_cutscene_zero_four()
-    elseif (CUR_STATE == STATES.SELECT_MENU) then
+    elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
         draw_select_menu()
     end
 end
@@ -801,25 +805,27 @@ function draw_game()
     if DISPATCH ~= nil then
         local coords = DISPATCH.dst.coords
         local message = DISPATCH.content
-        --print(coords[1] .. coords[2], 80, 120, 1)
+        -- print(coords[1] .. coords[2], 80, 120, 1)
         draw_receiving_call(message)
     end
     print(LEVELS[CUR_STATE].missed, 100, 100, 1)
     print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
     print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
 
-   -- local coords = LEVELS[CUR_STATE].solution
-   -- if coords ~= nil then print(coords[1] .. coords[2], 80, 100, 1) end
+    -- local coords = LEVELS[CUR_STATE].solution
+    -- if coords ~= nil then print(coords[1] .. coords[2], 80, 100, 1) end
 end
 
 function draw_receiving_call(message)
     if #message > 86 then
         print(string.sub(message, 0, 43), 40, 110, TEXT_COLOR, false, 1, true)
         print(string.sub(message, 44, 86), 40, 120, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 87, #message), 40, 130, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 87, #message), 40, 130, TEXT_COLOR, false, 1,
+              true)
     elseif #message > 43 then
         print(string.sub(message, 0, 43), 40, 115, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, #message), 40, 125, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, #message), 40, 125, TEXT_COLOR, false, 1,
+              true)
     else
         print(message, 40, 120, 1, false, TEXT_COLOR, true)
     end
