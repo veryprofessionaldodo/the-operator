@@ -22,6 +22,7 @@ CUR_STATE = STATES.MAIN_MENU
 
 LEVELS = {
     level_one = {
+        time = 20,
         messages = {
             {
                 caller = "Shake Spear",
@@ -416,24 +417,30 @@ function setup_level() MESSAGES = generate_messages(LEVELS[CUR_STATE].messages) 
 function generate_messages(mandatory_messages)
     local messages = {}
 
-    -- local indices = map(mandatory_messages, function(m)
-    --     return math.random(1, 10)
-    -- end)
-    -- table.sort(indices)
-
-    -- trace(indices[1] .. " " .. indices[2] .. " " .. indices[3]) 
-
-    for _, mandatory in pairs(mandatory_messages) do
-        local message = {}
-        message.caller = mandatory.caller
-        message.content = mandatory.content
-        message.receiver = mandatory.receiver
-        message.timestamp = mandatory.timestamp
-        -- local message = copy(mandatory)
+    -- random messages
+    for _, message_spec in pairs(MESSAGE_POOL) do
+        message_spec.timestamp = math.random(3, LEVELS[CUR_STATE].time)
+        local message = build_message(message_spec)
         table.insert(messages, message)
     end
 
+    -- guarantee they appears in the first 10
+    for _, message_spec in pairs(mandatory_messages) do
+        local index = math.random(1, 10)
+        local message = build_message(message_spec)
+        table.insert(messages, index, message)
+    end
+
     return messages
+end
+
+function build_message(spec)
+    local message = {}
+    message.caller = spec.caller
+    message.content = spec.content
+    message.receiver = spec.receiver
+    message.timestamp = spec.timestamp
+    return message
 end
 
 function generate_col()
@@ -729,12 +736,6 @@ end
 function filter(tbl, func)
     local newtbl = {}
     for i, v in pairs(tbl) do if func(v) then table.insert(newtbl, v) end end
-    return newtbl
-end
-
-function copy(tbl)
-    local newtbl = {}
-    for _, v in pairs(tbl) do table.insert(newtbl, v) end
     return newtbl
 end
 
