@@ -24,7 +24,7 @@ PLAYABLE_STATES = {STATES.LEVEL_ONE}
 
 CUR_STATE = STATES.MAIN_MENU
 
-SELECT_MENU = {selected = 0, options = {"A2", "A3", "B6"}}
+SELECT_MENU = {selected = 0, options = {}}
 
 LEVELS = {
     level_one = {
