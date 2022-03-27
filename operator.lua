@@ -568,6 +568,10 @@ end
 -- draws
 function draw()
     -- rectb(0, 0, 240, 136, 2)
+    draw_game()
+end
+
+function draw_game()
     draw_switchboard()
     draw_knobs()
     draw_calls()
