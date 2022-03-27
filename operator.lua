@@ -994,6 +994,7 @@ function draw_cutscene_zero_one()
 end
 
 function draw_cutscene_zero_two()
+    draw_old_timey_background()
     text_height = 40
     print("First of all, whenever you see a", TEXT_X_SHIFT, text_height,
           TEXT_COLOR)
@@ -1010,6 +1011,7 @@ function draw_cutscene_zero_two()
 end
 
 function draw_cutscene_zero_three()
+    draw_old_timey_background()
     text_height = 35
     print("After that you'll just have to grab", TEXT_X_SHIFT, text_height,
           TEXT_COLOR)
@@ -1028,6 +1030,7 @@ function draw_cutscene_zero_three()
 end
 
 function draw_cutscene_zero_four()
+    draw_old_timey_background()
     text_height = 55
     print("Alright, best way to learn it is", TEXT_X_SHIFT, text_height,
           TEXT_COLOR)
@@ -1038,6 +1041,7 @@ function draw_cutscene_zero_four()
 end
 
 function draw_cutscene_thief_one()
+    draw_old_timey_background()
     text_height = 35
     print("He-Hello? Yes, hello there dolly, I was", 5, text_height,
           TEXT_COLOR)
@@ -1055,6 +1059,7 @@ function draw_cutscene_thief_one()
 end
 
 function draw_cutscene_thief_two()
+    draw_old_timey_background()
     text_height = 45
     print("This made me think to myself:", 5, text_height,
           TEXT_COLOR)
@@ -1070,6 +1075,7 @@ function draw_cutscene_thief_two()
 end
 
 function draw_cutscene_thief_three()
+    draw_old_timey_background()
     text_height = 45
     print("I'm assuming that the silence means yes!", 5, text_height,
           TEXT_COLOR)
@@ -1083,6 +1089,7 @@ function draw_cutscene_thief_three()
 end
 
 function draw_cutscene_thief_four()
+    draw_old_timey_background()
     text_height = 55
     print("Just get me the channels", 5, text_height,
           TEXT_COLOR)
@@ -1094,10 +1101,12 @@ function draw_cutscene_thief_four()
 end
 
 function draw_cutscene_news()
+    draw_old_timey_background()
     print("BREAKING NEWS", 100, 75, TEXT_COLOR) 
 end
 
 function draw_cutscene_final() 
+    draw_old_timey_background()
     trace(LEVELS.level_one.chosen)
     trace(LEVELS.level_one.solution)
     if levels.level_one.solution == levels.level_one.chosen
