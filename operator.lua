@@ -27,6 +27,10 @@ CUR_STATE = STATES.MAIN_MENU
 SELECT_MENU = {selected = 0, options = {}}
 
 LEVELS = {
+    level_zero = {
+        time = 30,
+        max_messages = 5
+    },
     level_one = {
         time = 30,
         max_messages = 5,
@@ -35,7 +39,7 @@ LEVELS = {
                 content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
                 timestamp = 2
             }, {
-                content = "Could you connect me to the taxi company @receiver? I'm told there's a driver there who knows the city like the back of his hand?",
+                content = "Could you connect me to the taxi company @receiver? There's a driver there who knows the city like the back of his hand",
                 solution = true,
                 timestamp = 4
             }, {
@@ -46,9 +50,6 @@ LEVELS = {
                 timestamp = 8
             }
         },
-        missed = 0,
-        interrupted = 0,
-        wrong = 0
     },
     level_two = {
         time = 30,
@@ -63,9 +64,6 @@ LEVELS = {
                 timestamp = 4
             }
         },
-        missed = 0,
-        interrupted = 0,
-        wrong = 0
     },
     level_three = {
         time = 30,
@@ -87,9 +85,6 @@ LEVELS = {
                 timestamp = 8
             }
         },
-        missed = 0,
-        interrupted = 0,
-        wrong = 0
     },
     level_four = {
         time = 30,
@@ -107,10 +102,7 @@ LEVELS = {
                 timestamp = 6
             }
         },
-        missed = 0,
-        interrupted = 0,
-        wrong = 0
-    }
+    },
 }
 
 MESSAGE_POOL = {
@@ -809,15 +801,28 @@ function draw_game()
     if DISPATCH ~= nil then
         local coords = DISPATCH.dst.coords
         local message = DISPATCH.content
-        print(coords[1] .. coords[2], 80, 120, 1)
-        print(message, 100, 120, 1)
+        --print(coords[1] .. coords[2], 80, 120, 1)
+        draw_receiving_call(message)
     end
     print(LEVELS[CUR_STATE].missed, 100, 100, 1)
     print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
     print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
 
-    local coords = LEVELS[CUR_STATE].solution
-    if coords ~= nil then print(coords[1] .. coords[2], 80, 100, 1) end
+   -- local coords = LEVELS[CUR_STATE].solution
+   -- if coords ~= nil then print(coords[1] .. coords[2], 80, 100, 1) end
+end
+
+function draw_receiving_call(message)
+    if #message > 86 then
+        print(string.sub(message, 0, 43), 40, 110, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, 86), 40, 120, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 87, #message), 40, 130, TEXT_COLOR, false, 1, true)
+    elseif #message > 43 then
+        print(string.sub(message, 0, 43), 40, 115, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, #message), 40, 125, TEXT_COLOR, false, 1, true)
+    else
+        print(message, 40, 120, 1, false, TEXT_COLOR, true)
+    end
 end
 
 function draw_switchboard()
