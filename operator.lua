@@ -986,7 +986,7 @@ function draw_cutscene_zero_three()
           text_height + LINE_HEIGHT * 4, TEXT_COLOR)
     print("appear, which is the knob where", TEXT_X_SHIFT,
           text_height + LINE_HEIGHT * 5, TEXT_COLOR)
-    print("you have now redirect the call to.", TEXT_X_SHIFT,
+    print("you will now redirect the call to.", TEXT_X_SHIFT,
           text_height + LINE_HEIGHT * 6, TEXT_COLOR)
 end
 
@@ -1003,58 +1003,62 @@ end
 
 function draw_cutscene_thief_one()
     rectb(0, 0, 240, 136, 2)
-    text_height = 45
-    print("1Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+    text_height = 35
+    print("He-Hello? Yes, hello there dolly, I was", 5, text_height,
           TEXT_COLOR)
-    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("Welcome here to your first training", TEXT_X_SHIFT,
+    print("wondering if you could help me? Look here,", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("I'm currently a bit low on the dough, if you", 5,
           text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("on how to operate this ritzie", TEXT_X_SHIFT,
+    print("catch my drift. And for a while I've been", 5,
           text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
-          TEXT_COLOR)
+    print("thinking about, you know, getting some", 5,
+          text_height + LINE_HEIGHT * 4, TEXT_COLOR)
+    print("*help* from the bank. Problem is,", 5,
+          text_height + LINE_HEIGHT * 5, TEXT_COLOR)
+    print("ain't easy finding a crew in this economy.", 5,
+          text_height + LINE_HEIGHT * 6, TEXT_COLOR)
 end
 
 function draw_cutscene_thief_two()
     rectb(0, 0, 240, 136, 2)
     text_height = 45
-    print("2Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+    print("This made me think to myself:", 5, text_height,
           TEXT_COLOR)
-    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("Welcome here to your first training", TEXT_X_SHIFT,
+    print("who better to find the mugs", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("I need than an esteemed operator", 5,
           text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("on how to operate this ritzie", TEXT_X_SHIFT,
+    print("like you? Sorry to entangle you,", 5,
           text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+    print("with this, but whaddya say, hun?", 5, text_height + LINE_HEIGHT * 4,
           TEXT_COLOR)
+    print("--Pause--", 5, text_height + LINE_HEIGHT * 5,
+    TEXT_COLOR)
 end
 
 function draw_cutscene_thief_three()
     rectb(0, 0, 240, 136, 2)
     text_height = 45
-    print("3Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+    print("I'm assuming that the silence means yes!", 5, text_height,
           TEXT_COLOR)
-    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("Welcome here to your first training", TEXT_X_SHIFT,
+    print("Great! You're really the bee's knees!", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("So, I'm in need of a getaway driver,", 5,
           text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("on how to operate this ritzie", TEXT_X_SHIFT,
+    print("a demolitions expert, a strategist", 5,
           text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+    print("and an arms dealer.", 5, text_height + LINE_HEIGHT * 4,
           TEXT_COLOR)
 end
 
 function draw_cutscene_thief_four()
     rectb(0, 0, 240, 136, 2)
-    text_height = 45
-    print("4Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+    text_height = 55
+    print("Just get me the channels", 5, text_height,
           TEXT_COLOR)
-    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("Welcome here to your first training", TEXT_X_SHIFT,
+    print("on which I can contact them,", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("I'll handle the rest!", 5,
           text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("on how to operate this ritzie", TEXT_X_SHIFT,
+    print("Talk to you soon, I hope!", 5,
           text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
-          TEXT_COLOR)
 end
 
 -- utils
