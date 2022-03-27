@@ -44,8 +44,8 @@ LEVELS = {
             }
         },
         missed = 0,
-        interrupted = 0
-        
+        interrupted = 0,
+        wrong = 0
     }
 }
 
@@ -458,7 +458,8 @@ function on_mouse_up(mx, my, md)
             src = KNOB_PIVOT,
             dst = dst_knob,
             state = CALL_STATE.DISPATCHING,
-            rope_segments = previous_rope_segments
+            rope_segments = previous_rope_segments,
+            message = message
         })
         DISPATCH = message.dst.coords
     elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB and not is_same_node and
@@ -484,10 +485,21 @@ function on_mouse_up(mx, my, md)
             rope_segments = previous_rope_segments
         })
     elseif not is_same_node then
+        if CALL_SELECTED.message ~= nil then
+            local expected = CALL_SELECTED.message.dst.coords
+            local actual = dst_knob.coords
+            if expected ~= actual then
+                LEVELS[CUR_STATE].wrong = LEVELS[CUR_STATE].wrong + 1
+                CALL_SELECTED.state = CALL_STATE.UNUSED
+                CALL_SELECTED.src.state = KNOB_STATE.OFF
+                CALL_SELECTED.dst.state = KNOB_STATE.OFF
+            else
+                CALL_SELECTED.state = CALL_STATE.ONGOING
+                CALL_SELECTED.duration = 5
+            end
+        end
         CALL_SELECTED.dst = dst_knob
-        CALL_SELECTED.state = CALL_STATE.ONGOING
         DISPATCH = nil
-        CALL_SELECTED.duration = 5
     end
 
     CALL_SELECTED, KNOB_PIVOT = nil, nil
@@ -534,6 +546,7 @@ function draw()
     if DISPATCH ~= nil then print(DISPATCH[1] .. DISPATCH[2], 100, 120, 1) end
     print(LEVELS[CUR_STATE].missed, 100, 100, 1)
     print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
+    print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
 end
 
 function draw_switchboard()
