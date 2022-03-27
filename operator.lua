@@ -198,37 +198,9 @@ function update()
     elseif has_value(PLAYABLE_STATES, CUR_STATE) then
         update_mouse()
         update_ropes()
-        -- UPDATE STATES
-        -- TODO: perhaps not needed
         update_knobs()
-
-        for _, call in pairs(CALLS) do
-            if call.state == CALL_STATE.DISPATCHING then
-                call.src.state = KNOB_STATE.DISPATCHING
-                call.dst.state = KNOB_STATE.DISPATCHING
-            elseif call.state == CALL_STATE.ONGOING and call.src ~= nil and
-                call.dst ~= nil then
-                if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~=
-                    KNOB_STATE.INCOMING then
-                    call.src.state = KNOB_STATE.CONNECTED
-                    call.dst.state = KNOB_STATE.CONNECTED
-                end
-                if (FRAME_COUNTER % 60 == 0) then
-                    call.duration = call.duration - 1
-                    if call.duration == 0 then
-                        call.state = CALL_STATE.FINISHED
-                        call.src.state = KNOB_STATE.OFF
-                        call.dst.state = KNOB_STATE.OFF
-                        for i = 1, #MESSAGES do
-                            if MESSAGES[i] == call.message then
-                                table.remove(MESSAGES, i)
-                                break
-                            end
-                        end
-                    end
-                end
-            end
-        end
+        update_calls()
+        
 
         for _, message in pairs(MESSAGES) do
             if message.timestamp == SECONDS_PASSED and not message.processed then
@@ -265,6 +237,36 @@ function update_knobs()
                 if knob.pickup_timer == 0 then
                     LEVELS[CUR_STATE].missed = LEVELS[CUR_STATE].missed + 1
                     knob.state = KNOB_STATE.MISSED
+                end
+            end
+        end
+    end
+end
+
+function update_calls()
+    for _, call in pairs(CALLS) do
+        if call.state == CALL_STATE.DISPATCHING then
+            call.src.state = KNOB_STATE.DISPATCHING
+            call.dst.state = KNOB_STATE.DISPATCHING
+        elseif call.state == CALL_STATE.ONGOING and call.src ~= nil and
+            call.dst ~= nil then
+            if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~=
+                KNOB_STATE.INCOMING then
+                call.src.state = KNOB_STATE.CONNECTED
+                call.dst.state = KNOB_STATE.CONNECTED
+            end
+            if (FRAME_COUNTER % 60 == 0) then
+                call.duration = call.duration - 1
+                if call.duration == 0 then
+                    call.state = CALL_STATE.FINISHED
+                    call.src.state = KNOB_STATE.OFF
+                    call.dst.state = KNOB_STATE.OFF
+                    for i = 1, #MESSAGES do
+                        if MESSAGES[i] == call.message then
+                            table.remove(MESSAGES, i)
+                            break
+                        end
+                    end
                 end
             end
         end
