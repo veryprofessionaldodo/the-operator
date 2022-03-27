@@ -27,25 +27,58 @@ LEVELS = {
                 caller = "Shake Spear",
                 receiver = "BigZ",
                 content = "Hello World",
-                timestamp = 2,
-                processed = false
+                timestamp = 2
             }, {
                 caller = "Tom Segura",
                 receiver = "João Conde",
                 content = "Auuuch where is the hospital I played basketball",
-                timestamp = 4,
-                processed = false
+                timestamp = 4
             }, {
                 caller = "Slim Shady",
                 receiver = "Diogo Dores",
                 content = "Wazuuuuuuuuuup",
-                timestamp = 6,
-                processed = false
+                timestamp = 6
             }
         },
         missed = 0,
-        interrupted = 0
-        
+        interrupted = 0,
+        wrong = 0
+    }
+}
+
+MESSAGE_POOL = {
+    {
+        caller = "John Doe #1",
+        receiver = "Mary Jane #1",
+        content = "Random one liner"
+    }, {
+        caller = "John Doe #2",
+        receiver = "Mary Jane #2",
+        content = "Random two liner"
+    }, {
+        caller = "John Doe #3",
+        receiver = "Mary Jane #3",
+        content = "Random three liner"
+    }, {
+        caller = "John Doe #4",
+        receiver = "Mary Jane #4",
+        content = "Random four liner"
+    }, {
+        caller = "John Doe #5",
+        receiver = "Mary Jane #5",
+        content = "Random five liner"
+    }, {
+        caller = "John Doe #6",
+        receiver = "Mary Jane #6",
+        content = "Random six liner"
+    }, {
+        caller = "John Doe #7",
+        receiver = "Mary Jane #7",
+        content = "Random seven liner"
+    }, {
+        caller = "John Doe #8",
+        receiver = "Mary Jane #8",
+        content = "Random eight liner"
     }
 }
 
@@ -74,7 +107,8 @@ KNOB_STATE = {
     OFF = "off",
     INCOMING = "incoming",
     DISPATCHING = "dispatching",
-    CONNECTED = "connected"
+    CONNECTED = "connected",
+    MISSED = "missed"
 }
 CALL_STATE = {
     ONGOING = 'ongoing',
@@ -93,18 +127,15 @@ CALLS = {}
 DISPATCH = nil
 
 function TIC()
-    cls()
     update()
     draw()
 end
 
 -- inits
 function init()
-    CUR_STATE = STATES.LEVEL_ONE
+    CUR_STATE = STATES.MAIN_MENU
     KNOBS = init_knobs()
     CALLS = init_calls()
-
-    setup_level()
 end
 
 function init_knobs()
@@ -120,7 +151,8 @@ function init_knobs()
                 x = x,
                 y = y,
                 state = KNOB_STATE.OFF,
-                pickup_timer = 0
+                pickup_timer = 0,
+                missed_timer = 0
             }
             table.insert(knobs, knob)
         end
@@ -136,28 +168,48 @@ function init_calls()
     local calls = {}
 
     -- TODO: generate random
-    table.insert(calls,
-                 {src = KNOBS[1], dst = KNOBS[2], state = CALL_STATE.UNUSED, rope_segments = create_rope_segments(KNOBS[1], KNOBS[2])})
-    table.insert(calls,
-                 {src = KNOBS[5], dst = KNOBS[15], state = CALL_STATE.UNUSED, rope_segments = create_rope_segments(KNOBS[5], KNOBS[15])})
-    table.insert(calls,
-                 {src = KNOBS[8], dst = KNOBS[12], state = CALL_STATE.UNUSED, rope_segments = create_rope_segments(KNOBS[8], KNOBS[12])})
-    table.insert(calls,
-                 {src = KNOBS[9], dst = KNOBS[4], state = CALL_STATE.UNUSED, rope_segments = create_rope_segments(KNOBS[9], KNOBS[4])})
+    table.insert(calls, {
+        src = KNOBS[1],
+        dst = KNOBS[2],
+        state = CALL_STATE.UNUSED,
+        rope_segments = create_rope_segments(KNOBS[1], KNOBS[2])
+    })
+    table.insert(calls, {
+        src = KNOBS[5],
+        dst = KNOBS[15],
+        state = CALL_STATE.UNUSED,
+        rope_segments = create_rope_segments(KNOBS[5], KNOBS[15])
+    })
+    table.insert(calls, {
+        src = KNOBS[8],
+        dst = KNOBS[12],
+        state = CALL_STATE.UNUSED,
+        rope_segments = create_rope_segments(KNOBS[8], KNOBS[12])
+    })
+    table.insert(calls, {
+        src = KNOBS[9],
+        dst = KNOBS[4],
+        state = CALL_STATE.UNUSED,
+        rope_segments = create_rope_segments(KNOBS[9], KNOBS[4])
+    })
 
     return calls
 end
 
 function create_rope_segments(pos_1, pos_2)
-    local diffX = pos_2.x - pos_1.x 
+    local diffX = pos_2.x - pos_1.x
     local diffY = pos_2.y - pos_1.y
     local length = math.sqrt(math.pow(diffX, 2), math.pow(diffY, 2))
     -- get more segments, that way there's a bit of flex 
-    local num_segments = math.ceil(length / SEGMENTS_LENGTH * 1.5)
+    local num_segments = math.ceil(length / SEGMENTS_LENGTH *
+                                       math.random(11, 13) / 10)
 
     local segments = {}
     for i = 1, num_segments do
-        local new_segment = { previous = {x = 0, y = 0}, current = {x = 0, y = 0}}
+        local new_segment = {
+            previous = {x = 0, y = 0},
+            current = {x = 0, y = 0}
+        }
         new_segment.x = pos_1.x + diffX * (i - 1) / (num_segments - 1)
         new_segment.y = pos_1.y + diffY * (i - 1) / (num_segments - 1)
 
@@ -169,41 +221,50 @@ end
 
 -- updates
 function update()
-    -- DEBUG: see if selected
-    -- if knob then knob.state = KNOB_STATE.INCOMING end
-
     FRAME_COUNTER = FRAME_COUNTER + 1
 
     if has_value(SKIPPABLE_STATES, CUR_STATE) and keyp(Z_KEYCODE) then
         update_state_machine()
     elseif has_value(PLAYABLE_STATES, CUR_STATE) then
         update_mouse()
+        update_ropes()
+        update_knobs()
+        update_calls()
+        update_messages()
     end
+end
 
-    update_ropes()
-
-    -- UPDATE STATES
-    -- TODO: perhaps not needed
+function update_knobs()
     OPERATOR_KNOB.state = KNOB_STATE.OFF
     for _, knob in pairs(KNOBS) do
-        if knob.state ~= KNOB_STATE.INCOMING then
+        if knob.state ~= KNOB_STATE.INCOMING and knob.state ~= KNOB_STATE.MISSED then
             knob.state = KNOB_STATE.OFF
         else
             if (FRAME_COUNTER % 60 == 0) then
                 knob.pickup_timer = knob.pickup_timer - 1
+                if knob.state == KNOB_STATE.MISSED then
+                    if knob.missed_timer ~= 1 then
+                        knob.missed_timer = knob.missed_timer + 1
+                    else
+                        knob.state = KNOB_STATE.OFF
+                    end
+                end
                 if knob.pickup_timer == 0 then
                     LEVELS[CUR_STATE].missed = LEVELS[CUR_STATE].missed + 1
-                    knob.state = KNOB_STATE.OFF
+                    knob.state = KNOB_STATE.MISSED
                 end
             end
         end
     end
+end
 
+function update_calls()
     for _, call in pairs(CALLS) do
         if call.state == CALL_STATE.DISPATCHING then
             call.src.state = KNOB_STATE.DISPATCHING
             call.dst.state = KNOB_STATE.DISPATCHING
-        elseif call.state == CALL_STATE.ONGOING then
+        elseif call.state == CALL_STATE.ONGOING and call.src ~= nil and call.dst ~=
+            nil then
             if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~=
                 KNOB_STATE.INCOMING then
                 call.src.state = KNOB_STATE.CONNECTED
@@ -225,12 +286,14 @@ function update()
             end
         end
     end
+end
 
+function update_messages()
     for _, message in pairs(MESSAGES) do
-        if message.timestamp == SECONDS_PASSED and not message.processed then
+        if message.timestamp == SECONDS_PASSED and message.processed == nil then
             src_knob = get_available_knob()
             src_knob.state = KNOB_STATE.INCOMING
-            src_knob.pickup_timer = 10
+            src_knob.pickup_timer = 30
 
             dst_knob = get_available_knob()
 
@@ -244,11 +307,9 @@ end
 function update_ropes()
     for i = 1, #CALLS do
         simulate_ropes(CALLS[i])
-        for j = 1, 50 do
-            constraint_ropes(CALLS[i])
-        end
+        for j = 1, 50 do constraint_ropes(CALLS[i]) end
         simulate_ropes(CALLS[i])
-    end 
+    end
 end
 
 function simulate_ropes(call)
@@ -269,38 +330,39 @@ function constraint_ropes(call)
         -- measure distance between the two points
         local distance = get_distance_between_points(current_point, next_point)
         local diff = math.abs(distance - SEGMENTS_LENGTH)
-        
+
         -- ignore if distance isn't bigger than specified segments length
-        if diff < 0 then 
-            break
-        end
+        if diff < 0 then break end
 
         -- get direction of correction vector
-        local correction_vector = get_vector_from_points(current_point, next_point)
+        local correction_vector = get_vector_from_points(current_point,
+                                                         next_point)
         -- print(get_distance_between_points({x = 0, y = 0}, correction_vector), 50, 50, 3)
-        correction_vector.x = correction_vector.x * ((distance - SEGMENTS_LENGTH) / distance)
-        correction_vector.y = correction_vector.y * ((distance - SEGMENTS_LENGTH) / distance)
+        correction_vector.x = correction_vector.x *
+                                  ((distance - SEGMENTS_LENGTH) / distance)
+        correction_vector.y = correction_vector.y *
+                                  ((distance - SEGMENTS_LENGTH) / distance)
 
         -- correction should be done only by next segment
         if i == 1 then
             next_point.x = next_point.x - correction_vector.x
             next_point.y = next_point.y - correction_vector.y
-        -- correction should be done only be second to last segment
+            -- correction should be done only be second to last segment
         elseif i == #call.rope_segments - 1 then
             current_point.x = current_point.x + correction_vector.x
             current_point.y = current_point.y + correction_vector.y
-        -- correction should be split between current and next vector
-        else 
+            -- correction should be split between current and next vector
+        else
             current_point.x = current_point.x + correction_vector.x * 0.5
             current_point.y = current_point.y + correction_vector.y * 0.5
             next_point.x = next_point.x - correction_vector.x * 0.5
             next_point.y = next_point.y - correction_vector.y * 0.5
-        end 
+        end
 
         -- print(i, 10, base_y, 3)
         -- print(correction_vector.x, 20, base_y, 3)
         -- print(correction_vector.y, 130, base_y, 3)
-        
+
         -- base_y = base_y + 25
         -- trace(i)
         -- trace(correction_vector.x)
@@ -308,13 +370,12 @@ function constraint_ropes(call)
     end
 end
 
-function get_vector_from_points(p1, p2)
-    return { x = p2.x - p1.x, y = p2.y - p1.y }
-end 
+function get_vector_from_points(p1, p2) return
+    {x = p2.x - p1.x, y = p2.y - p1.y} end
 
 function normalize_vector(vec)
     local length = get_distance_between_points({x = 0, y = 0}, vec)
-    return { x = vec.x / length, y = vec.y / length }
+    return {x = vec.x / length, y = vec.y / length}
 end
 
 function get_available_knob()
@@ -338,8 +399,6 @@ function update_state_machine()
     -- advances state machine to next state
     -- may run additional logic in between
     if CUR_STATE == STATES.MAIN_MENU then
-        CUR_STATE = STATES.CUTSCENE_ZERO
-    elseif CUR_STATE == STATES.CUTSCENE_ZERO then
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
         CUR_STATE = STATES.RESULT_ONE
@@ -354,15 +413,23 @@ end
 
 function setup_level() MESSAGES = generate_messages(LEVELS[CUR_STATE].messages) end
 
-function generate_messages(messages_meta)
+function generate_messages(mandatory_messages)
     local messages = {}
 
-    for _, meta in pairs(messages_meta) do
+    -- local indices = map(mandatory_messages, function(m)
+    --     return math.random(1, 10)
+    -- end)
+    -- table.sort(indices)
+
+    -- trace(indices[1] .. " " .. indices[2] .. " " .. indices[3]) 
+
+    for _, mandatory in pairs(mandatory_messages) do
         local message = {}
-        message.caller = meta.caller
-        message.content = meta.content
-        message.receiver = meta.receiver
-        message.timestamp = meta.timestamp
+        message.caller = mandatory.caller
+        message.content = mandatory.content
+        message.receiver = mandatory.receiver
+        message.timestamp = mandatory.timestamp
+        -- local message = copy(mandatory)
         table.insert(messages, message)
     end
 
@@ -384,11 +451,19 @@ function update_mouse()
         for i = 1, #CALLS do
             if CALLS[i].src == knob_hovered then
                 CALL_SELECTED = CALLS[i]
-                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
+                if CALL_SELECTED.state == CALL_STATE.ONGOING then
+                    CALL_SELECTED.state = CALL_STATE.UNUSED
+                    LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
+                                                        .interrupted + 1
+                end
                 KNOB_PIVOT = CALL_SELECTED.dst
             elseif CALLS[i].dst == knob_hovered then
                 CALL_SELECTED = CALLS[i]
-                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
+                if CALL_SELECTED.state == CALL_STATE.ONGOING then
+                    CALL_SELECTED.state = CALL_STATE.UNUSED
+                    LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
+                                                        .interrupted + 1
+                end
                 KNOB_PIVOT = CALL_SELECTED.src
             end
         end
@@ -427,26 +502,70 @@ function on_mouse_up(mx, my, md)
 
     if dst_knob == OPERATOR_KNOB and not is_same_node and not overlaps and
         message ~= nil then
+        local index = 1
+        for i = 1, #CALLS do
+            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then
+                index = i
+                break
+            end
+        end
+        CALL_SELECTED.rope_segments[1] = {x = KNOB_PIVOT.x, y = KNOB_PIVOT.y}
+        CALL_SELECTED.rope_segments[#CALL_SELECTED.rope_segments] = {
+            x = dst_knob.x,
+            y = dst_knob.y
+        }
+        local previous_rope_segments = CALL_SELECTED.rope_segments
+
+        table.remove(CALLS, index)
         table.insert(CALLS, {
             src = KNOB_PIVOT,
             dst = dst_knob,
             state = CALL_STATE.DISPATCHING,
-            rope_segments = create_rope_segments(KNOB_PIVOT, dst_knob)
+            rope_segments = previous_rope_segments,
+            message = message
         })
         DISPATCH = message.dst.coords
-    elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and not is_same_node and
-        not overlaps then
+    elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~=
+        OPERATOR_KNOB and not is_same_node and not overlaps then
+        local index = 1
+        for i = 1, #CALLS do
+            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then
+                index = i
+                break
+            end
+        end
+
+        CALLS[index].rope_segments[1] = {x = KNOB_PIVOT.x, y = KNOB_PIVOT.y}
+        CALLS[index].rope_segments[#CALLS[index].rope_segments] = {
+            x = dst_knob.x,
+            y = dst_knob.y
+        }
+        local previous_rope_segments = CALLS[index].rope_segments
+
+        table.remove(CALLS, index)
         table.insert(CALLS, {
             src = KNOB_PIVOT,
             dst = dst_knob,
-            state = CALL_STATE.ONGOING,
+            state = CALL_STATE.UNUSED,
             message = message,
-            duration = 5,
-            rope_segments = create_rope_segments(KNOB_PIVOT, dst_knob)
+            rope_segments = previous_rope_segments
         })
-    else
-        CALL_SELECTED.state = CALL_STATE.ONGOING
-        CALL_SELECTED.duration = 5
+    elseif not is_same_node then
+        if CALL_SELECTED.message ~= nil then
+            local expected = CALL_SELECTED.message.dst.coords
+            local actual = dst_knob.coords
+            if expected ~= actual then
+                LEVELS[CUR_STATE].wrong = LEVELS[CUR_STATE].wrong + 1
+                CALL_SELECTED.state = CALL_STATE.UNUSED
+                CALL_SELECTED.src.state = KNOB_STATE.OFF
+                CALL_SELECTED.dst.state = KNOB_STATE.OFF
+            else
+                CALL_SELECTED.state = CALL_STATE.ONGOING
+                CALL_SELECTED.duration = 5
+            end
+        end
+        CALL_SELECTED.dst = dst_knob
+        DISPATCH = nil
     end
 
     CALL_SELECTED, KNOB_PIVOT = nil, nil
@@ -485,6 +604,15 @@ end
 -- draws
 function draw()
     -- rectb(0, 0, 240, 136, 2)
+    cls()
+    if has_value(PLAYABLE_STATES, CUR_STATE) then
+        draw_game()
+    elseif (CUR_STATE == STATES.MAIN_MENU) then
+        draw_main_menu()
+    end
+end
+
+function draw_game()
     draw_switchboard()
     draw_knobs()
     draw_calls()
@@ -493,7 +621,7 @@ function draw()
     if DISPATCH ~= nil then print(DISPATCH[1] .. DISPATCH[2], 100, 120, 1) end
     print(LEVELS[CUR_STATE].missed, 100, 100, 1)
     print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
-    print(#CALLS, 20, 20, 3)
+    print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
 end
 
 function draw_switchboard()
@@ -518,9 +646,7 @@ function draw_sidebar()
 end
 
 function draw_knobs()
-    for i = 1, #KNOBS do
-        draw_knob(KNOBS[i])
-    end
+    for i = 1, #KNOBS do draw_knob(KNOBS[i]) end
     draw_knob(OPERATOR_KNOB)
 end
 
@@ -532,6 +658,8 @@ function draw_knob(knob)
         spr(3, knob.x, knob.y, -1, KNOB_SCALE)
     elseif knob.state == KNOB_STATE.CONNECTED then
         spr(5, knob.x, knob.y, -1, KNOB_SCALE)
+    elseif knob.state == KNOB_STATE.MISSED then
+        spr(1, knob.x, knob.y, -1, KNOB_SCALE)
     else
         spr(0, knob.x, knob.y, -1, KNOB_SCALE)
     end
@@ -549,9 +677,9 @@ function draw_call(call)
     for i = 1, #call.rope_segments - 1 do
         current_point = call.rope_segments[i]
         next_point = call.rope_segments[i + 1]
-        line(current_point.x + KNOB_WIDTH, current_point.y + KNOB_HEIGHT, 
-                next_point.x + KNOB_WIDTH, next_point.y + KNOB_HEIGHT, 1)
-    end 
+        line(current_point.x + KNOB_WIDTH, current_point.y + KNOB_HEIGHT,
+             next_point.x + KNOB_WIDTH, next_point.y + KNOB_HEIGHT, 1)
+    end
 end
 
 function draw_timer()
@@ -571,6 +699,8 @@ function draw_timer()
     end
 
 end
+
+function draw_main_menu() print("Main Menu") end
 
 -- utils
 function has_value(tab, val)
@@ -599,6 +729,12 @@ end
 function filter(tbl, func)
     local newtbl = {}
     for i, v in pairs(tbl) do if func(v) then table.insert(newtbl, v) end end
+    return newtbl
+end
+
+function copy(tbl)
+    local newtbl = {}
+    for _, v in pairs(tbl) do table.insert(newtbl, v) end
     return newtbl
 end
 
