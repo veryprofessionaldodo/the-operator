@@ -23,13 +23,14 @@ CUR_STATE = STATES.MAIN_MENU
 LEVELS = {
     level_one = {
         time = 30,
-        max_messages = 10,
+        max_messages = 5,
         messages = {
             {
                 caller = "Shake Spear",
                 receiver = "BigZ",
-                content = "Hello World",
-                timestamp = 2
+                content = "BigZ: Hello World",
+                timestamp = 2,
+                solution = true
             }, {
                 caller = "Tom Segura",
                 receiver = "João Conde",
@@ -41,10 +42,7 @@ LEVELS = {
                 content = "Wazuuuuuuuuuup",
                 timestamp = 6
             }
-        },
-        missed = 0,
-        interrupted = 0,
-        wrong = 0
+        }
     }
 }
 
@@ -73,7 +71,8 @@ MESSAGE_POOL = {
         caller = "John Doe #6",
         receiver = "Mary Jane #6",
         content = "Random six liner"
-    }, {
+    }
+    {
         caller = "John Doe #7",
         receiver = "Mary Jane #7",
         content = "Random seven liner"
@@ -135,7 +134,7 @@ end
 
 -- inits
 function init()
-    CUR_STATE = STATES.MAIN_MENU
+    reset()
     KNOBS = init_knobs()
     CALLS = init_calls()
 end
@@ -201,6 +200,19 @@ function init_calls()
     })
 
     return calls
+end
+
+function reset()
+    -- reset state
+    CUR_STATE = STATES.MAIN_MENU
+
+    -- reset counters
+    for _, level in pairs(LEVELS) do
+        level.missed = 0
+        level.interrupted = 0
+        level.wrong = 0
+        level.solution = nil
+    end
 end
 
 function create_rope_segments(pos_1, pos_2)
@@ -309,6 +321,10 @@ function update_messages()
             message.src = src_knob
             message.dst = dst_knob
             message.processed = true
+
+            if message.solution then
+                LEVELS[CUR_STATE].solution = message.dst.coords
+            end
         end
     end
 end
@@ -318,7 +334,7 @@ function update_ropes()
     for i = 1, #CALLS do
         simulate_ropes(CALLS[i])
         for j = 1, 50 do constraint_ropes(CALLS[i]) end
-    end 
+    end
 end
 
 function simulate_ropes(call)
@@ -367,15 +383,6 @@ function constraint_ropes(call)
             next_point.x = next_point.x - correction_vector.x * 0.5
             next_point.y = next_point.y - correction_vector.y * 0.5
         end
-
-        -- print(i, 10, base_y, 3)
-        -- print(correction_vector.x, 20, base_y, 3)
-        -- print(correction_vector.y, 130, base_y, 3)
-
-        -- base_y = base_y + 25
-        -- trace(i)
-        -- trace(correction_vector.x)
-        -- trace(correction_vector.y)
     end
 end
 
@@ -444,6 +451,11 @@ function generate_messages(mandatory_messages)
         table.insert(messages, indices[i], message)
     end
 
+    -- DEBUG
+    -- for _, v in pairs(messages) do
+    --     trace(v.content)
+    -- end
+
     return messages
 end
 
@@ -466,6 +478,7 @@ function build_message(spec)
     message.content = spec.content
     message.receiver = spec.receiver
     message.timestamp = spec.timestamp
+    message.solution = ifthenelse(spec.solution ~= nil, spec.solution, false)
     return message
 end
 
@@ -520,8 +533,8 @@ function update_mouse()
 end
 
 function reset_call_segments(call)
-    call.rope_segments[1] = {x = call.src.x, y = call.src.y }
-    call.rope_segments[#call.rope_segments] = {x = call.dst.x, y = call.dst.y }
+    call.rope_segments[1] = {x = call.src.x, y = call.src.y}
+    call.rope_segments[#call.rope_segments] = {x = call.dst.x, y = call.dst.y}
 end
 
 function on_mouse_up(mx, my, md)
@@ -534,17 +547,21 @@ function on_mouse_up(mx, my, md)
         return
     end
 
-    local selected_src = KNOB_PIVOT.x == CALL_SELECTED.dst.x and KNOB_PIVOT.y == CALL_SELECTED.dst.y
-    local selected_dst = KNOB_PIVOT.x == CALL_SELECTED.src.x and KNOB_PIVOT.y == CALL_SELECTED.src.y
+    local selected_src = KNOB_PIVOT.x == CALL_SELECTED.dst.x and KNOB_PIVOT.y ==
+                             CALL_SELECTED.dst.y
+    local selected_dst = KNOB_PIVOT.x == CALL_SELECTED.src.x and KNOB_PIVOT.y ==
+                             CALL_SELECTED.src.y
     -- it can't be the same as the current source or destination
-    local is_same_node = (dst_knob.x == CALL_SELECTED.src.x and dst_knob.y == CALL_SELECTED.src.y)
-                    or (dst_knob.x == CALL_SELECTED.dst.x and dst_knob.y == CALL_SELECTED.dst.y)
+    local is_same_node = (dst_knob.x == CALL_SELECTED.src.x and dst_knob.y ==
+                             CALL_SELECTED.src.y) or
+                             (dst_knob.x == CALL_SELECTED.dst.x and dst_knob.y ==
+                                 CALL_SELECTED.dst.y)
 
     if is_same_node then
         reset_call_segments(CALL_SELECTED)
         CALL_SELECTED, KNOB_PIVOT = nil, nil
         return
-    end 
+    end
 
     local overlaps = #filter(CALLS, function(call)
         return call.state ~= CALL_STATE.INTERRUPTED and
@@ -562,7 +579,8 @@ function on_mouse_up(mx, my, md)
     end)[1]
 
     -- incorrect connection with operator, ignore
-    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and message == nil then 
+    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and message ==
+        nil then
         CALL_SELECTED.src = KNOB_PIVOT
         CALL_SELECTED.dst = dst_knob
 
@@ -583,8 +601,8 @@ function on_mouse_up(mx, my, md)
     elseif dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB then
         local index = 1
         for i = 1, #CALLS do
-            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then 
-                index = i 
+            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then
+                index = i
                 break
             end
         end
