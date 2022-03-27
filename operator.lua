@@ -194,7 +194,6 @@ function update()
             if (FRAME_COUNTER % 60 == 0) then
                 knob.pickup_timer = knob.pickup_timer - 1
                 if knob.state == KNOB_STATE.MISSED then
-                    trace(knob.missed_timer)
                     if knob.missed_timer ~= 1 then
                         knob.missed_timer = knob.missed_timer + 1
                     else
@@ -475,7 +474,7 @@ function on_mouse_up(mx, my, md)
             message = message,
             rope_segments = create_rope_segments(KNOB_PIVOT, dst_knob)
         })
-    else
+    elseif not is_same_node then
         CALL_SELECTED.dst = dst_knob
         CALL_SELECTED.state = CALL_STATE.ONGOING
         DISPATCH = nil
