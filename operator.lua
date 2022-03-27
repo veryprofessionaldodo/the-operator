@@ -203,7 +203,7 @@ function update()
         if call.state == CALL_STATE.DISPATCHING then
             call.src.state = KNOB_STATE.DISPATCHING
             call.dst.state = KNOB_STATE.DISPATCHING
-        elseif call.state == CALL_STATE.ONGOING then
+        elseif call.state == CALL_STATE.ONGOING and call.src ~= nil and call.dst ~= nil then
             if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~=
                 KNOB_STATE.INCOMING then
                 call.src.state = KNOB_STATE.CONNECTED
@@ -427,6 +427,14 @@ function on_mouse_up(mx, my, md)
 
     if dst_knob == OPERATOR_KNOB and not is_same_node and not overlaps and
         message ~= nil then
+        local index = 1
+        for i = 1, #CALLS do
+            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then 
+                index = i 
+                break
+            end
+        end
+        table.remove(CALLS, index)
         table.insert(CALLS, {
             src = KNOB_PIVOT,
             dst = dst_knob,
@@ -434,17 +442,25 @@ function on_mouse_up(mx, my, md)
             rope_segments = create_rope_segments(KNOB_PIVOT, dst_knob)
         })
         DISPATCH = message.dst.coords
-    elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and not is_same_node and
+    elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB and not is_same_node and
         not overlaps then
+        local index = 1
+        for i = 1, #CALLS do
+            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then 
+                index = i 
+                break
+            end
+        end
+        table.remove(CALLS, index)
         table.insert(CALLS, {
             src = KNOB_PIVOT,
             dst = dst_knob,
-            state = CALL_STATE.ONGOING,
+            state = CALL_STATE.UNUSED,
             message = message,
-            duration = 5,
             rope_segments = create_rope_segments(KNOB_PIVOT, dst_knob)
         })
     else
+        CALL_SELECTED.dst = dst_knob
         CALL_SELECTED.state = CALL_STATE.ONGOING
         CALL_SELECTED.duration = 5
     end
