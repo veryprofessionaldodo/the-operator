@@ -330,7 +330,8 @@ function on_mouse_up(mx, my, md)
         })
         DISPATCH = message.dst.coords
     elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and not is_same_node and
-        not overlaps then
+        not overlaps and KNOB_SELECTED.state ~= KNOB_STATE.OFF and
+        dst_knob.state ~= KNOB_STATE.OFF then
         table.insert(CALLS, {
             src = KNOB_SELECTED,
             dst = dst_knob,
@@ -339,8 +340,13 @@ function on_mouse_up(mx, my, md)
             duration = 5
         })
     else
-        CALL_SELECTED.state = CALL_STATE.ONGOING
-        CALL_SELECTED.duration = 5
+        table.insert(CALLS, {
+            src = KNOB_SELECTED,
+            dst = dst_knob,
+            state = CALL_STATE.UNUSED,
+            message = message,
+            duration = 5
+        })
     end
 
     CALL_SELECTED, KNOB_SELECTED = nil, nil
