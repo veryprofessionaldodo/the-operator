@@ -42,7 +42,9 @@ LEVELS = {
                 timestamp = 6,
                 processed = false
             }
-        }
+        },
+        missed = 0,
+        interrupted = 0
     }
 }
 
@@ -71,16 +73,15 @@ KNOB_STATE = {
     CONNECTED = "connected"
 }
 CALL_STATE = {
-    ONGOING = 'ongoing',
+    UNUSED = "unused",
     DISPATCHING = "dispatching",
+    ONGOING = 'ongoing',
     FINISHED = 'finished',
     INTERRUPTED = 'interrupted',
-    UNUSED = "unused"
+    DELETED = "deleted"
 }
 KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
 KNOB_SELECTED, CALL_SELECTED, OPERATOR_KNOB = nil, nil, nil
-
-MISSED_CALLS = 0
 
 -- calls from knob to knob
 CALLS = {}
@@ -162,7 +163,7 @@ function update()
             if (FRAME_COUNTER % 60 == 0) then
                 knob.pickup_timer = knob.pickup_timer - 1
                 if knob.pickup_timer == 0 then
-                    MISSED_CALLS = MISSED_CALLS + 1
+                    LEVELS[CUR_STATE].missed = LEVELS[CUR_STATE].missed + 1
                     knob.state = KNOB_STATE.OFF
                 end
             end
@@ -278,12 +279,26 @@ function update_mouse()
         for i = 1, #CALLS do
             if CALLS[i].src == knob_hovered then
                 CALL_SELECTED = CALLS[i]
-                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
                 KNOB_SELECTED = CALL_SELECTED.dst
+
+                if CALL_SELECTED.state == CALL_STATE.ONGOING then
+                    CALL_SELECTED.state = CALL_STATE.INTERRUPTED
+                    LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
+                                                        .interrupted + 1
+                else
+                    CALL_SELECTED.state = CALL_STATE.DELETED
+                end
             elseif CALLS[i].dst == knob_hovered then
                 CALL_SELECTED = CALLS[i]
-                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
                 KNOB_SELECTED = CALL_SELECTED.src
+
+                if CALL_SELECTED.state == CALL_STATE.ONGOING then
+                    CALL_SELECTED.state = CALL_STATE.INTERRUPTED
+                    LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
+                                                        .interrupted + 1
+                else
+                    CALL_SELECTED.state = CALL_STATE.DELETED
+                end
             end
         end
     end
@@ -378,8 +393,8 @@ function draw()
     end
 
     if DISPATCH ~= nil then print(DISPATCH[1] .. DISPATCH[2], 100, 120, 1) end
-    print(MISSED_CALLS, 100, 100, 1)
-    print(#MESSAGES, 120, 100, 1)
+    print(LEVELS[CUR_STATE].missed, 100, 100, 1)
+    print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
 end
 
 function draw_switchboard()
@@ -404,9 +419,7 @@ function draw_sidebar()
 end
 
 function draw_knobs()
-    for i = 1, #KNOBS do
-        draw_knob(KNOBS[i])
-    end
+    for i = 1, #KNOBS do draw_knob(KNOBS[i]) end
     draw_knob(OPERATOR_KNOB)
 end
 
@@ -425,7 +438,8 @@ end
 
 function draw_calls()
     for _, call in pairs(CALLS) do
-        if call.state ~= CALL_STATE.INTERRUPTED then
+        if call.state ~= CALL_STATE.INTERRUPTED and call.state ~=
+            CALL_STATE.DELETED then
             draw_call(call.src.x + KNOB_WIDTH, call.src.y + KNOB_HEIGHT,
                       call.dst.x + KNOB_WIDTH, call.dst.y + KNOB_HEIGHT)
         end
