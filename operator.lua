@@ -520,6 +520,7 @@ function update_state_machine()
         music(3)
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
+        sfx(13, 60, 18, 3, 6)
         music(1)
         CUR_STATE = STATES.CUTSCENE_THIEF_1
     elseif CUR_STATE == STATES.CUTSCENE_THIEF_1 then
@@ -531,6 +532,7 @@ function update_state_machine()
     elseif CUR_STATE == STATES.CUTSCENE_THIEF_4 then
         CUR_STATE = STATES.SELECT_MENU_1
     elseif CUR_STATE == STATES.SELECT_MENU_1 then
+        music(3)
         LEVELS.level_one.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
         CUR_STATE = STATES.LEVEL_TWO
     elseif CUR_STATE == STATES.LEVEL_TWO then
