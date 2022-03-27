@@ -200,29 +200,14 @@ function update()
         update_ropes()
         update_knobs()
         update_calls()
-        
-
-        for _, message in pairs(MESSAGES) do
-            if message.timestamp == SECONDS_PASSED and not message.processed then
-                src_knob = get_available_knob()
-                src_knob.state = KNOB_STATE.INCOMING
-                src_knob.pickup_timer = 30
-
-                dst_knob = get_available_knob()
-
-                message.src = src_knob
-                message.dst = dst_knob
-                message.processed = true
-            end
-        end
+        update_messages()
     end
 end
 
 function update_knobs()
     OPERATOR_KNOB.state = KNOB_STATE.OFF
     for _, knob in pairs(KNOBS) do
-        if knob.state ~= KNOB_STATE.INCOMING and knob.state ~=
-            KNOB_STATE.MISSED then
+        if knob.state ~= KNOB_STATE.INCOMING and knob.state ~= KNOB_STATE.MISSED then
             knob.state = KNOB_STATE.OFF
         else
             if (FRAME_COUNTER % 60 == 0) then
@@ -248,8 +233,8 @@ function update_calls()
         if call.state == CALL_STATE.DISPATCHING then
             call.src.state = KNOB_STATE.DISPATCHING
             call.dst.state = KNOB_STATE.DISPATCHING
-        elseif call.state == CALL_STATE.ONGOING and call.src ~= nil and
-            call.dst ~= nil then
+        elseif call.state == CALL_STATE.ONGOING and call.src ~= nil and call.dst ~=
+            nil then
             if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~=
                 KNOB_STATE.INCOMING then
                 call.src.state = KNOB_STATE.CONNECTED
@@ -269,6 +254,22 @@ function update_calls()
                     end
                 end
             end
+        end
+    end
+end
+
+function update_messages()
+    for _, message in pairs(MESSAGES) do
+        if message.timestamp == SECONDS_PASSED and not message.processed then
+            src_knob = get_available_knob()
+            src_knob.state = KNOB_STATE.INCOMING
+            src_knob.pickup_timer = 30
+
+            dst_knob = get_available_knob()
+
+            message.src = src_knob
+            message.dst = dst_knob
+            message.processed = true
         end
     end
 end
