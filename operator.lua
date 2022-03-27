@@ -572,7 +572,7 @@ function on_mouse_up(mx, my, md)
     end
 
     -- is connecting to operator, with a valid message
-    if dst_knob == OPERATOR_KNOB and message ~= nil then
+    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and message ~= nil then
         -- local previous_rope_segments = CALL_SELECTED.rope_segments
         CALL_SELECTED.src = KNOB_PIVOT
         CALL_SELECTED.dst = dst_knob
@@ -664,6 +664,7 @@ end
 
 function draw_game()
     draw_switchboard()
+    draw_footer()
     draw_knobs()
     draw_calls()
     draw_timer()
@@ -679,11 +680,23 @@ function draw_game()
     print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
 end
 
+function draw_footer()
+		spr(464, 0, 100, 6, 2, 0, 0, 15, 3)
+end
+
 function draw_switchboard()
     -- rectb(2, 2, (SWITCHBOARD.N_COLS * SWITCHBOARD.COL_SPACING) - 8,
     --       SWITCHBOARD.N_ROWS * SWITCHBOARD.ROW_SPACING, 1)
+    spr(7, 35, 0, 0, 1, 0, 0, 1, 15)
+    spr(7, 69, 0, 0, 1, 0, 0, 1, 15)
+    spr(7, 102, 0, 0, 1, 0, 0, 1, 15)
+    spr(7, 137, 0, 0, 1, 0, 0, 1, 15)
+    spr(7, 170, 0, 0, 1, 0, 0, 1, 15)
+    spr(7, 205, 0, 0, 1, 0, 0, 1, 15)
+    
     draw_header()
     draw_sidebar()
+
 end
 
 function draw_header()
@@ -708,15 +721,15 @@ end
 function draw_knob(knob)
     local is_blinking = knob.state == KNOB_STATE.INCOMING
     if is_blinking then
-        spr(0 + FRAME_COUNTER % 60 // 30 * 2, knob.x, knob.y, -1, KNOB_SCALE)
+        spr(0 + FRAME_COUNTER % 60 // 30 * 2, knob.x, knob.y, 11, KNOB_SCALE)
     elseif knob.state == KNOB_STATE.DISPATCHING then
-        spr(3, knob.x, knob.y, -1, KNOB_SCALE)
+        spr(3, knob.x, knob.y, 11, KNOB_SCALE)
     elseif knob.state == KNOB_STATE.CONNECTED then
-        spr(5, knob.x, knob.y, -1, KNOB_SCALE)
+        spr(5, knob.x, knob.y, 3, KNOB_SCALE)
     elseif knob.state == KNOB_STATE.MISSED then
-        spr(1, knob.x, knob.y, -1, KNOB_SCALE)
+        spr(1, knob.x, knob.y, 11, KNOB_SCALE)
     else
-        spr(0, knob.x, knob.y, -1, KNOB_SCALE)
+        spr(0, knob.x, knob.y, 11, KNOB_SCALE)
     end
 end
 
@@ -738,24 +751,31 @@ function draw_call(call)
 end
 
 function draw_timer()
-    local clock_x = 214
-    local clock_y = 119
+    local clock_x = 215
+    local clock_y = 120
     local clock_radius = 10
 
+	spr(12, 200, 105, 5,1,0,0,4,4 )
+
     print("Time Left", clock_x - 14, clock_y - 17, 3, false, 1, true)
-    circ(clock_x, clock_y, clock_radius, 1)
+    circ(clock_x, clock_y, clock_radius, 12)
     if (FRAME_COUNTER % 60 == 0) then SECONDS_PASSED = SECONDS_PASSED + 1 end
 
     for i = 0, SECONDS_PASSED, 0.3 do
         line_increment = deg_to_rad(-90 + i * 6)
         line(clock_x, clock_y,
              round(clock_x + clock_radius * math.cos(line_increment)),
-             round(clock_y + clock_radius * math.sin(line_increment)), 2)
+             round(clock_y + clock_radius * math.sin(line_increment)), 4)
     end
-
+    
+   
 end
 
-function draw_main_menu() print("Main Menu") end
+function draw_main_menu() 
+    print("The", 20, 40, 12, true, 2) 
+    print("Operator", 20, 70, 12, true, 2)
+    spr(154, 130, 20, 1, 2,0,0, 5, 6)
+end
 
 -- utils
 function has_value(tab, val)
@@ -795,13 +815,221 @@ function round(x) return x >= 0 and math.floor(x + 0.5) or math.ceil(x - 0.5) en
 init()
 
 -- <TILES>
--- 000:00ffff000ffeeff0ffeeeefffeeeeedffeeeeedfffeeedff0ffedff000ffff00
--- 001:00ffff000ff22ff0ff2222fff222223ff222223fff2223ff0ff23ff000ffff00
--- 002:00ffff000ff66ff0ff6666fff666665ff666665fff6665ff0ff65ff000ffff00
--- 003:00ffff000ff44ff0ff4444fff444441ff444441fff4441ff0ff41ff000ffff00
--- 004:00ffff000ffffff0ffffffffffffffffffffffffffffffff0ffffff000ffff00
--- 005:00ffff000ff99ff0ff9999fff999998ff999998fff9998ff0ff98ff000ffff00
+-- 000:0eeeeebbeeddddebedcddeeeedddeeeeeddeeeeeedeeedeebeeeeeebbbeeeebb
+-- 001:3322ffbb3343332b24c3322f2333222ff3322f2ff222f32fb222222bbbffffbb
+-- 002:556677bb5555566b65c56677655667777566677776777677b777777bbb7777bb
+-- 003:443322bb4444113b34c4113234413132e1131132e1111132b333333bbb2222bb
+-- 004:0033febb00117deb31ceeeee31eeee0ef7eee80efeee880eb000000bbbeeeebb
+-- 005:bbaaaa33bbbbaaa3abbaa999abaa9999aaa99899aa998a993999999333999933
+-- 007:d0000000d0000000d0000000d0000000d0000000d0000000d0000000d0000000
+-- 012:555555555555555d5555555c55555ddc55555dcc55555ccc5555cccd555dccde
+-- 013:55ddccdddcccddddccccddddccddd0d0cddddddddd0000e0d0000000000eeeee
+-- 014:ddddddd5ddddddcdddddedecddddeeee00000eee0e00e0eee000000eee000000
+-- 015:55555555d5555555cd555555cc555555ecc55555ecc55555eccd5555eecc5555
+-- 023:d0000000d0000000d0000000d0000000d0000000d0000000d0000000d0000000
+-- 028:555dccd0555dcc00555dce00555cc00055dcc00055dd000055cd000055cd0000
+-- 029:00e00e0e00000eee0e0e00ee0e0e00ee0ee0000e00ee00e0e0000000e00ee000
+-- 030:e000ee00ee0000000000e00000000000000000000000000000000e0000000000
+-- 031:0eccd5550eecd55500edd55500eed55500eed555000ed555000dd555000ec555
+-- 035:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+-- 039:d0000000d0000000d0000000d0000000d0000000d0000000d0000000d0000000
+-- 044:55dc000055dd000055cc000055cdd00055dcd00055cddd0055cdd00055cddf00
+-- 045:000ee0000e000000000e00000000000000000000000e000000000000e0000000
+-- 046:00000000000000e00000000000e00000000e0000000000000000e00000000000
+-- 047:000cc5550000e5550000e5550000ce550000ce55000dc555000dc555000cd555
+-- 055:d000000000000000d0000000d000000000000000d0000000d0000000d0000000
+-- 060:55cddfe055cddfd0555d0ede55edefde5dcccedd5dccccedeeecccccdeddcccc
+-- 061:000000000000000000000000d0000e00ddddd000d0000000ced0000eceeeeeee
+-- 062:00000000000000000000000000000000e00000000000000eeee00eeeeeeeeee0
+-- 063:000cd55500cddd55e0dcdcc5eddcecc5eeddccc5ee0dcccee0ccccdeccccdddd
+-- 071:d0000000d000000000000000d0000000d0000000d0000000d0000000d0000000
+-- 087:d000000000000000d0000000d0000000d000000000000000d000000000000000
+-- 103:d000000000000000d0000000d0000000d000000000000000d0000000d0000000
+-- 119:d00000000000000000000000d000000000000000d0000000d0000000d0000000
+-- 135:d0000000d000000000000000d0000000d0000000d0000000d0000000d0000000
+-- 151:d000000000000000d0000000d0000000d000000000000000d000000000000000
+-- 155:0000000000000000000000000000000000000000000000000000000000000002
+-- 156:0000000000000000000000000000002000002211002121112111112211112000
+-- 157:0000000000000000000000000202100011111220122022221112112222022222
+-- 158:0000000000000000000000000000000000000000200000002000000022000000
+-- 167:d000000000000000d0000000d0000000d000000000000000d0000000d0000000
+-- 171:0000002100000001000002210000011200022110000011200000110000221100
+-- 172:1112020210202000120000000000000000000000000000000000000000000000
+-- 173:2222222200002202000000220000000200000002000000200000000000000000
+-- 174:2202000020220000000020002222000022222000002200000202000200020000
+-- 183:d00000000000000000000000d000000000000000d0000000d0000000d0000000
+-- 186:0000000000000000000000000000000000000000000000000000000100000001
+-- 187:0022000000222000000222200011222011212222122222221222222202222222
+-- 190:2022222000022222000220000200020200022202000022000002220000022200
+-- 191:0000000000000000200000000000000000000000000000000000000020000000
+-- 199:d00000000000000000000000d000000000000000d0000000d0000000d0000000
+-- 202:0000000100000001000000010000000100000001000000000000000000000000
+-- 203:1222222212222222222222221222222212222220122222200222220000000000
+-- 206:0002222000022200000222000020022000222220000222000202220020022000
+-- 215:000000000000000000000000d0000000000000000000000000000000d0000000
+-- 219:0000000000000000000000000000000000040000004444000444440004044000
+-- 221:0000000000000021000000110000211100002122000011220000122200202222
+-- 222:1222220011222200122222002222220022222200224112002241100022112000
+-- 231:d000000000000000d0000000d0000000d0000000000000000000000000000000
+-- 235:0444404044444440040444440000004400000000000000000000000000000000
+-- 236:0000000000000000040000004404040044404400000000400000000000000000
+-- 237:0202222200022444000244114444111444444442404022220000222200000020
+-- 238:4111200011222000442000004200000022000000000000000000000000000000
+-- 247:00000000d000000000000000000000000000000000000000d0000000d0000000
 -- </TILES>
+
+-- <SPRITES>
+-- 001:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeed
+-- 002:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeeeeeededdddde
+-- 003:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedddeddd
+-- 004:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 005:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 006:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 007:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 008:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 009:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 010:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 011:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeede
+-- 012:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 013:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 017:eeeeeeedeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeedd
+-- 018:ddddddddddddededdeeeeeeedeeeeeeeeeeeeeeeeeeeeeeedeeeeeeedeeeeeee
+-- 019:ddddddddeddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 020:dddddeeeeeeeddeeeeeeedeeeeeeedeeeeeeddeeeeeeddeeeeeeedeededddeee
+-- 021:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 022:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 023:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 024:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 025:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 026:eeeedeededddddddedddeeeeeddeeeeeeddeeeeeeddddddeedddddddeeddedee
+-- 027:deddeeddddddddddeeedededeeeeeeeeeeeeeeeeeeeeeeeedeeeeeeeeeeeeeee
+-- 028:eddddddeeddddddeeeeeeeeeeeeeeeeeddeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 029:ddeeeeeeddddeeeeeedeeeeeeedeeeeeeedeeeeeeedeeeeeeeddeeeeeeddeeee
+-- 033:eeeeeeedeeeeeeddeeeeeeedeeeeeeedeeeeeeedeeeeeeddeeeeeeedeeeeeeed
+-- 034:deeeeeeedeeeeeeedeeeeeeedeeeeeeedeeeeeeedeeddddedeeddddedeedeede
+-- 035:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 036:deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 037:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 038:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 039:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 040:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 041:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 042:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 043:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 044:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 045:eeddeeeeeedeeeeeeedeeeeeeeddeeeeeeeeeeeeeedeeeeeeedeeeeeeeddeeee
+-- 049:eeeeeeedeeeeeeedeeeeeeedeeeeeeedeeeeeeedeeeeeeedeeeeeeeeeeeeeeee
+-- 050:deeeeddedeeeeededeeeeeeedeeededededdddeeddddeeeedeeeeeeeedeeeeee
+-- 051:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 052:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 053:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 054:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 055:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 056:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 057:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 058:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 059:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 060:eeeeeeeeeeeeeeeeedddeeeeddeeeeeedeeeeeeeddeeeeeeedeeeeedeedeedde
+-- 061:eedeeeeeeedeeeeeeedeeeeeeedeeeeeeddeeeeeeddeeeeeddeeeeeeeeeeeeee
+-- 065:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 066:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 067:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 068:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 069:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 070:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 071:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 072:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 073:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 074:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 075:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 076:eedddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedddeeeddddddddddeeedddeeeeeed
+-- 077:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeeeeeedeeeeeeeddeeeeee
+-- 081:eeeeeeeeeeeeeeeeeeeeeeedeeeeeeedeeeeeeddeeeeeeddeeeeeeddeeeeeedd
+-- 082:eeeeeeeeedddddeeddededdedeeeedddeeeeeeeeeeeeedeeeeeeedddeeeeedde
+-- 083:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeeeeeedeeeeeeeeeeeeeeeeeeeeeee
+-- 084:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 085:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 086:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 087:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 088:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 089:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 090:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 091:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 092:ddeeeeeedddeeeeeeddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 093:ddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeedddeeeeeddeeeeeeddeeeeee
+-- 097:eeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeeedeeeeeedd
+-- 098:eeeeeddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 099:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeeeeeed
+-- 100:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeddeeeeeeedddeeeeddddeee
+-- 101:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 102:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 103:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 104:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 105:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 106:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeddeeeeedeeeeeedddeeeedddeeeeedddee
+-- 107:eeeeeeeeeeeeeeeeeeeeeeeedeeeeeeeddeeeeeeddeeeeeeeeeeeeeeeeeeeeee
+-- 108:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeeeeeedeeeeeeedeeeeeeed
+-- 109:ddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeeeddeeeeee
+-- 113:eeeeeeedeeeeeeedeeeeeeedeeeeeeedeeeeeeedeeeeeeedeeeeeeeeeeeeeeee
+-- 114:eeeeeeeedeeeeeeedeeeeeeedddeeddddddddeeddddedddeeeeeeeeeeeeeeeee
+-- 115:eeeeeeedeeeeeeedeeeeeeededdddddddddddeeeeeeeddedeeeeeedeeeeeeeee
+-- 116:deeddeeeededdeeeddeddeeeeddddeeeedddeeeedddeeeeeeeeeeeeeeeeeeeee
+-- 117:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 118:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 119:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 120:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 121:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 122:eeeddeeeeeeddeddeeedddddeeeededdeeeeedeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 123:eeeeeeeddeddddddddddddddddddededeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 124:ddeddddddddddddddddddddddddedeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 125:ddeeeeeeddeeeeeeddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 198:0000000000000000000000000000000000000000000000000000000000000200
+-- 199:0000000000000000000000000000000000000000000000000000424222222222
+-- 203:0000000000000000000000000000000000000000000000000000000000ee0000
+-- 208:6666666622226222ddeeeeeeddeeeeeeeeeeededeeeeedddeeedddddeeeddddd
+-- 209:6622666622222222eeeeeeeeeedeeeeeedddedeeddddddeeddddddeeddddddee
+-- 210:22666666220eeeeeee0eeeeeee0eeeeeee0eeeeeee0eeeeeee0eeeeeee0eeeee
+-- 211:66666662eeeeeeeeeeeeeeeeeeeededeeeddddddeeddddddedddddddeedddddd
+-- 212:66626e66eeeeeeeeeeeeeeeedeeeeddeededededddddddeeddddeededddddddd
+-- 213:e2ee2666eeeeeeeeeeddeeeeeedeedeeeeeeeedddddddddddddddddddddddddd
+-- 214:eee2eeeeeeeeeeeeeeeee2eeeeededeedddddddddddddddddddddddddddddddd
+-- 215:e2eeeeeeeeeeeeeeeeeeeedeeeddeeeddddddddddddddddddddddddddddddddd
+-- 216:eeeeeeeeeeeeeeeeeeeeeeeeeddeeeeddddddddddddddddddddddddddddddddd
+-- 217:eeeeeee6eeeeeeeeeeeeeeeedddeeeeedeeedddddddddddddddddddddddddddd
+-- 218:6e66eeeeeeeeeeeeeeeeeeeeeeeddddddddddddddddddddddddddddddddddedd
+-- 219:222e6ee6eeeeeeeeeeeeeeeedddddeddddddddddddddddddddddddddddddddde
+-- 220:6626662eeeeeeeeeeeeeedeeddeeeeeeddeeeee0dddeee00dddeee00dddee000
+-- 221:eeeeeeeeeeeeeeeeeee0e0eee000000e00000000000000000000000000000000
+-- 222:eeeeeeeeeeeeeeeeeeeeeeee0eeeeeeee0eeeeee0eeeeeee00eeeeee000eeeee
+-- 223:22262226ee222222eeee2222eeeeeeeeeeeeeeeee0eeeee00000e00000000000
+-- 224:eeddddddeeddddddeeddddddeeddddddeeddddddeededdddeeeeddddeeeddddd
+-- 225:ddddddeeddddddeeddddddeedddddddedddddddeddddddd0dddddde0dddddee0
+-- 226:ee0eeeeeee0eeeeeee0eeeeeee0eeeeeee0eeeeeee0eeeeeee0eeeee0e0eeeee
+-- 227:eeddeddddeededddeeededddeeedeeddeeeeeeddeeeeeeddeeeeeeedeeeeeeee
+-- 228:ddeeeddddeedddddddddddddedddddddeeddddddeeddddddeeddddddeeeeeedd
+-- 229:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddeeedede
+-- 230:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+-- 231:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+-- 232:ddddddddddddddddddddddddddddddddddddddddddddddddddddddeedddddeee
+-- 233:dddddddddddddddddddddddddddddddddddddddddddddddddedddddddeeeeddd
+-- 234:ddddddddddddddddddddddddddddddddddddddddddddddddddddddeeddddddde
+-- 235:dddddddddddddddddddddddddddddddddddddddddddddddddededededeeeeeee
+-- 236:ddde0000ddee0000ddee0000dee00000deee0000eeee0000eeee0000eee00000
+-- 238:000000ee00000000000000000000000000000000000000000000000000000000
+-- 240:eeeeddddeeeeedddeeeeedddeeeeeeeeeeeeeeee0eeeeeee00eeeeee0000eeee
+-- 241:dddeee00deeee000eeee0000e0000000000000000000000000000000e0000000
+-- 242:0e0eeeee000eeeee0000eeee00000eee00000eee000000ee0000000000000000
+-- 243:eeeeeeeeeeeeeeedeeedeeeeeeeeeeeeeeeeeeedeeeeeeed0eeeeeeee0eeeeee
+-- 244:deeeeeeeeeeeeeeeeeeddeedeeeeeeeedeeeeeeeddeeeeeeeeeeeeeeeeeeeeee
+-- 245:eddeededeeeeeeeeeeedeeeedededdeeeeeeeeeeeeeeeedeeeeeeeedeeeeeeee
+-- 246:ddeddeeeeeeeeeeeeeeeeeeeeeedddddeeeeedeededeededdeeeedeeeeeeeeee
+-- 247:eeeeeeeeeeedeedeeeeeedeeddddddddddeeeedeedeeeeededdededdeeeeeede
+-- 248:eeeededeeeeeeeeeeeeeedeeddddddededeedeeeededdeddeeeddeeedeeeeede
+-- 249:deddeeeeeedeeeeedeeedededddddddddeedeeedeeeeeeeeeededeeeedededee
+-- 250:eeeedeeedeeeeeeeddedededddddddddddddddeeeeededeeeeedeeeeeeedeeee
+-- 251:eeeeeededeeedeeeeddeeeeedeeedeeedeeddeeeeeedeeeeedeeeeeeedededde
+-- 252:eeee0000eee00000eeee0000eeeeee00eeeeee00ee000000ee000000ee000000
+-- </SPRITES>
 
 -- <WAVES>
 -- 000:00000000ffffffff00000000ffffffff
@@ -881,6 +1109,6 @@ init()
 -- </TRACKS>
 
 -- <PALETTE>
--- 000:1a1c2cffa559b13e53d67571ffcd75a7f07038b76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86333c57
+-- 000:1a1c2cffa5597d3c38d67571ffcd75a7f07038b76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86482418
 -- </PALETTE>
 
