@@ -337,7 +337,7 @@ function update_knobs()
                 if knob.pickup_timer == 0 then
                     LEVELS[CUR_STATE].missed = LEVELS[CUR_STATE].missed + 1
                     knob.state = KNOB_STATE.MISSED
-                    sfx(18, 30, -1, 3, 6)  
+                    sfx(18, 30, -1, 3, 6)
                 end
             end
         end
@@ -393,9 +393,29 @@ function update_messages()
 
             if message.solution then
                 LEVELS[CUR_STATE].solution = message.dst.coords
+                local first_option = LEVELS[CUR_STATE].solution
+                local second_option = generate_unique_coord({first_option})
+                local third_option = generate_unique_coord({
+                    first_option, second_option
+                })
+                SELECT_MENU.options = {
+                    first_option, second_option, third_option
+                }
             end
         end
     end
+end
+
+function generate_unique_coord(coords)
+    local cols = map(coords, function(coord) return coord[1] end)
+    local col = generate_col()
+    while has_value(cols, col) do col = generate_col() end
+
+    local rows = map(coords, function(coord) return coord[2] end)
+    local row = generate_row()
+    while has_value(rows, row) do row = generate_row() end
+
+    return {col, row}
 end
 
 function update_ropes()
@@ -586,7 +606,7 @@ function update_mouse()
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
                                                         .interrupted + 1
-                    sfx(17, 40, -1, 3, 6)  
+                    sfx(17, 40, -1, 3, 6)
                 end
                 KNOB_PIVOT = CALL_SELECTED.dst
             elseif CALLS[i].dst == knob_hovered then
