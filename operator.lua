@@ -9,6 +9,10 @@ STATES = {
     CUTSCENE_ZERO_3 = 'cutscene_zero_3',
     CUTSCENE_ZERO_4 = 'cutscene_zero_4',
     LEVEL_ONE = 'level_one',
+    CUTSCENE_THIEF_1 = 'cutscene_thief_1',
+    CUTSCENE_THIEF_2 = 'cutscene_thief_2',
+    CUTSCENE_THIEF_3 = 'cutscene_thief_3',
+    CUTSCENE_THIEF_4 = 'cutscene_thief_4',
     SELECT_MENU_1 = "select_menu_1",
     LEVEL_TWO = "level_two",
     SELECT_MENU_2 = "select_menu_2"
@@ -16,8 +20,8 @@ STATES = {
 
 SKIPPABLE_STATES = {
     STATES.MAIN_MENU, STATES.CUTSCENE_ZERO_1, STATES.CUTSCENE_ZERO_2,
-    STATES.CUTSCENE_ZERO_3, STATES.CUTSCENE_ZERO_4, STATES.RESULT_ONE,
-    STATES.RESULT_FINAL
+    STATES.CUTSCENE_ZERO_3, STATES.CUTSCENE_ZERO_4, STATES.CUTSCENE_THIEF_1,
+    STATES.CUTSCENE_THIEF_2, STATES.CUTSCENE_THIEF_3, STATES.CUTSCENE_THIEF_4
 }
 
 PLAYABLE_STATES = {STATES.LEVEL_ONE, STATES.LEVEL_TWO}
@@ -515,6 +519,14 @@ function update_state_machine()
     elseif CUR_STATE == STATES.CUTSCENE_ZERO_4 then
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
+        CUR_STATE = STATES.CUTSCENE_THIEF_1
+    elseif CUR_STATE == STATES.CUTSCENE_THIEF_1 then
+        CUR_STATE = STATES.CUTSCENE_THIEF_2
+    elseif CUR_STATE == STATES.CUTSCENE_THIEF_2 then
+        CUR_STATE = STATES.CUTSCENE_THIEF_3
+    elseif CUR_STATE == STATES.CUTSCENE_THIEF_3 then
+        CUR_STATE = STATES.CUTSCENE_THIEF_4
+    elseif CUR_STATE == STATES.CUTSCENE_THIEF_4 then
         CUR_STATE = STATES.SELECT_MENU_1
     elseif CUR_STATE == STATES.SELECT_MENU_1 then
         LEVELS.level_one.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
@@ -794,6 +806,14 @@ function draw()
         draw_cutscene_zero_three()
     elseif (CUR_STATE == STATES.CUTSCENE_ZERO_4) then
         draw_cutscene_zero_four()
+    elseif (CUR_STATE == STATES.CUTSCENE_THIEF_1) then
+        draw_cutscene_thief_one()
+    elseif (CUR_STATE == STATES.CUTSCENE_THIEF_2) then
+        draw_cutscene_thief_two()
+    elseif (CUR_STATE == STATES.CUTSCENE_THIEF_3) then
+        draw_cutscene_thief_three()
+    elseif (CUR_STATE == STATES.CUTSCENE_THIEF_4) then
+        draw_cutscene_thief_four()
     elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
         draw_select_menu()
     end
@@ -978,6 +998,62 @@ function draw_cutscene_zero_four()
     print("to do it! So get on with it!", TEXT_X_SHIFT,
           text_height + LINE_HEIGHT, TEXT_COLOR)
     print("Go chase yourself!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_thief_one()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("1Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_thief_two()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("2Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_thief_three()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("3Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_thief_four()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("4Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
           TEXT_COLOR)
 end
 
