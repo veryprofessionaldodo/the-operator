@@ -23,6 +23,7 @@ CUR_STATE = STATES.MAIN_MENU
 LEVELS = {
     level_one = {
         time = 20,
+        max_messages = 20,
         messages = {
             {
                 caller = "Shake Spear",
@@ -418,20 +419,37 @@ function generate_messages(mandatory_messages)
     local messages = {}
 
     -- random messages
-    for _, message_spec in pairs(MESSAGE_POOL) do
+    for i = 1, LEVELS[CUR_STATE].max_messages do
+        local message_spec = MESSAGE_POOL[math.random(1, #MESSAGE_POOL)]
         message_spec.timestamp = math.random(3, LEVELS[CUR_STATE].time)
         local message = build_message(message_spec)
         table.insert(messages, message)
     end
 
     -- guarantee they appears in the first 10
-    for _, message_spec in pairs(mandatory_messages) do
-        local index = math.random(1, 10)
+    local indices = map(mandatory_messages,
+                        function(_m) return math.random(1, 10) end)
+    indices = unique_indices(indices)
+
+    for i, message_spec in pairs(mandatory_messages) do
         local message = build_message(message_spec)
-        table.insert(messages, index, message)
+        table.insert(messages, indices[i], message)
     end
 
     return messages
+end
+
+function unique_indices(list)
+    table.sort(list)
+    local newlist = {}
+    for _, v in pairs(list) do
+        if has_value(newlist, v) then
+            table.insert(newlist, v + 1)
+        else
+            table.insert(newlist, v)
+        end
+    end
+    return newlist
 end
 
 function build_message(spec)
