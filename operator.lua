@@ -54,7 +54,7 @@ LEVELS = {
     },
     level_two = {
         time = 30,
-        max_messages = 10,
+        max_messages = 8,
         messages = {
             {
                 content = "Call the mine @receiver and tell the to get me the ragamuffin who colapsed half of my gold mine!",
@@ -68,7 +68,7 @@ LEVELS = {
     },
     level_three = {
         time = 30,
-        max_messages = 10,
+        max_messages = 8,
         messages = {
             {
                 content = "Hiya, we're trying to play chess over the phone. Call @receiver and tell him I want Pawn to F3.",
@@ -140,6 +140,7 @@ ROPE_WIDTH = 10
 
 FRAME_COUNTER = 0
 SECONDS_PASSED = 0
+TIMEOUT = 60
 ASCII_UPPER_A = 65
 Z_KEYCODE = 26
 UP_KEYCODE = 58
@@ -299,10 +300,7 @@ function update()
         update_messages()
 
         -- timeout go next
-        if SECONDS_PASSED == 10 then
-            SECONDS_PASSED = 0
-            update_state_machine()
-        end
+        if SECONDS_PASSED == TIMEOUT then update_state_machine() end
     elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
         update_select_menu()
     end
@@ -543,7 +541,10 @@ function update_state_machine()
     if has_value(PLAYABLE_STATES, CUR_STATE) then setup_level() end
 end
 
-function setup_level() MESSAGES = generate_messages(LEVELS[CUR_STATE].messages) end
+function setup_level()
+    MESSAGES = generate_messages(LEVELS[CUR_STATE].messages)
+    SECONDS_PASSED = 0
+end
 
 function generate_messages(mandatory_messages)
     local messages = {}
