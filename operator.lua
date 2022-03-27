@@ -38,7 +38,7 @@ LEVELS = {
     level_zero = {time = 30, max_messages = 5},
     level_one = {
         time = TIMEOUT,
-        max_messages = 15,
+        max_messages = 10,
         messages = {
             {
                 content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
@@ -76,18 +76,18 @@ LEVELS = {
         messages = {
             {
                 content = "Hiya, we're trying to play chess over the phone. Call @receiver and tell him I want Pawn to F3.",
-                timestamp = 2
+                timestamp = 10
             }, {
                 content = "Hello, @receiver just called, we're playing chess. Pawn to E6.",
-                timestamp = 4
+                timestamp = 16
             },
             {
                 content = "I'm trying to reach @receiver. Pawn to G4.",
-                timestamp = 6
+                timestamp = 40
             }, {
                 content = "Yes! Call @receiver. Queen to H4! Checkmate!",
                 solution = true,
-                timestamp = 8
+                timestamp = 46
             }
         }
     },
@@ -860,14 +860,12 @@ function draw_receiving_call(message)
     if #message > 86 then
         print(string.sub(message, 0, 43), 40, 110, TEXT_COLOR, false, 1, true)
         print(string.sub(message, 44, 86), 40, 120, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 87, #message), 40, 130, TEXT_COLOR, false, 1,
-              true)
+        print(string.sub(message, 87, #message), 40, 130, TEXT_COLOR, false, 1, true)
     elseif #message > 43 then
         print(string.sub(message, 0, 43), 40, 115, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, #message), 40, 125, TEXT_COLOR, false, 1,
-              true)
+        print(string.sub(message, 44, #message), 40, 125, TEXT_COLOR, false, 1, true)
     else
-        print(message, 40, 120, 1, false, TEXT_COLOR, true)
+        print(message, 40, 120, TEXT_COLOR, false, 1, true)
     end
 end
 
