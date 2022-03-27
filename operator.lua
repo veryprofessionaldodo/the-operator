@@ -200,28 +200,7 @@ function update()
         update_ropes()
         -- UPDATE STATES
         -- TODO: perhaps not needed
-        OPERATOR_KNOB.state = KNOB_STATE.OFF
-        for _, knob in pairs(KNOBS) do
-            if knob.state ~= KNOB_STATE.INCOMING and knob.state ~=
-                KNOB_STATE.MISSED then
-                knob.state = KNOB_STATE.OFF
-            else
-                if (FRAME_COUNTER % 60 == 0) then
-                    knob.pickup_timer = knob.pickup_timer - 1
-                    if knob.state == KNOB_STATE.MISSED then
-                        if knob.missed_timer ~= 1 then
-                            knob.missed_timer = knob.missed_timer + 1
-                        else
-                            knob.state = KNOB_STATE.OFF
-                        end
-                    end
-                    if knob.pickup_timer == 0 then
-                        LEVELS[CUR_STATE].missed = LEVELS[CUR_STATE].missed + 1
-                        knob.state = KNOB_STATE.MISSED
-                    end
-                end
-            end
-        end
+        update_knobs()
 
         for _, call in pairs(CALLS) do
             if call.state == CALL_STATE.DISPATCHING then
@@ -262,6 +241,31 @@ function update()
                 message.src = src_knob
                 message.dst = dst_knob
                 message.processed = true
+            end
+        end
+    end
+end
+
+function update_knobs()
+    OPERATOR_KNOB.state = KNOB_STATE.OFF
+    for _, knob in pairs(KNOBS) do
+        if knob.state ~= KNOB_STATE.INCOMING and knob.state ~=
+            KNOB_STATE.MISSED then
+            knob.state = KNOB_STATE.OFF
+        else
+            if (FRAME_COUNTER % 60 == 0) then
+                knob.pickup_timer = knob.pickup_timer - 1
+                if knob.state == KNOB_STATE.MISSED then
+                    if knob.missed_timer ~= 1 then
+                        knob.missed_timer = knob.missed_timer + 1
+                    else
+                        knob.state = KNOB_STATE.OFF
+                    end
+                end
+                if knob.pickup_timer == 0 then
+                    LEVELS[CUR_STATE].missed = LEVELS[CUR_STATE].missed + 1
+                    knob.state = KNOB_STATE.MISSED
+                end
             end
         end
     end
