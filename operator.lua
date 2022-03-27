@@ -74,7 +74,8 @@ KNOB_STATE = {
     OFF = "off",
     INCOMING = "incoming",
     DISPATCHING = "dispatching",
-    CONNECTED = "connected"
+    CONNECTED = "connected",
+    MISSED = "missed"
 }
 CALL_STATE = {
     ONGOING = 'ongoing',
@@ -120,7 +121,8 @@ function init_knobs()
                 x = x,
                 y = y,
                 state = KNOB_STATE.OFF,
-                pickup_timer = 0
+                pickup_timer = 0,
+                missed_timer = 0
             }
             table.insert(knobs, knob)
         end
@@ -186,14 +188,22 @@ function update()
     -- TODO: perhaps not needed
     OPERATOR_KNOB.state = KNOB_STATE.OFF
     for _, knob in pairs(KNOBS) do
-        if knob.state ~= KNOB_STATE.INCOMING then
+        if knob.state ~= KNOB_STATE.INCOMING and knob.state ~= KNOB_STATE.MISSED then
             knob.state = KNOB_STATE.OFF
         else
             if (FRAME_COUNTER % 60 == 0) then
                 knob.pickup_timer = knob.pickup_timer - 1
+                if knob.state == KNOB_STATE.MISSED then
+                    trace(knob.missed_timer)
+                    if knob.missed_timer ~= 1 then
+                        knob.missed_timer = knob.missed_timer + 1
+                    else
+                        knob.state = KNOB_STATE.OFF
+                    end
+                end
                 if knob.pickup_timer == 0 then
                     LEVELS[CUR_STATE].missed = LEVELS[CUR_STATE].missed + 1
-                    knob.state = KNOB_STATE.OFF
+                    knob.state = KNOB_STATE.MISSED
                 end
             end
         end
@@ -230,7 +240,7 @@ function update()
         if message.timestamp == SECONDS_PASSED and not message.processed then
             src_knob = get_available_knob()
             src_knob.state = KNOB_STATE.INCOMING
-            src_knob.pickup_timer = 10
+            src_knob.pickup_timer = 30
 
             dst_knob = get_available_knob()
 
@@ -384,11 +394,17 @@ function update_mouse()
         for i = 1, #CALLS do
             if CALLS[i].src == knob_hovered then
                 CALL_SELECTED = CALLS[i]
-                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
+                if CALL_SELECTED.state == CALL_STATE.ONGOING then
+                    CALL_SELECTED.state = CALL_STATE.UNUSED
+                    LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE].interrupted + 1
+                end
                 KNOB_PIVOT = CALL_SELECTED.dst
             elseif CALLS[i].dst == knob_hovered then
                 CALL_SELECTED = CALLS[i]
-                CALL_SELECTED.state = CALL_STATE.INTERRUPTED
+                if CALL_SELECTED.state == CALL_STATE.ONGOING then
+                    CALL_SELECTED.state = CALL_STATE.UNUSED
+                    LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE].interrupted + 1
+                end
                 KNOB_PIVOT = CALL_SELECTED.src
             end
         end
@@ -548,6 +564,8 @@ function draw_knob(knob)
         spr(3, knob.x, knob.y, -1, KNOB_SCALE)
     elseif knob.state == KNOB_STATE.CONNECTED then
         spr(5, knob.x, knob.y, -1, KNOB_SCALE)
+    elseif knob.state == KNOB_STATE.MISSED then
+        spr(1, knob.x, knob.y, -1, KNOB_SCALE)
     else
         spr(0, knob.x, knob.y, -1, KNOB_SCALE)
     end
