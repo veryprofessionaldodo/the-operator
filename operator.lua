@@ -2,7 +2,6 @@
 -- author: Team "It's about drive"
 -- desc:   RetroJam 2022 organized by IEEE UP SB
 -- script: lua
--- Viewport 240x136
 STATES = {
     MAIN_MENU = 'main_menu',
     CUTSCENE_ZERO = 'cutscene_zero',
@@ -22,13 +21,15 @@ CUR_STATE = STATES.MAIN_MENU
 
 LEVELS = {
     level_one = {
-        time = 20,
+        time = 30,
+        max_messages = 5,
         messages = {
             {
                 caller = "Shake Spear",
                 receiver = "BigZ",
-                content = "Hello World",
-                timestamp = 2
+                content = "BigZ: Hello World",
+                timestamp = 2,
+                solution = true
             }, {
                 caller = "Tom Segura",
                 receiver = "João Conde",
@@ -40,10 +41,7 @@ LEVELS = {
                 content = "Wazuuuuuuuuuup",
                 timestamp = 6
             }
-        },
-        missed = 0,
-        interrupted = 0,
-        wrong = 0
+        }
     }
 }
 
@@ -134,7 +132,7 @@ end
 
 -- inits
 function init()
-    CUR_STATE = STATES.MAIN_MENU
+    reset()
     KNOBS = init_knobs()
     CALLS = init_calls()
 end
@@ -168,7 +166,6 @@ end
 function init_calls()
     local calls = {}
 
-    -- TODO: generate random
     table.insert(calls, {
         src = KNOBS[1],
         dst = KNOBS[2],
@@ -182,19 +179,38 @@ function init_calls()
         rope_segments = create_rope_segments(KNOBS[5], KNOBS[15])
     })
     table.insert(calls, {
-        src = KNOBS[8],
-        dst = KNOBS[12],
-        state = CALL_STATE.UNUSED,
-        rope_segments = create_rope_segments(KNOBS[8], KNOBS[12])
-    })
-    table.insert(calls, {
         src = KNOBS[9],
         dst = KNOBS[4],
         state = CALL_STATE.UNUSED,
         rope_segments = create_rope_segments(KNOBS[9], KNOBS[4])
     })
+    table.insert(calls, {
+        src = KNOBS[3],
+        dst = KNOBS[13],
+        state = CALL_STATE.UNUSED,
+        rope_segments = create_rope_segments(KNOBS[3], KNOBS[13])
+    })
+    table.insert(calls, {
+        src = KNOBS[6],
+        dst = KNOBS[24],
+        state = CALL_STATE.UNUSED,
+        rope_segments = create_rope_segments(KNOBS[6], KNOBS[24])
+    })
 
     return calls
+end
+
+function reset()
+    -- reset state
+    CUR_STATE = STATES.MAIN_MENU
+
+    -- reset counters
+    for _, level in pairs(LEVELS) do
+        level.missed = 0
+        level.interrupted = 0
+        level.wrong = 0
+        level.solution = nil
+    end
 end
 
 function create_rope_segments(pos_1, pos_2)
@@ -293,6 +309,8 @@ function update_messages()
     for _, message in pairs(MESSAGES) do
         if message.timestamp == SECONDS_PASSED and message.processed == nil then
             src_knob = get_available_knob()
+            if src_knob == nil then break end
+
             src_knob.state = KNOB_STATE.INCOMING
             src_knob.pickup_timer = 30
 
@@ -301,21 +319,25 @@ function update_messages()
             message.src = src_knob
             message.dst = dst_knob
             message.processed = true
+
+            if message.solution then
+                LEVELS[CUR_STATE].solution = message.dst.coords
+            end
         end
     end
 end
 
 function update_ropes()
+    -- if not (FRAME_COUNTER % 20 == 0) then return end
     for i = 1, #CALLS do
         simulate_ropes(CALLS[i])
         for j = 1, 50 do constraint_ropes(CALLS[i]) end
-        simulate_ropes(CALLS[i])
     end
 end
 
 function simulate_ropes(call)
     for i = 2, #call.rope_segments - 1 do
-        call.rope_segments[i].y = call.rope_segments[i].y + GRAVITY / 60
+        call.rope_segments[i].y = call.rope_segments[i].y + GRAVITY / 5
     end
 end
 
@@ -359,15 +381,6 @@ function constraint_ropes(call)
             next_point.x = next_point.x - correction_vector.x * 0.5
             next_point.y = next_point.y - correction_vector.y * 0.5
         end
-
-        -- print(i, 10, base_y, 3)
-        -- print(correction_vector.x, 20, base_y, 3)
-        -- print(correction_vector.y, 130, base_y, 3)
-
-        -- base_y = base_y + 25
-        -- trace(i)
-        -- trace(correction_vector.x)
-        -- trace(correction_vector.y)
     end
 end
 
@@ -389,6 +402,7 @@ function get_available_knob()
                    not has_value(allocated_srcs, knob) and
                    not has_value(allocated_dsts, knob)
     end)
+    if #usable_knobs == 0 then return nil end
     local index = math.random(1, #usable_knobs)
     return usable_knobs[index]
 end
@@ -418,20 +432,43 @@ function generate_messages(mandatory_messages)
     local messages = {}
 
     -- random messages
-    for _, message_spec in pairs(MESSAGE_POOL) do
+    for i = 1, LEVELS[CUR_STATE].max_messages do
+        local message_spec = MESSAGE_POOL[math.random(1, #MESSAGE_POOL)]
         message_spec.timestamp = math.random(3, LEVELS[CUR_STATE].time)
         local message = build_message(message_spec)
         table.insert(messages, message)
     end
 
     -- guarantee they appears in the first 10
-    for _, message_spec in pairs(mandatory_messages) do
-        local index = math.random(1, 10)
+    local limit = math.min(#messages, 10)
+    local indices = map(mandatory_messages,
+                        function(_m) return math.random(1, limit) end)
+    indices = unique_indices(indices)
+
+    for i, message_spec in pairs(mandatory_messages) do
         local message = build_message(message_spec)
-        table.insert(messages, index, message)
+        table.insert(messages, indices[i], message)
     end
 
+    -- DEBUG
+    -- for _, v in pairs(messages) do
+    --     trace(v.content)
+    -- end
+
     return messages
+end
+
+function unique_indices(list)
+    table.sort(list)
+    local newlist = {}
+    for _, v in pairs(list) do
+        if has_value(newlist, v) then
+            table.insert(newlist, v + 1)
+        else
+            table.insert(newlist, v)
+        end
+    end
+    return newlist
 end
 
 function build_message(spec)
@@ -440,6 +477,7 @@ function build_message(spec)
     message.content = spec.content
     message.receiver = spec.receiver
     message.timestamp = spec.timestamp
+    message.solution = ifthenelse(spec.solution ~= nil, spec.solution, false)
     return message
 end
 
@@ -493,22 +531,73 @@ function update_mouse()
     if not md and KNOB_PIVOT ~= nil then on_mouse_up(mx, my, md) end
 end
 
+function reset_call_segments(call)
+    call.rope_segments[1] = {x = call.src.x, y = call.src.y}
+    call.rope_segments[#call.rope_segments] = {x = call.dst.x, y = call.dst.y}
+end
+
 function on_mouse_up(mx, my, md)
     local dst_knob = get_hovered_knob(mx, my)
 
-    local is_same_node = dst_knob ~= nil and dst_knob.x == KNOB_PIVOT.x and
-                             dst_knob.y == KNOB_PIVOT.y
+    -- reset position in case no knob was discovered
+    if dst_knob == nil then
+        reset_call_segments(CALL_SELECTED)
+        CALL_SELECTED, KNOB_PIVOT = nil, nil
+        return
+    end
+
+    local selected_src = KNOB_PIVOT.x == CALL_SELECTED.dst.x and KNOB_PIVOT.y ==
+                             CALL_SELECTED.dst.y
+    local selected_dst = KNOB_PIVOT.x == CALL_SELECTED.src.x and KNOB_PIVOT.y ==
+                             CALL_SELECTED.src.y
+    -- it can't be the same as the current source or destination
+    local is_same_node = (dst_knob.x == CALL_SELECTED.src.x and dst_knob.y ==
+                             CALL_SELECTED.src.y) or
+                             (dst_knob.x == CALL_SELECTED.dst.x and dst_knob.y ==
+                                 CALL_SELECTED.dst.y)
+
+    if is_same_node then
+        reset_call_segments(CALL_SELECTED)
+        CALL_SELECTED, KNOB_PIVOT = nil, nil
+        return
+    end
+
     local overlaps = #filter(CALLS, function(call)
         return call.state ~= CALL_STATE.INTERRUPTED and
                    (call.src == dst_knob or call.dst == dst_knob)
     end) > 0
 
+    if overlaps then
+        reset_call_segments(CALL_SELECTED)
+        CALL_SELECTED, KNOB_PIVOT = nil, nil
+        return
+    end
+
     local message = filter(MESSAGES, function(message)
         return message.src == KNOB_PIVOT
     end)[1]
 
-    if dst_knob == OPERATOR_KNOB and not is_same_node and not overlaps and
-        message ~= nil then
+    -- incorrect connection with operator, ignore
+    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and message ==
+        nil then
+        CALL_SELECTED.src = KNOB_PIVOT
+        CALL_SELECTED.dst = dst_knob
+
+        CALL_SELECTED.state = CALL_STATE.UNUSED
+        reset_call_segments(CALL_SELECTED)
+        return
+    end
+
+    -- is connecting to operator, with a valid message
+    if dst_knob == OPERATOR_KNOB and message ~= nil then
+        -- local previous_rope_segments = CALL_SELECTED.rope_segments
+        CALL_SELECTED.src = KNOB_PIVOT
+        CALL_SELECTED.dst = dst_knob
+        reset_call_segments(CALL_SELECTED)
+        CALL_SELECTED.state = CALL_STATE.DISPATCHING
+        CALL_SELECTED.message = message
+        DISPATCH = message
+    elseif dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB then
         local index = 1
         for i = 1, #CALLS do
             if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then
@@ -516,48 +605,17 @@ function on_mouse_up(mx, my, md)
                 break
             end
         end
-        CALL_SELECTED.rope_segments[1] = {x = KNOB_PIVOT.x, y = KNOB_PIVOT.y}
-        CALL_SELECTED.rope_segments[#CALL_SELECTED.rope_segments] = {
-            x = dst_knob.x,
-            y = dst_knob.y
-        }
-        local previous_rope_segments = CALL_SELECTED.rope_segments
 
-        table.remove(CALLS, index)
-        table.insert(CALLS, {
-            src = KNOB_PIVOT,
-            dst = dst_knob,
-            state = CALL_STATE.DISPATCHING,
-            rope_segments = previous_rope_segments,
-            message = message
-        })
-        DISPATCH = message.dst.coords
-    elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~=
-        OPERATOR_KNOB and not is_same_node and not overlaps then
-        local index = 1
-        for i = 1, #CALLS do
-            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then
-                index = i
-                break
-            end
-        end
+        CALLS[index].src = KNOB_PIVOT
+        CALLS[index].dst = dst_knob
+        reset_call_segments(CALLS[index])
+        CALLS[index].state = CALL_STATE.UNUSED
+        CALLS[index].message = message
+    else
+        -- everything is correct, it's now an ongoing call
+        -- if selected_src then CALL_SELECTED.src = dst_knob end
+        -- if selected_dst then CALL_SELECTED.dst = dst_knob end
 
-        CALLS[index].rope_segments[1] = {x = KNOB_PIVOT.x, y = KNOB_PIVOT.y}
-        CALLS[index].rope_segments[#CALLS[index].rope_segments] = {
-            x = dst_knob.x,
-            y = dst_knob.y
-        }
-        local previous_rope_segments = CALLS[index].rope_segments
-
-        table.remove(CALLS, index)
-        table.insert(CALLS, {
-            src = KNOB_PIVOT,
-            dst = dst_knob,
-            state = CALL_STATE.UNUSED,
-            message = message,
-            rope_segments = previous_rope_segments
-        })
-    elseif not is_same_node then
         if CALL_SELECTED.message ~= nil then
             local expected = CALL_SELECTED.message.dst.coords
             local actual = dst_knob.coords
@@ -572,6 +630,8 @@ function on_mouse_up(mx, my, md)
             end
         end
         CALL_SELECTED.dst = dst_knob
+
+        reset_call_segments(CALL_SELECTED)
         DISPATCH = nil
     end
 
@@ -625,10 +685,18 @@ function draw_game()
     draw_calls()
     draw_timer()
 
-    if DISPATCH ~= nil then print(DISPATCH[1] .. DISPATCH[2], 100, 120, 1) end
+    if DISPATCH ~= nil then
+        local coords = DISPATCH.dst.coords
+        local message = DISPATCH.content
+        print(coords[1] .. coords[2], 80, 120, 1)
+        print(message, 100, 120, 1)
+    end
     print(LEVELS[CUR_STATE].missed, 100, 100, 1)
     print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
     print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
+
+    local coords = LEVELS[CUR_STATE].solution
+    if coords ~= nil then print(coords[1] .. coords[2], 120, 120, 1) end
 end
 
 function draw_switchboard()
