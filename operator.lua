@@ -1099,8 +1099,10 @@ function draw_cutscene_final()
         -- and levels.level_four.solution == levels.level_four.chosen
     then
         draw_victory()
+        music(2)
     else 
         draw_lost()
+        music(0)
     end
 
 
