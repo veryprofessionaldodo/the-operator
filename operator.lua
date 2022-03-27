@@ -251,6 +251,8 @@ function init_calls()
 end
 
 function reset()
+    music(4)
+
     -- reset state
     CUR_STATE = STATES.MAIN_MENU
 
@@ -502,7 +504,7 @@ end
 
 function update_state_machine()
     -- stops all SFX
-    -- sfx(-1)
+    sfx(-1)
 
     -- advances state machine to next state
     -- may run additional logic in between
@@ -515,8 +517,10 @@ function update_state_machine()
     elseif CUR_STATE == STATES.CUTSCENE_ZERO_3 then
         CUR_STATE = STATES.CUTSCENE_ZERO_4
     elseif CUR_STATE == STATES.CUTSCENE_ZERO_4 then
+        music(3)
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
+        music(1)
         CUR_STATE = STATES.CUTSCENE_THIEF_1
     elseif CUR_STATE == STATES.CUTSCENE_THIEF_1 then
         CUR_STATE = STATES.CUTSCENE_THIEF_2
@@ -618,7 +622,7 @@ function update_mouse()
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
                                                         .interrupted + 1
-                    sfx(17, 40, -1, 3, 6)
+                    sfx(17, 40, -1, 3, 15)
                 end
                 KNOB_PIVOT = CALL_SELECTED.dst
             elseif CALLS[i].dst == knob_hovered then
@@ -627,7 +631,7 @@ function update_mouse()
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
                                                         .interrupted + 1
-                    sfx(17, 40, -1, 3, 6)
+                    sfx(17, 40, -1, 3, 15)
                 end
                 KNOB_PIVOT = CALL_SELECTED.src
             end
@@ -717,7 +721,7 @@ function on_mouse_up(mx, my, md)
         CALL_SELECTED.state = CALL_STATE.DISPATCHING
         CALL_SELECTED.message = message
         DISPATCH = message
-        sfx(14, 48, -1, 3, 6)
+        sfx(14, 48, -1, 3, 15)
     elseif dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB then
         local index = 1
         for i = 1, #CALLS do
@@ -745,11 +749,11 @@ function on_mouse_up(mx, my, md)
                 CALL_SELECTED.state = CALL_STATE.UNUSED
                 CALL_SELECTED.src.state = KNOB_STATE.OFF
                 CALL_SELECTED.dst.state = KNOB_STATE.OFF
-                sfx(17, 61, -1, 3, 6)
+                sfx(17, 61, -1, 3, 15)
             else
                 CALL_SELECTED.state = CALL_STATE.ONGOING
                 CALL_SELECTED.duration = 5
-                sfx(16, 60, -1, 3, 6)
+                sfx(16, 60, -1, 3, 15)
             end
         end
         CALL_SELECTED.dst = dst_knob
@@ -1188,7 +1192,7 @@ init()
 -- 001:0817021817021818421818821c20001c2c000000000000000000000000000000000000000000000000000000000000002e0100
 -- 002:e00000ec3000ec3010000010ec30000000000000000000000000000000000000000000000000000000000000000000002e8100
 -- 003:2100002d40002d40002d44102d44102556d52d4410296856296b56296b17047000257000257e102d40200c40000000002e81ef
--- 004:4a9000ca972056a720ca972a56a7aaca97ea56a76bca97ab000000000000000000000000000000000000000000000000ec01ef
+-- 004:4a9720ca972056a720ca972a56a7aaca97ea56a76bca97ab000000000000000000000000000000000000000000000000ec01ef
 -- 005:0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002e0100
 -- </TRACKS>
 
