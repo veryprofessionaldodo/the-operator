@@ -384,6 +384,9 @@ function update_messages()
 
             message.src = src_knob
             message.dst = dst_knob
+            message.content = message.content:gsub("@receiver",
+                                                   dst_knob.coords[1] ..
+                                                       dst_knob.coords[2])
             message.processed = true
 
             if message.solution then
@@ -808,9 +811,9 @@ function draw_game()
         -- print(coords[1] .. coords[2], 80, 120, 1)
         draw_receiving_call(message)
     end
-    print(LEVELS[CUR_STATE].missed, 100, 100, 1)
-    print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
-    print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
+    -- print(LEVELS[CUR_STATE].missed, 100, 100, 1)
+    -- print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
+    -- print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
 
     -- local coords = LEVELS[CUR_STATE].solution
     -- if coords ~= nil then print(coords[1] .. coords[2], 80, 100, 1) end
