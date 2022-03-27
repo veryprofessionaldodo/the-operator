@@ -696,7 +696,7 @@ function draw_game()
     print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
 
     local coords = LEVELS[CUR_STATE].solution
-    if coords ~= nil then print(coords[1] .. coords[2], 120, 120, 1) end
+    if coords ~= nil then print(coords[1] .. coords[2], 80, 100, 1) end
 end
 
 function draw_switchboard()
