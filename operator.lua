@@ -155,7 +155,7 @@ function create_rope_segments(pos_1, pos_2)
     local diffY = pos_2.y - pos_1.y
     local length = math.sqrt(math.pow(diffX, 2), math.pow(diffY, 2))
     -- get more segments, that way there's a bit of flex 
-    local num_segments = math.ceil(length / SEGMENTS_LENGTH * 1.5)
+    local num_segments = math.ceil(length / SEGMENTS_LENGTH * math.random(11, 13) / 10)
 
     local segments = {}
     for i = 1, num_segments do
@@ -450,12 +450,16 @@ function on_mouse_up(mx, my, md)
                 break
             end
         end
+        CALL_SELECTED.rope_segments[1] = { x = KNOB_PIVOT.x, y = KNOB_PIVOT.y }
+        CALL_SELECTED.rope_segments[#CALL_SELECTED.rope_segments] = { x = dst_knob.x, y = dst_knob.y }
+        local previous_rope_segments = CALL_SELECTED.rope_segments
+
         table.remove(CALLS, index)
         table.insert(CALLS, {
             src = KNOB_PIVOT,
             dst = dst_knob,
             state = CALL_STATE.DISPATCHING,
-            rope_segments = create_rope_segments(KNOB_PIVOT, dst_knob)
+            rope_segments = previous_rope_segments
         })
         DISPATCH = message.dst.coords
     elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB and not is_same_node and
@@ -467,13 +471,18 @@ function on_mouse_up(mx, my, md)
                 break
             end
         end
+
+        CALLS[index].rope_segments[1] = { x = KNOB_PIVOT.x, y = KNOB_PIVOT.y }
+        CALLS[index].rope_segments[#CALLS[index].rope_segments] = { x = dst_knob.x, y = dst_knob.y }
+        local previous_rope_segments = CALLS[index].rope_segments
+        
         table.remove(CALLS, index)
         table.insert(CALLS, {
             src = KNOB_PIVOT,
             dst = dst_knob,
             state = CALL_STATE.UNUSED,
             message = message,
-            rope_segments = create_rope_segments(KNOB_PIVOT, dst_knob)
+            rope_segments = previous_rope_segments
         })
     else
         CALL_SELECTED.dst = dst_knob
