@@ -94,7 +94,6 @@ CALLS = {}
 DISPATCH = nil
 
 function TIC()
-    cls()
     update()
     draw()
 end
@@ -564,6 +563,7 @@ end
 -- draws
 function draw()
     -- rectb(0, 0, 240, 136, 2)
+    cls()
     if has_value(PLAYABLE_STATES, CUR_STATE) then
         draw_game()
     elseif (CUR_STATE == STATES.MAIN_MENU) then
