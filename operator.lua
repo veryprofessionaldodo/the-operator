@@ -33,11 +33,12 @@ CUR_STATE = STATES.MAIN_MENU
 
 SELECT_MENU = {selected = 0, options = {}}
 
+TIMEOUT = 60
 LEVELS = {
     level_zero = {time = 30, max_messages = 5},
     level_one = {
         time = TIMEOUT,
-        max_messages = 10,
+        max_messages = 15,
         messages = {
             {
                 content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
@@ -143,7 +144,6 @@ ROPE_WIDTH = 10
 
 FRAME_COUNTER = 0
 SECONDS_PASSED = 0
-TIMEOUT = 60
 ASCII_UPPER_A = 65
 Z_KEYCODE = 26
 UP_KEYCODE = 58
