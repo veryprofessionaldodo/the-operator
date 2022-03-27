@@ -1109,10 +1109,8 @@ function draw_cutscene_final()
     draw_old_timey_background()
     trace(LEVELS.level_one.chosen)
     trace(LEVELS.level_one.solution)
-    if levels.level_one.solution == levels.level_one.chosen
-    and levels.level_two.solution == levels.level_two.chosen
-        -- and levels.level_three.solution == levels.level_three.chosen
-        -- and levels.level_four.solution == levels.level_four.chosen
+    if LEVELS.level_one.solution == LEVELS.level_one.chosen
+    and LEVELS.level_two.solution == LEVELS.level_two.chosen
     then
         draw_victory()
         music(2)
