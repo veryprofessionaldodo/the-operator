@@ -38,35 +38,35 @@ LEVELS = {
     level_zero = {time = 30, max_messages = 5},
     level_one = {
         time = TIMEOUT,
-        max_messages = 10,
+        max_messages = 7,
         messages = {
             {
                 content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
-                timestamp = 2
+                timestamp = 3
             }, {
                 content = "Could you connect me to the taxi company @receiver? There's a driver there who knows the city like the back of his hand",
                 solution = true,
-                timestamp = 4
+                timestamp = 20
             }, {
                 content = "I'm looking to buy myself one of those new spiffy cars. I heard @receiver was maybe selling one",
-                timestamp = 6
+                timestamp = 40
             }, {
                 content = "I can't with this heap of a car! Call @receiver for me, will'ya doll?",
-                timestamp = 8
+                timestamp = 52
             }
         }
     },
     level_two = {
         time = TIMEOUT,
-        max_messages = 15,
+        max_messages = 9,
         messages = {
             {
                 content = "Call the mine @receiver and tell the to get me the ragamuffin who colapsed half of my gold mine!",
-                timestamp = 2
+                timestamp = 5
             }, {
                 content = "Could you get me that delightful scotish man at @receiver? I've heard he can handle a grenade launcher well.",
                 solution = true,
-                timestamp = 4
+                timestamp = 20
             }
         }
     },
