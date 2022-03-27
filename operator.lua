@@ -15,13 +15,16 @@ STATES = {
     CUTSCENE_THIEF_4 = 'cutscene_thief_4',
     SELECT_MENU_1 = "select_menu_1",
     LEVEL_TWO = "level_two",
-    SELECT_MENU_2 = "select_menu_2"
+    SELECT_MENU_2 = "select_menu_2",
+    CUTSCENE_NEWS = "cutscene_news",
+    CUTSCENE_FINAL = "cutscene_final"
 }
 
 SKIPPABLE_STATES = {
     STATES.MAIN_MENU, STATES.CUTSCENE_ZERO_1, STATES.CUTSCENE_ZERO_2,
     STATES.CUTSCENE_ZERO_3, STATES.CUTSCENE_ZERO_4, STATES.CUTSCENE_THIEF_1,
-    STATES.CUTSCENE_THIEF_2, STATES.CUTSCENE_THIEF_3, STATES.CUTSCENE_THIEF_4
+    STATES.CUTSCENE_THIEF_2, STATES.CUTSCENE_THIEF_3, STATES.CUTSCENE_THIEF_4,
+    STATES.CUTSCENE_NEWS, STATES.CUTSCENE_FINAL
 }
 
 PLAYABLE_STATES = {STATES.LEVEL_ONE, STATES.LEVEL_TWO}
@@ -33,8 +36,8 @@ SELECT_MENU = {selected = 0, options = {}}
 LEVELS = {
     level_zero = {time = 30, max_messages = 5},
     level_one = {
-        time = 30,
-        max_messages = 5,
+        time = TIMEOUT,
+        max_messages = 10,
         messages = {
             {
                 content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
@@ -53,8 +56,8 @@ LEVELS = {
         }
     },
     level_two = {
-        time = 30,
-        max_messages = 8,
+        time = TIMEOUT,
+        max_messages = 15,
         messages = {
             {
                 content = "Call the mine @receiver and tell the to get me the ragamuffin who colapsed half of my gold mine!",
@@ -67,8 +70,8 @@ LEVELS = {
         }
     },
     level_three = {
-        time = 30,
-        max_messages = 8,
+        time = TIMEOUT,
+        max_messages = 15,
         messages = {
             {
                 content = "Hiya, we're trying to play chess over the phone. Call @receiver and tell him I want Pawn to F3.",
@@ -88,8 +91,8 @@ LEVELS = {
         }
     },
     level_four = {
-        time = 30,
-        max_messages = 10,
+        time = TIMEOUT,
+        max_messages = 15,
         messages = {
             {
                 content = "Get me @receiver, spiffy! His trigger men just tried to chisel me!",
@@ -537,7 +540,9 @@ function update_state_machine()
         CUR_STATE = STATES.SELECT_MENU_2
     elseif CUR_STATE == STATES.SELECT_MENU_2 then
         LEVELS.level_two.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
-        CUR_STATE = STATES.MAIN_MENU
+        CUR_STATE = STATES.CUTSCENE_NEWS
+    elseif CUR_STATE == STATES.CUTSCENE_NEWS then
+        CUR_STATE = STATES.CUTSCENE_FINAL
     else
         init()
     end
@@ -821,6 +826,10 @@ function draw()
         draw_cutscene_thief_four()
     elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
         draw_select_menu()
+    elseif (CUR_STATE == STATES.CUTSCENE_NEWS) then
+        draw_cutscene_news()
+    elseif (CUR_STATE == STATES.CUTSCENE_FINAL) then
+        draw_cutscene_final()
     end
 end
 
@@ -1061,6 +1070,10 @@ function draw_cutscene_thief_four()
     print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
           TEXT_COLOR)
 end
+
+function draw_cutscene_news() print("CUTSCENE NEWS") end
+
+function draw_cutscene_final() print("CUTSCENE FINAL") end
 
 -- utils
 function has_value(tab, val)
