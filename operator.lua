@@ -251,18 +251,18 @@ function update()
 end
 
 function update_ropes()
+    -- if not (FRAME_COUNTER % 20 == 0) then return end
     for i = 1, #CALLS do
         simulate_ropes(CALLS[i])
         for j = 1, 50 do
             constraint_ropes(CALLS[i])
         end
-        simulate_ropes(CALLS[i])
     end 
 end
 
 function simulate_ropes(call)
     for i = 2, #call.rope_segments - 1 do
-        call.rope_segments[i].y = call.rope_segments[i].y + GRAVITY / 60
+        call.rope_segments[i].y = call.rope_segments[i].y + GRAVITY / 5
     end
 end
 
@@ -426,65 +426,86 @@ function update_mouse()
     if not md and KNOB_PIVOT ~= nil then on_mouse_up(mx, my, md) end
 end
 
+function reset_call_segments(call)
+    call.rope_segments[1] = {x = call.src.x, y = call.src.y }
+    call.rope_segments[#call.rope_segments] = {x = call.dst.x, y = call.dst.y }
+end
+
 function on_mouse_up(mx, my, md)
     local dst_knob = get_hovered_knob(mx, my)
 
-    local is_same_node = dst_knob ~= nil and dst_knob.x == KNOB_PIVOT.x and
-                             dst_knob.y == KNOB_PIVOT.y
+    -- reset position in case no knob was discovered
+    if dst_knob == nil then
+        reset_call_segments(CALL_SELECTED)
+        CALL_SELECTED, KNOB_PIVOT = nil, nil
+        return
+    end
+
+    local selected_src = KNOB_PIVOT.x == CALL_SELECTED.dst.x and KNOB_PIVOT.y == CALL_SELECTED.dst.y
+    local selected_dst = KNOB_PIVOT.x == CALL_SELECTED.src.x and KNOB_PIVOT.y == CALL_SELECTED.src.y
+    -- it can't be the same as the current source or destination
+    local is_same_node = (dst_knob.x == CALL_SELECTED.src.x and dst_knob.y == CALL_SELECTED.src.y)
+                    or (dst_knob.x == CALL_SELECTED.dst.x and dst_knob.y == CALL_SELECTED.dst.y)
+
+    if is_same_node then
+        reset_call_segments(CALL_SELECTED)
+        CALL_SELECTED, KNOB_PIVOT = nil, nil
+        return
+    end 
+
     local overlaps = #filter(CALLS, function(call)
         return call.state ~= CALL_STATE.INTERRUPTED and
                    (call.src == dst_knob or call.dst == dst_knob)
     end) > 0
 
+    if overlaps then
+        reset_call_segments(CALL_SELECTED)
+        CALL_SELECTED, KNOB_PIVOT = nil, nil
+        return
+    end
+
     local message = filter(MESSAGES, function(message)
         return message.src == KNOB_PIVOT
     end)[1]
 
-    if dst_knob == OPERATOR_KNOB and not is_same_node and not overlaps and
-        message ~= nil then
-        local index = 1
-        for i = 1, #CALLS do
-            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then 
-                index = i 
-                break
-            end
-        end
-        CALL_SELECTED.rope_segments[1] = { x = KNOB_PIVOT.x, y = KNOB_PIVOT.y }
-        CALL_SELECTED.rope_segments[#CALL_SELECTED.rope_segments] = { x = dst_knob.x, y = dst_knob.y }
-        local previous_rope_segments = CALL_SELECTED.rope_segments
-
-        table.remove(CALLS, index)
-        table.insert(CALLS, {
-            src = KNOB_PIVOT,
-            dst = dst_knob,
-            state = CALL_STATE.DISPATCHING,
-            rope_segments = previous_rope_segments
-        })
-        DISPATCH = message.dst.coords
-    elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB and not is_same_node and
-        not overlaps then
-        local index = 1
-        for i = 1, #CALLS do
-            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then 
-                index = i 
-                break
-            end
-        end
-
-        CALLS[index].rope_segments[1] = { x = KNOB_PIVOT.x, y = KNOB_PIVOT.y }
-        CALLS[index].rope_segments[#CALLS[index].rope_segments] = { x = dst_knob.x, y = dst_knob.y }
-        local previous_rope_segments = CALLS[index].rope_segments
-        
-        table.remove(CALLS, index)
-        table.insert(CALLS, {
-            src = KNOB_PIVOT,
-            dst = dst_knob,
-            state = CALL_STATE.UNUSED,
-            message = message,
-            rope_segments = previous_rope_segments
-        })
-    elseif not is_same_node then
+    -- incorrect connection with operator, ignore
+    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and message == nil then 
+        CALL_SELECTED.src = KNOB_PIVOT
         CALL_SELECTED.dst = dst_knob
+
+        CALL_SELECTED.state = CALL_STATE.UNUSED
+        reset_call_segments(CALL_SELECTED)
+        return
+    end
+
+    -- is connecting to operator, with a valid message
+    if dst_knob == OPERATOR_KNOB and message ~= nil then
+        -- local previous_rope_segments = CALL_SELECTED.rope_segments
+        CALL_SELECTED.src = KNOB_PIVOT
+        CALL_SELECTED.dst = dst_knob
+        reset_call_segments(CALL_SELECTED)
+        CALL_SELECTED.state = CALL_STATE.DISPATCHING
+        DISPATCH = message.dst.coords
+    elseif dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB then
+        local index = 1
+        for i = 1, #CALLS do
+            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then 
+                index = i 
+                break
+            end
+        end
+
+        CALLS[index].src = KNOB_PIVOT
+        CALLS[index].dst = dst_knob
+        reset_call_segments(CALLS[index])
+        CALLS[index].state = CALL_STATE.UNUSED
+        CALLS[index].message = message
+    else
+        -- everything is correct, it's now an ongoing call
+        if selected_src then CALL_SELECTED.src = dst_knob end
+        if selected_dst then CALL_SELECTED.dst = dst_knob end
+
+        reset_call_segments(CALL_SELECTED)
         CALL_SELECTED.state = CALL_STATE.ONGOING
         DISPATCH = nil
         CALL_SELECTED.duration = 5
