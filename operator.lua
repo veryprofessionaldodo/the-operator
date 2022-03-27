@@ -169,7 +169,6 @@ end
 function init_calls()
     local calls = {}
 
-    -- TODO: generate random
     table.insert(calls, {
         src = KNOBS[1],
         dst = KNOBS[2],
@@ -183,16 +182,22 @@ function init_calls()
         rope_segments = create_rope_segments(KNOBS[5], KNOBS[15])
     })
     table.insert(calls, {
-        src = KNOBS[8],
-        dst = KNOBS[12],
-        state = CALL_STATE.UNUSED,
-        rope_segments = create_rope_segments(KNOBS[8], KNOBS[12])
-    })
-    table.insert(calls, {
         src = KNOBS[9],
         dst = KNOBS[4],
         state = CALL_STATE.UNUSED,
         rope_segments = create_rope_segments(KNOBS[9], KNOBS[4])
+    })
+    table.insert(calls, {
+        src = KNOBS[3],
+        dst = KNOBS[13],
+        state = CALL_STATE.UNUSED,
+        rope_segments = create_rope_segments(KNOBS[3], KNOBS[13])
+    })
+    table.insert(calls, {
+        src = KNOBS[6],
+        dst = KNOBS[24],
+        state = CALL_STATE.UNUSED,
+        rope_segments = create_rope_segments(KNOBS[6], KNOBS[24])
     })
 
     return calls
