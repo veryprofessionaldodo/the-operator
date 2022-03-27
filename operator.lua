@@ -22,8 +22,8 @@ CUR_STATE = STATES.MAIN_MENU
 
 LEVELS = {
     level_one = {
-        time = 20,
-        max_messages = 20,
+        time = 30,
+        max_messages = 10,
         messages = {
             {
                 caller = "Shake Spear",
