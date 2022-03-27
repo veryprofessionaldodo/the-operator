@@ -865,7 +865,7 @@ function draw_receiving_call(message)
         print(string.sub(message, 0, 43), 45, 115, TEXT_COLOR, false, 1, true)
         print(string.sub(message, 44, #message), 45, 125, TEXT_COLOR, false, 1, true)
     else
-        print(message, 45, 110, TEXT_COLOR, false, 1, true)
+        print(message, 45, 120, TEXT_COLOR, false, 1, true)
     end
 end
 
