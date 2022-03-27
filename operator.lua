@@ -2,86 +2,130 @@
 -- author: Team "It's about drive"
 -- desc:   RetroJam 2022 organized by IEEE UP SB
 -- script: lua
--- Viewport 240x136
 STATES = {
     MAIN_MENU = 'main_menu',
-    CUTSCENE_ZERO = 'cutscene_zero',
+    CUTSCENE_ZERO_1 = 'cutscene_zero_1',
+    CUTSCENE_ZERO_2 = 'cutscene_zero_2',
+    CUTSCENE_ZERO_3 = 'cutscene_zero_3',
+    CUTSCENE_ZERO_4 = 'cutscene_zero_4',
     LEVEL_ONE = 'level_one',
-    RESULT_ONE = 'result_one',
-    RESULT_FINAL = 'result_final'
+    CUTSCENE_THIEF_1 = 'cutscene_thief_1',
+    CUTSCENE_THIEF_2 = 'cutscene_thief_2',
+    CUTSCENE_THIEF_3 = 'cutscene_thief_3',
+    CUTSCENE_THIEF_4 = 'cutscene_thief_4',
+    SELECT_MENU_1 = "select_menu_1",
+    LEVEL_TWO = "level_two",
+    SELECT_MENU_2 = "select_menu_2",
+    CUTSCENE_NEWS = "cutscene_news",
+    CUTSCENE_FINAL = "cutscene_final"
 }
 
 SKIPPABLE_STATES = {
-    STATES.MAIN_MENU, STATES.CUTSCENE_ZERO, STATES.RESULT_ONE,
-    STATES.RESULT_FINAL
+    STATES.MAIN_MENU, STATES.CUTSCENE_ZERO_1, STATES.CUTSCENE_ZERO_2,
+    STATES.CUTSCENE_ZERO_3, STATES.CUTSCENE_ZERO_4, STATES.CUTSCENE_THIEF_1,
+    STATES.CUTSCENE_THIEF_2, STATES.CUTSCENE_THIEF_3, STATES.CUTSCENE_THIEF_4,
+    STATES.CUTSCENE_NEWS, STATES.CUTSCENE_FINAL
 }
 
-PLAYABLE_STATES = {STATES.LEVEL_ONE}
+PLAYABLE_STATES = {STATES.LEVEL_ONE, STATES.LEVEL_TWO}
 
 CUR_STATE = STATES.MAIN_MENU
 
+SELECT_MENU = {selected = 0, options = {}}
+
+TIMEOUT = 60
 LEVELS = {
+    level_zero = {time = 30, max_messages = 5},
     level_one = {
-        time = 30,
-        max_messages = 10,
+        time = TIMEOUT,
+        max_messages = 15,
         messages = {
             {
-                caller = "Shake Spear",
-                receiver = "BigZ",
-                content = "Hello World",
+                content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
                 timestamp = 2
             }, {
-                caller = "Tom Segura",
-                receiver = "João Conde",
-                content = "Auuuch where is the hospital I played basketball",
+                content = "Could you connect me to the taxi company @receiver? There's a driver there who knows the city like the back of his hand",
+                solution = true,
                 timestamp = 4
             }, {
-                caller = "Slim Shady",
-                receiver = "Diogo Dores",
-                content = "Wazuuuuuuuuuup",
+                content = "I'm looking to buy myself one of those new spiffy cars. I heard @receiver was maybe selling one",
+                timestamp = 6
+            }, {
+                content = "I can't with this heap of a car! Call @receiver for me, will'ya doll?",
+                timestamp = 8
+            }
+        }
+    },
+    level_two = {
+        time = TIMEOUT,
+        max_messages = 15,
+        messages = {
+            {
+                content = "Call the mine @receiver and tell the to get me the ragamuffin who colapsed half of my gold mine!",
+                timestamp = 2
+            }, {
+                content = "Could you get me that delightful scotish man at @receiver? I've heard he can handle a grenade launcher well.",
+                solution = true,
+                timestamp = 4
+            }
+        }
+    },
+    level_three = {
+        time = TIMEOUT,
+        max_messages = 15,
+        messages = {
+            {
+                content = "Hiya, we're trying to play chess over the phone. Call @receiver and tell him I want Pawn to F3.",
+                timestamp = 2
+            }, {
+                content = "Hello, @receiver just called, we're playing chess. Pawn to E6.",
+                timestamp = 4
+            },
+            {
+                content = "I'm trying to reach @receiver. Pawn to G4.",
+                timestamp = 6
+            }, {
+                content = "Yes! Call @receiver. Queen to H4! Checkmate!",
+                solution = true,
+                timestamp = 8
+            }
+        }
+    },
+    level_four = {
+        time = TIMEOUT,
+        max_messages = 15,
+        messages = {
+            {
+                content = "Get me @receiver, spiffy! His trigger men just tried to chisel me!",
+                timestamp = 2
+            }, {
+                content = "Where are the coppers when you need them? Call the station! @receiver, move!",
+                timestamp = 4
+            }, {
+                content = "Good golly! This town ain't safe no more! Call me @receiver, I need a piece!",
+                solution = true,
                 timestamp = 6
             }
-        },
-        missed = 0,
-        interrupted = 0,
-        wrong = 0
+        }
     }
 }
 
 MESSAGE_POOL = {
-    {
-        caller = "John Doe #1",
-        receiver = "Mary Jane #1",
-        content = "Random one liner"
-    }, {
-        caller = "John Doe #2",
-        receiver = "Mary Jane #2",
-        content = "Random two liner"
-    }, {
-        caller = "John Doe #3",
-        receiver = "Mary Jane #3",
-        content = "Random three liner"
-    }, {
-        caller = "John Doe #4",
-        receiver = "Mary Jane #4",
-        content = "Random four liner"
-    }, {
-        caller = "John Doe #5",
-        receiver = "Mary Jane #5",
-        content = "Random five liner"
-    }, {
-        caller = "John Doe #6",
-        receiver = "Mary Jane #6",
-        content = "Random six liner"
-    }, {
-        caller = "John Doe #7",
-        receiver = "Mary Jane #7",
-        content = "Random seven liner"
-    }, {
-        caller = "John Doe #8",
-        receiver = "Mary Jane #8",
-        content = "Random eight liner"
-    }
+    {content = "Hiya sweet-cheeks, connect me to line @receiver, pronto!"},
+    {content = "Hello, could you reach @receiver for me?"},
+    {content = "Get @receiver for me, will ya?"},
+    {content = "...rt...ng...a...@receiver...ps?"},
+    {content = "I just wanna give @receiver a piece of my mind!"}, {
+        content = "Is this thing working? Oh I can never get this to work... Hello? Deary? @receiver?"
+    }, {content = "Can I talk to @receiver, please?"},
+    {content = "Dolly? Yes, get me to @receiver."}, {content = "@receiver"},
+    {content = "Can-a a you-a connect-a me-a to @receiver?"},
+    {content = "I need to talk to @receiver, make it quick"},
+    {content = "It'd be swell if I could call @receiver."},
+    {content = "Get me @receiver, savvy?"},
+    {content = "I can't with this no more, just call @receiver!"}, {
+        content = "Why do you grifters take so much time to do everything? Connect me with @receiver, woman!"
+    }, {content = "Darling, I'd like to talk to @receiver, ok?"}
 }
 
 MESSAGES = {}
@@ -102,6 +146,8 @@ FRAME_COUNTER = 0
 SECONDS_PASSED = 0
 ASCII_UPPER_A = 65
 Z_KEYCODE = 26
+UP_KEYCODE = 58
+DOWN_KEYCODE = 59
 
 -- knobs are computed based on switch board params
 KNOBS = {}
@@ -128,6 +174,10 @@ CALLS = {}
 
 DISPATCH = nil
 
+TEXT_COLOR = 13
+TEXT_X_SHIFT = 25
+LINE_HEIGHT = 10
+
 function TIC()
     update()
     draw()
@@ -135,7 +185,7 @@ end
 
 -- inits
 function init()
-    CUR_STATE = STATES.MAIN_MENU
+    reset()
     KNOBS = init_knobs()
     CALLS = init_calls()
 end
@@ -203,6 +253,21 @@ function init_calls()
     return calls
 end
 
+function reset()
+    music(4)
+
+    -- reset state
+    CUR_STATE = STATES.MAIN_MENU
+
+    -- reset counters
+    for _, level in pairs(LEVELS) do
+        level.missed = 0
+        level.interrupted = 0
+        level.wrong = 0
+        level.solution = nil
+    end
+end
+
 function create_rope_segments(pos_1, pos_2)
     local diffX = pos_2.x - pos_1.x
     local diffY = pos_2.y - pos_1.y
@@ -238,6 +303,21 @@ function update()
         update_knobs()
         update_calls()
         update_messages()
+
+        -- timeout go next
+        if SECONDS_PASSED == TIMEOUT then update_state_machine() end
+    elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
+        update_select_menu()
+    end
+end
+
+function update_select_menu()
+    if keyp(DOWN_KEYCODE) then
+        SELECT_MENU.selected = (SELECT_MENU.selected + 1) % 3
+    elseif keyp(UP_KEYCODE) then
+        SELECT_MENU.selected = (SELECT_MENU.selected - 1) % 3
+    elseif keyp(Z_KEYCODE) then
+        update_state_machine()
     end
 end
 
@@ -259,6 +339,7 @@ function update_knobs()
                 if knob.pickup_timer == 0 then
                     LEVELS[CUR_STATE].missed = LEVELS[CUR_STATE].missed + 1
                     knob.state = KNOB_STATE.MISSED
+                    sfx(18, 30, -1, 3, 6)
                 end
             end
         end
@@ -270,6 +351,7 @@ function update_calls()
         if call.state == CALL_STATE.DISPATCHING then
             call.src.state = KNOB_STATE.DISPATCHING
             call.dst.state = KNOB_STATE.DISPATCHING
+
         elseif call.state == CALL_STATE.ONGOING and call.src ~= nil and call.dst ~=
             nil then
             if call.src.state ~= KNOB_STATE.INCOMING and call.dst.state ~=
@@ -305,12 +387,42 @@ function update_messages()
             src_knob.pickup_timer = 30
 
             dst_knob = get_available_knob()
+            sfx(13, 60, 18, 3, 6)
 
             message.src = src_knob
             message.dst = dst_knob
+            message.content = message.content:gsub("@receiver",
+                                                   dst_knob.coords[1] ..
+                                                       dst_knob.coords[2])
             message.processed = true
+
+            if message.solution then
+                LEVELS[CUR_STATE].solution = message.dst.coords
+                local first_option = LEVELS[CUR_STATE].solution
+                local second_option = generate_unique_coord({first_option})
+                local third_option = generate_unique_coord({
+                    first_option, second_option
+                })
+                SELECT_MENU.options = {
+                    first_option[1] .. first_option[2],
+                    second_option[1] .. second_option[2],
+                    third_option[1] .. third_option[2]
+                }
+            end
         end
     end
+end
+
+function generate_unique_coord(coords)
+    local cols = map(coords, function(coord) return coord[1] end)
+    local col = generate_col()
+    while has_value(cols, col) do col = generate_col() end
+
+    local rows = map(coords, function(coord) return coord[2] end)
+    local row = generate_row()
+    while has_value(rows, row) do row = generate_row() end
+
+    return {col, row}
 end
 
 function update_ropes()
@@ -318,7 +430,7 @@ function update_ropes()
     for i = 1, #CALLS do
         simulate_ropes(CALLS[i])
         for j = 1, 50 do constraint_ropes(CALLS[i]) end
-    end 
+    end
 end
 
 function simulate_ropes(call)
@@ -367,15 +479,6 @@ function constraint_ropes(call)
             next_point.x = next_point.x - correction_vector.x * 0.5
             next_point.y = next_point.y - correction_vector.y * 0.5
         end
-
-        -- print(i, 10, base_y, 3)
-        -- print(correction_vector.x, 20, base_y, 3)
-        -- print(correction_vector.y, 130, base_y, 3)
-
-        -- base_y = base_y + 25
-        -- trace(i)
-        -- trace(correction_vector.x)
-        -- trace(correction_vector.y)
     end
 end
 
@@ -404,24 +507,55 @@ end
 
 function update_state_machine()
     -- stops all SFX
-    -- sfx(-1)
+    sfx(-1)
 
     -- advances state machine to next state
     -- may run additional logic in between
     if CUR_STATE == STATES.MAIN_MENU then
+        CUR_STATE = STATES.CUTSCENE_ZERO_1
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO_1 then
+        CUR_STATE = STATES.CUTSCENE_ZERO_2
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO_2 then
+        CUR_STATE = STATES.CUTSCENE_ZERO_3
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO_3 then
+        CUR_STATE = STATES.CUTSCENE_ZERO_4
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO_4 then
+        music(3)
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
-        CUR_STATE = STATES.RESULT_ONE
-    elseif CUR_STATE == STATES.RESULT_ONE then
-        CUR_STATE = STATES.RESULT_FINAL
-    elseif CUR_STATE == STATES.RESULT_FINAL then
+        sfx(13, 60, 18, 3, 6)
+        music(1)
+        CUR_STATE = STATES.CUTSCENE_THIEF_1
+    elseif CUR_STATE == STATES.CUTSCENE_THIEF_1 then
+        CUR_STATE = STATES.CUTSCENE_THIEF_2
+    elseif CUR_STATE == STATES.CUTSCENE_THIEF_2 then
+        CUR_STATE = STATES.CUTSCENE_THIEF_3
+    elseif CUR_STATE == STATES.CUTSCENE_THIEF_3 then
+        CUR_STATE = STATES.CUTSCENE_THIEF_4
+    elseif CUR_STATE == STATES.CUTSCENE_THIEF_4 then
+        CUR_STATE = STATES.SELECT_MENU_1
+    elseif CUR_STATE == STATES.SELECT_MENU_1 then
+        music(3)
+        LEVELS.level_one.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
+        CUR_STATE = STATES.LEVEL_TWO
+    elseif CUR_STATE == STATES.LEVEL_TWO then
+        CUR_STATE = STATES.SELECT_MENU_2
+    elseif CUR_STATE == STATES.SELECT_MENU_2 then
+        LEVELS.level_two.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
+        CUR_STATE = STATES.CUTSCENE_NEWS
+    elseif CUR_STATE == STATES.CUTSCENE_NEWS then
+        CUR_STATE = STATES.CUTSCENE_FINAL
+    else
         init()
     end
 
     if has_value(PLAYABLE_STATES, CUR_STATE) then setup_level() end
 end
 
-function setup_level() MESSAGES = generate_messages(LEVELS[CUR_STATE].messages) end
+function setup_level()
+    MESSAGES = generate_messages(LEVELS[CUR_STATE].messages)
+    SECONDS_PASSED = 0
+end
 
 function generate_messages(mandatory_messages)
     local messages = {}
@@ -435,14 +569,20 @@ function generate_messages(mandatory_messages)
     end
 
     -- guarantee they appears in the first 10
+    local limit = math.min(#messages, 10)
     local indices = map(mandatory_messages,
-                        function(_m) return math.random(1, 10) end)
+                        function(_m) return math.random(1, limit) end)
     indices = unique_indices(indices)
 
     for i, message_spec in pairs(mandatory_messages) do
         local message = build_message(message_spec)
         table.insert(messages, indices[i], message)
     end
+
+    -- DEBUG
+    -- for _, v in pairs(messages) do
+    --     trace(v.content)
+    -- end
 
     return messages
 end
@@ -466,6 +606,7 @@ function build_message(spec)
     message.content = spec.content
     message.receiver = spec.receiver
     message.timestamp = spec.timestamp
+    message.solution = ifthenelse(spec.solution ~= nil, spec.solution, false)
     return message
 end
 
@@ -488,6 +629,7 @@ function update_mouse()
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
                                                         .interrupted + 1
+                    sfx(17, 40, -1, 3, 15)
                 end
                 KNOB_PIVOT = CALL_SELECTED.dst
             elseif CALLS[i].dst == knob_hovered then
@@ -496,6 +638,7 @@ function update_mouse()
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
                                                         .interrupted + 1
+                    sfx(17, 40, -1, 3, 15)
                 end
                 KNOB_PIVOT = CALL_SELECTED.src
             end
@@ -520,8 +663,8 @@ function update_mouse()
 end
 
 function reset_call_segments(call)
-    call.rope_segments[1] = {x = call.src.x, y = call.src.y }
-    call.rope_segments[#call.rope_segments] = {x = call.dst.x, y = call.dst.y }
+    call.rope_segments[1] = {x = call.src.x, y = call.src.y}
+    call.rope_segments[#call.rope_segments] = {x = call.dst.x, y = call.dst.y}
 end
 
 function on_mouse_up(mx, my, md)
@@ -534,17 +677,21 @@ function on_mouse_up(mx, my, md)
         return
     end
 
-    local selected_src = KNOB_PIVOT.x == CALL_SELECTED.dst.x and KNOB_PIVOT.y == CALL_SELECTED.dst.y
-    local selected_dst = KNOB_PIVOT.x == CALL_SELECTED.src.x and KNOB_PIVOT.y == CALL_SELECTED.src.y
+    local selected_src = KNOB_PIVOT.x == CALL_SELECTED.dst.x and KNOB_PIVOT.y ==
+                             CALL_SELECTED.dst.y
+    local selected_dst = KNOB_PIVOT.x == CALL_SELECTED.src.x and KNOB_PIVOT.y ==
+                             CALL_SELECTED.src.y
     -- it can't be the same as the current source or destination
-    local is_same_node = (dst_knob.x == CALL_SELECTED.src.x and dst_knob.y == CALL_SELECTED.src.y)
-                    or (dst_knob.x == CALL_SELECTED.dst.x and dst_knob.y == CALL_SELECTED.dst.y)
+    local is_same_node = (dst_knob.x == CALL_SELECTED.src.x and dst_knob.y ==
+                             CALL_SELECTED.src.y) or
+                             (dst_knob.x == CALL_SELECTED.dst.x and dst_knob.y ==
+                                 CALL_SELECTED.dst.y)
 
     if is_same_node then
         reset_call_segments(CALL_SELECTED)
         CALL_SELECTED, KNOB_PIVOT = nil, nil
         return
-    end 
+    end
 
     local overlaps = #filter(CALLS, function(call)
         return call.state ~= CALL_STATE.INTERRUPTED and
@@ -562,7 +709,8 @@ function on_mouse_up(mx, my, md)
     end)[1]
 
     -- incorrect connection with operator, ignore
-    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and message == nil then 
+    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and message ==
+        nil then
         CALL_SELECTED.src = KNOB_PIVOT
         CALL_SELECTED.dst = dst_knob
 
@@ -580,11 +728,12 @@ function on_mouse_up(mx, my, md)
         CALL_SELECTED.state = CALL_STATE.DISPATCHING
         CALL_SELECTED.message = message
         DISPATCH = message
+        sfx(14, 48, -1, 3, 15)
     elseif dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB then
         local index = 1
         for i = 1, #CALLS do
-            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then 
-                index = i 
+            if CALLS[i].dst == KNOB_PIVOT or CALLS[i].src == KNOB_PIVOT then
+                index = i
                 break
             end
         end
@@ -607,9 +756,11 @@ function on_mouse_up(mx, my, md)
                 CALL_SELECTED.state = CALL_STATE.UNUSED
                 CALL_SELECTED.src.state = KNOB_STATE.OFF
                 CALL_SELECTED.dst.state = KNOB_STATE.OFF
+                sfx(17, 61, -1, 3, 15)
             else
                 CALL_SELECTED.state = CALL_STATE.ONGOING
                 CALL_SELECTED.duration = 5
+                sfx(16, 60, -1, 3, 15)
             end
         end
         CALL_SELECTED.dst = dst_knob
@@ -659,6 +810,28 @@ function draw()
         draw_game()
     elseif (CUR_STATE == STATES.MAIN_MENU) then
         draw_main_menu()
+    elseif (CUR_STATE == STATES.CUTSCENE_ZERO_1) then
+        draw_cutscene_zero_one()
+    elseif (CUR_STATE == STATES.CUTSCENE_ZERO_2) then
+        draw_cutscene_zero_two()
+    elseif (CUR_STATE == STATES.CUTSCENE_ZERO_3) then
+        draw_cutscene_zero_three()
+    elseif (CUR_STATE == STATES.CUTSCENE_ZERO_4) then
+        draw_cutscene_zero_four()
+    elseif (CUR_STATE == STATES.CUTSCENE_THIEF_1) then
+        draw_cutscene_thief_one()
+    elseif (CUR_STATE == STATES.CUTSCENE_THIEF_2) then
+        draw_cutscene_thief_two()
+    elseif (CUR_STATE == STATES.CUTSCENE_THIEF_3) then
+        draw_cutscene_thief_three()
+    elseif (CUR_STATE == STATES.CUTSCENE_THIEF_4) then
+        draw_cutscene_thief_four()
+    elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
+        draw_select_menu()
+    elseif (CUR_STATE == STATES.CUTSCENE_NEWS) then
+        draw_cutscene_news()
+    elseif (CUR_STATE == STATES.CUTSCENE_FINAL) then
+        draw_cutscene_final()
     end
 end
 
@@ -672,12 +845,30 @@ function draw_game()
     if DISPATCH ~= nil then
         local coords = DISPATCH.dst.coords
         local message = DISPATCH.content
-        print(coords[1] .. coords[2], 80, 120, 1)
-        print(message, 100, 120, 1)
+        -- print(coords[1] .. coords[2], 80, 120, 1)
+        draw_receiving_call(message)
     end
-    print(LEVELS[CUR_STATE].missed, 100, 100, 1)
-    print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
-    print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
+    -- print(LEVELS[CUR_STATE].missed, 100, 100, 1)
+    -- print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
+    -- print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
+
+    -- local coords = LEVELS[CUR_STATE].solution
+    -- if coords ~= nil then print(coords[1] .. coords[2], 80, 100, 1) end
+end
+
+function draw_receiving_call(message)
+    if #message > 86 then
+        print(string.sub(message, 0, 43), 40, 110, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, 86), 40, 120, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 87, #message), 40, 130, TEXT_COLOR, false, 1,
+              true)
+    elseif #message > 43 then
+        print(string.sub(message, 0, 43), 40, 115, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, #message), 40, 125, TEXT_COLOR, false, 1,
+              true)
+    else
+        print(message, 40, 120, 1, false, TEXT_COLOR, true)
+    end
 end
 
 function draw_footer()
@@ -776,6 +967,135 @@ function draw_main_menu()
     print("Operator", 20, 70, 12, true, 2)
     spr(154, 130, 20, 1, 2,0,0, 5, 6)
 end
+
+function draw_select_menu()
+    print("Select one with arrows", 0, 10, 1)
+    for i, option in pairs(SELECT_MENU.options) do
+        if i == SELECT_MENU.selected + 1 then print(">", 110, 25 * i, 1) end
+        print(option, 120, 25 * i, 1)
+    end
+end
+
+function draw_cutscene_zero_one()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_zero_two()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 40
+    print("First of all, whenever you see a", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("blinking green knob, that means", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("you've got a call!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2,
+          TEXT_COLOR)
+    print("If there's no cable connected to", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("that knob, just grab a free one", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 4, TEXT_COLOR)
+    print("on your board and put'it there!", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 5, TEXT_COLOR)
+end
+
+function draw_cutscene_zero_three()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 35
+    print("After that you'll just have to grab", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("the other end of the cable and", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("connect it to the CR knob at the", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("bottom of your desk!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 3,
+          TEXT_COLOR)
+    print("A letter-number combination will", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 4, TEXT_COLOR)
+    print("appear, which is the knob where", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 5, TEXT_COLOR)
+    print("you have now redirect the call to.", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 6, TEXT_COLOR)
+end
+
+function draw_cutscene_zero_four()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 55
+    print("Alright, best way to learn it is", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("to do it! So get on with it!", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Go chase yourself!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_thief_one()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("1Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_thief_two()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("2Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_thief_three()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("3Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_thief_four()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("4Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
+          TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
+          TEXT_COLOR)
+end
+
+function draw_cutscene_news() print("CUTSCENE NEWS") end
+
+function draw_cutscene_final() print("CUTSCENE FINAL") end
 
 -- utils
 function has_value(tab, val)
@@ -1055,6 +1375,12 @@ init()
 -- 010:d6008600060006000600060006000600060006000600060006001600260026004600560066007600b600b600b600d600e600f600f600f600f600f60030b000000000
 -- 011:0400040004000400040004000400040004000400140014002400240034003400440044005400540064006400740084009400a400b400c400d400f400304000000000
 -- 012:170057009700d700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f700f70040b000040000
+-- 013:140044006400a400d400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400f400405000050000
+-- 014:080048008800b800d80018004800e800f800010001000100f10001000100f10001000100f1000100f1000100f10001000100f100010001000100f10047b000000000
+-- 015:01000100f100f100010001000100f100f1000100f1000100f1000100010001000100f10001000100f1000100f1000100f1000100f100010001000100374000000000
+-- 016:080048008800b800d80018004800e800f800013701370137018701870187018701870187018701870187118721873187518771878187b187d187f187570000000000
+-- 017:080048008800b800d80018004800e800f800013f013f013f013f013e013e013e013e013d013d013d013d113d213c313c513c713c813cb13cd13cf13cd73000000000
+-- 018:080038009800e20002002200320042006200720082009200a200b200c200e200e200f200f200f200f200f200f200f200f200f200f200f200f200f200974000000000
 -- </SFX>
 
 -- <PATTERNS>
@@ -1089,15 +1415,19 @@ init()
 -- 028:48f124000000000000700026000000b8f026000000000000000000000000900024000000000000600026000000700026000000000000000000000000400024000000000000700026000000b8f026000000000000000000000000d00026000000000000700026000000600026700026600026000000000000000000000000000000000000000000000000000000000000000000600024000000000000000000000000a00024000000000000000000000000000000000000000000000000000000
 -- 029:4000a60000004000a87000a80000000000000000000000000000000000004000a60000009000a6d000a600000000000000000000000000000000000076f0a6000000b000a66000a60000000000000000000000000000000000009000a60000007220a66000a6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 -- 031:4000a60000004000a87000a80000000000000000000000000000000000004991a60000009000a6d000a60000000000000000000000000000000000007661a6000000b000a66000a60000000000000000000000000000000000009000a60000007221a66000a6000000000000000000000000000000010300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
--- 032:400064000000700064000000600064000000500064000000400064000000000000000000b00064000000000000000000000000000000400064000000400064000000000000000000b00064000000000000000000000000000000900064000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 -- 033:000000000000000000000000000000000000000000000000413436024600000000000000000000000000000000000000000000000000000000000000e00036000000000000000000000000000000000000000000000000d00036000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 -- 034:000000000000000000000000000000000000000000000000b13438024600000000000000000000000000000000000000000000000000000000000000e00038000000000000000000000000000000000000000000000000900038000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
--- 035:0000000000000000000000000000000000000000000000004000ca0000001000000000004000ca0000000000000000000000000000001000000000004000ca0000001000000000004000ca0000000000000000000000009000ca000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
--- 036:400066000000700066000000600066000000500066000000400066000000000000000000b00066000000000000000000000000400066000000400066000000000000000000b00066000000000000000000000000000000d00066000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
--- 037:0000000000000000000000000000000000000000000000007000ca0000001000000000007000ca0000000000000000000000000000001000000000007000ca0000000000000000007000ca0000000000000000000000006000ca000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
--- 038:00000000000000000000000000000000000000000000000040001e00000000000000000000000000000040000e00000040000e00000000000000000040001e00000000000000000000000000000040000e00000040000e00000000000000000040001e00000000000000000000000000000040000e00000040000e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
--- 039:000000000000000000000000000000000000000000012400400036000000000000000000000000000000000000000000000000700038000000000000000000000000000000000000000000000000000000000000000000600038000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
--- 040:000000000000000000000000000000000000000000012400700038000000000000000000000000000000000000000000000000b00038000000000000000000000000000000000000000000000000000000000000000000900038000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 035:4fa1c80000001000000000004000c80000000000000000001000000000000000000000004000c80000001000000000004000c80000000000000000001000000000000000000000004000c80000001000000000004000c80000000000000000001000000000000000000000004000c80000001000000000004000c8000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 036:efa1c8000000100000000000e000c8000000000000000000100000000000000000000000e000c8000000100000000000e000c8000000000000000000100000000000000000000000e000c8000000100000000000e000c8000000000000000000100000000000000000000000e000c8000000100000000000e000c8000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 037:7af1ca0000001000000000007000ca0000000000000000001000000000000000000000007000ca0000001000000000007000ca0000000000000000001000000000000000000000007000ca0000001000000000007000ca0000000000000000001000000000000000000000007000ca0000001000000000007000ca0000000000000000001000000000000000000000007000ca000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 038:400024000000000000400026400024000000000000000000000000000000000000000000700024000000000000e00026e00024000000000000000000000000000000000000000000700024000000000000e00026e00024000000000000000000000000000000000000000000900024000000000000d00026d00024000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 039:b12436088100023600000000000000000000000000000000000000000000000000000000e00036000000000000000000000000000000000000000000900036000000000000000000000000000000000000000000400036000000000000000000000000000000000000000000900036000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 040:baf1c80a00001000000000007000c80000000000000000001000000000000000000000009000c80000001000000000007000c8000000000000000000100000000000000000000000b000c80000001000000000007000c80000000000000000001000000000000000000000004000c80000001000000000007000c80000000000000000001000000000000000000000007000ca000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 041:935636088100000000000000b00036000000000000000000400036000000000000000000e00034000000000000000000000000000000000000000000000000000000e00036000000100000000000e00036000000100000000000e00036100000e00036100000e00036100000e21436000000000000400038000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 042:61243a08810003560000000000000000000000000000040040003a00000060043a000000e0003800000000000000000000000000000000000000000000000000000000000000000062143a00000000000000000000000000000000040040003a00000060003a00000000000090003a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 043:4fa1c80000001000000000004000c80000000000000000001000000000000000000000004000c80000001000000000004000c80000000000000000001000000000000000000000009000c80000001000000000009000c80000000000000000001000000000000000000000009000c80000001000000000009000c8000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 044:41243a08810003560000000070003a000000000000000000000000000000000000000000700038000000000000000000600038000000000000000000000000000000000000000000700038000000000000000000400038000000000000000000000000000000000000000000600038000000000000000000400038000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 045:412438088100035600000000000000000000000000000000088100000000000000000000077100000000000000000000666138000000000000000000055100000000000000000000044100000000000000000000b33138000000000000000000022100000000000000000000411138000000000000000000000000000000000000000000000000000000000000010300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 -- </PATTERNS>
 
 -- <TRACKS>
@@ -1105,7 +1435,8 @@ init()
 -- 001:0817021817021818421818821c20001c2c000000000000000000000000000000000000000000000000000000000000002e0100
 -- 002:e00000ec3000ec3010000010ec30000000000000000000000000000000000000000000000000000000000000000000002e8100
 -- 003:2100002d40002d40002d44102d44102556d52d4410296856296b56296b17047000257000257e102d40200c40000000002e81ef
--- 004:1200005200c91296e952a9e9000000000000000000000000000000000000000000000000000000000000000000000000ec01ef
+-- 004:4a9720ca972056a720ca972a56a7aaca97ea56a76bca97ab000000000000000000000000000000000000000000000000ec01ef
+-- 005:0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002e0100
 -- </TRACKS>
 
 -- <PALETTE>
