@@ -174,7 +174,7 @@ CALLS = {}
 
 DISPATCH = nil
 
-TEXT_COLOR = 11
+TEXT_COLOR = 12
 TEXT_X_SHIFT = 25
 LINE_HEIGHT = 10
 
@@ -858,14 +858,14 @@ end
 
 function draw_receiving_call(message)
     if #message > 86 then
-        print(string.sub(message, 0, 43), 40, 110, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, 86), 40, 120, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 87, #message), 40, 130, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 0, 43), 45, 105, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, 86), 45, 115, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 87, #message), 45, 125, TEXT_COLOR, false, 1, true)
     elseif #message > 43 then
-        print(string.sub(message, 0, 43), 40, 115, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, #message), 40, 125, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 0, 43), 45, 115, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, #message), 45, 125, TEXT_COLOR, false, 1, true)
     else
-        print(message, 40, 120, TEXT_COLOR, false, 1, true)
+        print(message, 45, 125, TEXT_COLOR, false, 1, true)
     end
 end
 
@@ -946,7 +946,6 @@ function draw_timer()
 
 	spr(12, 200, 105, 5,1,0,0,4,4 )
 
-    print("Time Left", clock_x - 14, clock_y - 17, 3, false, 1, true)
     circ(clock_x, clock_y, clock_radius, 12)
     if (FRAME_COUNTER % 60 == 0) then SECONDS_PASSED = SECONDS_PASSED + 1 end
 
