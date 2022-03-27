@@ -5,14 +5,19 @@
 -- Viewport 240x136
 STATES = {
     MAIN_MENU = 'main_menu',
-    CUTSCENE_ZERO = 'cutscene_zero',
+    CUTSCENE_ZERO_1 = 'cutscene_zero_1',
+    CUTSCENE_ZERO_2 = 'cutscene_zero_2',
+    CUTSCENE_ZERO_3 = 'cutscene_zero_3',
+    CUTSCENE_ZERO_4 = 'cutscene_zero_4',
     LEVEL_ONE = 'level_one',
     RESULT_ONE = 'result_one',
     RESULT_FINAL = 'result_final'
 }
 
 SKIPPABLE_STATES = {
-    STATES.MAIN_MENU, STATES.CUTSCENE_ZERO, STATES.RESULT_ONE,
+    STATES.MAIN_MENU, 
+    STATES.CUTSCENE_ZERO_1, STATES.CUTSCENE_ZERO_2, STATES.CUTSCENE_ZERO_3, STATES.CUTSCENE_ZERO_4,
+    STATES.RESULT_ONE,
     STATES.RESULT_FINAL
 }
 
@@ -28,59 +33,144 @@ LEVELS = {
             {
                 caller = "Shake Spear",
                 receiver = "BigZ",
-                content = "Hello World",
+                content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
                 timestamp = 2
             }, {
                 caller = "Tom Segura",
                 receiver = "João Conde",
-                content = "Auuuch where is the hospital I played basketball",
+                content = "Could you connect me to the taxi company @receiver? I'm told there's a driver there who knows the city like the back of his hand?",
+                solution = true,
                 timestamp = 4
             }, {
                 caller = "Slim Shady",
                 receiver = "Diogo Dores",
-                content = "Wazuuuuuuuuuup",
+                content = "I'm looking to buy myself one of those new spiffy cars. I heard @receiver was maybe selling one",
+                timestamp = 6
+            }
+            , {
+                caller = "Slim Shady",
+                receiver = "Diogo Dores",
+                content = "I can't with this heap of a car! Call @receiver for me, will'ya doll?",
+                timestamp = 8
+            }
+        },
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
+    },
+    level_two = {
+        time = 30,
+        max_messages = 10,
+        messages = {
+            {
+                caller = "Shake Spear",
+                receiver = "BigZ",
+                content = "Call the mine @receiver and tell the to get me the ragamuffin who colapsed half of my gold mine!",
+                timestamp = 2
+            }, {
+                caller = "Tom Segura",
+                receiver = "João Conde",
+                content = "Could you get me that delightful scotish man at @receiver? I've heard he can handle a grenade launcher well.",
+                solution = true,
+                timestamp = 4
+            }
+        },
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
+    },
+    level_three = {
+        time = 30,
+        max_messages = 10,
+        messages = {
+            {
+                caller = "Shake Spear",
+                receiver = "BigZ",
+                content = "Hiya, we're trying to play chess over the phone. Call @receiver and tell him I want Pawn to F3.",
+                timestamp = 2
+            }, {
+                caller = "Tom Segura",
+                receiver = "João Conde",
+                content = "Hello, @receiver just called, we're playing chess. Pawn to E6.",
+                timestamp = 4
+            }, {
+                caller = "Slim Shady",
+                receiver = "Diogo Dores",
+                content = "I'm trying to reach @receiver. Pawn to G4.",
+                timestamp = 6
+            }, {
+                caller = "Slim Shady",
+                receiver = "Diogo Dores",
+                content = "Yes! Call @receiver. Queen to H4! Checkmate!",
+                solution = true,
+                timestamp = 8
+            }
+        },
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
+    },
+    level_four = {
+        time = 30,
+        max_messages = 10,
+        messages = {
+            {
+                caller = "Shake Spear",
+                receiver = "BigZ",
+                content = "Get me @receiver, spiffy! His trigger men just tried to chisel me!",
+                timestamp = 2
+            }, {
+                caller = "Tom Segura",
+                receiver = "João Conde",
+                content = "Where are the coppers when you need them? Call the station! @receiver, move!",
+                timestamp = 4
+            }, {
+                caller = "Slim Shady",
+                receiver = "Diogo Dores",
+                content = "Good golly! This town ain't safe no more! Call me @receiver, I need a piece!",
+                solution = true,
                 timestamp = 6
             }
         },
         missed = 0,
         interrupted = 0,
         wrong = 0
-    }
+    },
 }
 
 MESSAGE_POOL = {
     {
-        caller = "John Doe #1",
-        receiver = "Mary Jane #1",
-        content = "Random one liner"
+        content = "Hiya sweet-cheeks, connect me to line @receiver, pronto!"
     }, {
-        caller = "John Doe #2",
-        receiver = "Mary Jane #2",
-        content = "Random two liner"
+        content = "Hello, could you reach @receiver for me?"
     }, {
-        caller = "John Doe #3",
-        receiver = "Mary Jane #3",
-        content = "Random three liner"
+        content = "Get @receiver for me, will ya?"
     }, {
-        caller = "John Doe #4",
-        receiver = "Mary Jane #4",
-        content = "Random four liner"
+        content = "...rt...ng...a...@receiver...ps?"
     }, {
-        caller = "John Doe #5",
-        receiver = "Mary Jane #5",
-        content = "Random five liner"
+        content = "I just wanna give @receiver a piece of my mind!"
     }, {
-        caller = "John Doe #6",
-        receiver = "Mary Jane #6",
-        content = "Random six liner"
+        content = "Is this thing working? Oh I can never get this to work... Hello? Deary? @receiver?"
     }, {
-        caller = "John Doe #7",
-        receiver = "Mary Jane #7",
-        content = "Random seven liner"
+        content = "Can I talk to @receiver, please?"
     }, {
-        caller = "John Doe #8",
-        receiver = "Mary Jane #8",
-        content = "Random eight liner"
+        content = "Dolly? Yes, get me to @receiver."
+    }, {
+        content = "@receiver"
+    }, {
+        content = "Can-a a you-a connect-a me-a to @receiver?"
+    }, {
+        content = "I need to talk to @receiver, make it quick"
+    }, {
+        content = "It'd be swell if I could call @receiver."
+    }, {
+        content = "Get me @receiver, savvy?"
+    }, {
+        content = "I can't with this no more, just call @receiver!"
+    }, {
+        content = "Why do you grifters take so much time to do everything? Connect me with @receiver, woman!"
+    }, {
+        content = "Darling, I'd like to talk to @receiver, ok?"
     }
 }
 
@@ -127,6 +217,10 @@ KNOB_PIVOT, CALL_SELECTED, OPERATOR_KNOB = nil, nil, nil
 CALLS = {}
 
 DISPATCH = nil
+
+TEXT_COLOR = 13
+TEXT_X_SHIFT = 25
+LINE_HEIGHT = 10
 
 function TIC()
     update()
@@ -409,6 +503,14 @@ function update_state_machine()
     -- advances state machine to next state
     -- may run additional logic in between
     if CUR_STATE == STATES.MAIN_MENU then
+        CUR_STATE = STATES.CUTSCENE_ZERO_1
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO_1 then
+        CUR_STATE = STATES.CUTSCENE_ZERO_2
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO_2 then
+        CUR_STATE = STATES.CUTSCENE_ZERO_3
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO_3 then
+        CUR_STATE = STATES.CUTSCENE_ZERO_4
+    elseif CUR_STATE == STATES.CUTSCENE_ZERO_4 then
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
         CUR_STATE = STATES.RESULT_ONE
@@ -659,6 +761,14 @@ function draw()
         draw_game()
     elseif (CUR_STATE == STATES.MAIN_MENU) then
         draw_main_menu()
+    elseif (CUR_STATE == STATES.CUTSCENE_ZERO_1) then
+        draw_cutscene_zero_one()
+    elseif (CUR_STATE == STATES.CUTSCENE_ZERO_2) then
+        draw_cutscene_zero_two()
+    elseif (CUR_STATE == STATES.CUTSCENE_ZERO_3) then
+        draw_cutscene_zero_three()
+    elseif (CUR_STATE == STATES.CUTSCENE_ZERO_4) then
+        draw_cutscene_zero_four()
     end
 end
 
@@ -756,6 +866,47 @@ function draw_timer()
 end
 
 function draw_main_menu() print("Main Menu") end
+
+function draw_cutscene_zero_one()
+    rectb(0, 0, 240, 136, 2)
+    text_height = 45
+    print("Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height, TEXT_COLOR)
+    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Welcome here to your first training", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("on how to operate this ritzie", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4, TEXT_COLOR)
+end
+
+function draw_cutscene_zero_two() 
+    rectb(0, 0, 240, 136, 2)
+    text_height = 40
+    print("First of all, whenever you see a", TEXT_X_SHIFT, text_height, TEXT_COLOR)
+    print("blinking green knob, that means", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("you've got a call!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("If there's no cable connected to", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("that knob, just grab a free one", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4, TEXT_COLOR)
+    print("on your board and put'it there!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 5, TEXT_COLOR)
+end
+
+function draw_cutscene_zero_three() 
+    rectb(0, 0, 240, 136, 2)
+    text_height = 35
+    print("After that you'll just have to grab", TEXT_X_SHIFT, text_height, TEXT_COLOR)
+    print("the other end of the cable and", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("connect it to the CR knob at the", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("bottom of your desk!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("A letter-number combination will", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4, TEXT_COLOR)
+    print("appear, which is the knob where", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 5, TEXT_COLOR)
+    print("you have now redirect the call to.", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 6, TEXT_COLOR)
+end
+
+function draw_cutscene_zero_four() 
+    rectb(0, 0, 240, 136, 2)
+    text_height = 55
+    print("Alright, best way to learn it is", TEXT_X_SHIFT, text_height, TEXT_COLOR)
+    print("to do it! So get on with it!", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("Go chase yourself!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+end
 
 -- utils
 function has_value(tab, val)
