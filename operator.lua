@@ -2,7 +2,6 @@
 -- author: Team "It's about drive"
 -- desc:   RetroJam 2022 organized by IEEE UP SB
 -- script: lua
--- Viewport 240x136
 STATES = {
     MAIN_MENU = 'main_menu',
     CUTSCENE_ZERO = 'cutscene_zero',
@@ -71,8 +70,7 @@ MESSAGE_POOL = {
         caller = "John Doe #6",
         receiver = "Mary Jane #6",
         content = "Random six liner"
-    }
-    {
+    }, {
         caller = "John Doe #7",
         receiver = "Mary Jane #7",
         content = "Random seven liner"
@@ -442,8 +440,9 @@ function generate_messages(mandatory_messages)
     end
 
     -- guarantee they appears in the first 10
+    local limit = math.min(#messages, 10)
     local indices = map(mandatory_messages,
-                        function(_m) return math.random(1, 10) end)
+                        function(_m) return math.random(1, limit) end)
     indices = unique_indices(indices)
 
     for i, message_spec in pairs(mandatory_messages) do
@@ -695,6 +694,9 @@ function draw_game()
     print(LEVELS[CUR_STATE].missed, 100, 100, 1)
     print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
     print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
+
+    local coords = LEVELS[CUR_STATE].solution
+    if coords ~= nil then print(coords[1] .. coords[2], 120, 120, 1) end
 end
 
 function draw_switchboard()
