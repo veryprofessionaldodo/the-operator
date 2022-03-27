@@ -15,13 +15,16 @@ STATES = {
     CUTSCENE_THIEF_4 = 'cutscene_thief_4',
     SELECT_MENU_1 = "select_menu_1",
     LEVEL_TWO = "level_two",
-    SELECT_MENU_2 = "select_menu_2"
+    SELECT_MENU_2 = "select_menu_2",
+    CUTSCENE_NEWS = "cutscene_news",
+    CUTSCENE_FINAL = "cutscene_final"
 }
 
 SKIPPABLE_STATES = {
     STATES.MAIN_MENU, STATES.CUTSCENE_ZERO_1, STATES.CUTSCENE_ZERO_2,
     STATES.CUTSCENE_ZERO_3, STATES.CUTSCENE_ZERO_4, STATES.CUTSCENE_THIEF_1,
-    STATES.CUTSCENE_THIEF_2, STATES.CUTSCENE_THIEF_3, STATES.CUTSCENE_THIEF_4
+    STATES.CUTSCENE_THIEF_2, STATES.CUTSCENE_THIEF_3, STATES.CUTSCENE_THIEF_4,
+    STATES.CUTSCENE_NEWS, STATES.CUTSCENE_FINAL
 }
 
 PLAYABLE_STATES = {STATES.LEVEL_ONE, STATES.LEVEL_TWO}
@@ -30,11 +33,12 @@ CUR_STATE = STATES.MAIN_MENU
 
 SELECT_MENU = {selected = 0, options = {}}
 
+TIMEOUT = 60
 LEVELS = {
     level_zero = {time = 30, max_messages = 5},
     level_one = {
-        time = 30,
-        max_messages = 5,
+        time = TIMEOUT,
+        max_messages = 15,
         messages = {
             {
                 content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
@@ -53,8 +57,8 @@ LEVELS = {
         }
     },
     level_two = {
-        time = 30,
-        max_messages = 10,
+        time = TIMEOUT,
+        max_messages = 15,
         messages = {
             {
                 content = "Call the mine @receiver and tell the to get me the ragamuffin who colapsed half of my gold mine!",
@@ -67,8 +71,8 @@ LEVELS = {
         }
     },
     level_three = {
-        time = 30,
-        max_messages = 10,
+        time = TIMEOUT,
+        max_messages = 15,
         messages = {
             {
                 content = "Hiya, we're trying to play chess over the phone. Call @receiver and tell him I want Pawn to F3.",
@@ -88,8 +92,8 @@ LEVELS = {
         }
     },
     level_four = {
-        time = 30,
-        max_messages = 10,
+        time = TIMEOUT,
+        max_messages = 15,
         messages = {
             {
                 content = "Get me @receiver, spiffy! His trigger men just tried to chisel me!",
@@ -250,6 +254,8 @@ function init_calls()
 end
 
 function reset()
+    music(4)
+
     -- reset state
     CUR_STATE = STATES.MAIN_MENU
 
@@ -299,10 +305,7 @@ function update()
         update_messages()
 
         -- timeout go next
-        if SECONDS_PASSED == 10 then
-            SECONDS_PASSED = 0
-            update_state_machine()
-        end
+        if SECONDS_PASSED == TIMEOUT then update_state_machine() end
     elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
         update_select_menu()
     end
@@ -504,7 +507,7 @@ end
 
 function update_state_machine()
     -- stops all SFX
-    -- sfx(-1)
+    sfx(-1)
 
     -- advances state machine to next state
     -- may run additional logic in between
@@ -517,8 +520,11 @@ function update_state_machine()
     elseif CUR_STATE == STATES.CUTSCENE_ZERO_3 then
         CUR_STATE = STATES.CUTSCENE_ZERO_4
     elseif CUR_STATE == STATES.CUTSCENE_ZERO_4 then
+        music(3)
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
+        sfx(13, 60, 18, 3, 6)
+        music(1)
         CUR_STATE = STATES.CUTSCENE_THIEF_1
     elseif CUR_STATE == STATES.CUTSCENE_THIEF_1 then
         CUR_STATE = STATES.CUTSCENE_THIEF_2
@@ -529,13 +535,16 @@ function update_state_machine()
     elseif CUR_STATE == STATES.CUTSCENE_THIEF_4 then
         CUR_STATE = STATES.SELECT_MENU_1
     elseif CUR_STATE == STATES.SELECT_MENU_1 then
+        music(3)
         LEVELS.level_one.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
         CUR_STATE = STATES.LEVEL_TWO
     elseif CUR_STATE == STATES.LEVEL_TWO then
         CUR_STATE = STATES.SELECT_MENU_2
     elseif CUR_STATE == STATES.SELECT_MENU_2 then
         LEVELS.level_two.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
-        CUR_STATE = STATES.MAIN_MENU
+        CUR_STATE = STATES.CUTSCENE_NEWS
+    elseif CUR_STATE == STATES.CUTSCENE_NEWS then
+        CUR_STATE = STATES.CUTSCENE_FINAL
     else
         init()
     end
@@ -543,7 +552,10 @@ function update_state_machine()
     if has_value(PLAYABLE_STATES, CUR_STATE) then setup_level() end
 end
 
-function setup_level() MESSAGES = generate_messages(LEVELS[CUR_STATE].messages) end
+function setup_level()
+    MESSAGES = generate_messages(LEVELS[CUR_STATE].messages)
+    SECONDS_PASSED = 0
+end
 
 function generate_messages(mandatory_messages)
     local messages = {}
@@ -617,7 +629,7 @@ function update_mouse()
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
                                                         .interrupted + 1
-                    sfx(17, 40, -1, 3, 6)
+                    sfx(17, 40, -1, 3, 15)
                 end
                 KNOB_PIVOT = CALL_SELECTED.dst
             elseif CALLS[i].dst == knob_hovered then
@@ -626,7 +638,7 @@ function update_mouse()
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
                                                         .interrupted + 1
-                    sfx(17, 40, -1, 3, 6)
+                    sfx(17, 40, -1, 3, 15)
                 end
                 KNOB_PIVOT = CALL_SELECTED.src
             end
@@ -716,7 +728,7 @@ function on_mouse_up(mx, my, md)
         CALL_SELECTED.state = CALL_STATE.DISPATCHING
         CALL_SELECTED.message = message
         DISPATCH = message
-        sfx(14, 48, -1, 3, 6)
+        sfx(14, 48, -1, 3, 15)
     elseif dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~= OPERATOR_KNOB then
         local index = 1
         for i = 1, #CALLS do
@@ -744,11 +756,11 @@ function on_mouse_up(mx, my, md)
                 CALL_SELECTED.state = CALL_STATE.UNUSED
                 CALL_SELECTED.src.state = KNOB_STATE.OFF
                 CALL_SELECTED.dst.state = KNOB_STATE.OFF
-                sfx(17, 61, -1, 3, 6)
+                sfx(17, 61, -1, 3, 15)
             else
                 CALL_SELECTED.state = CALL_STATE.ONGOING
                 CALL_SELECTED.duration = 5
-                sfx(16, 60, -1, 3, 6)
+                sfx(16, 60, -1, 3, 15)
             end
         end
         CALL_SELECTED.dst = dst_knob
@@ -816,6 +828,10 @@ function draw()
         draw_cutscene_thief_four()
     elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
         draw_select_menu()
+    elseif (CUR_STATE == STATES.CUTSCENE_NEWS) then
+        draw_cutscene_news()
+    elseif (CUR_STATE == STATES.CUTSCENE_FINAL) then
+        draw_cutscene_final()
     end
 end
 
@@ -1061,6 +1077,10 @@ function draw_cutscene_thief_four()
           text_height + LINE_HEIGHT * 3, TEXT_COLOR)
 end
 
+function draw_cutscene_news() print("CUTSCENE NEWS") end
+
+function draw_cutscene_final() print("CUTSCENE FINAL") end
+
 -- utils
 function has_value(tab, val)
     for _i, value in ipairs(tab) do if value == val then return true end end
@@ -1191,7 +1211,7 @@ init()
 -- 001:0817021817021818421818821c20001c2c000000000000000000000000000000000000000000000000000000000000002e0100
 -- 002:e00000ec3000ec3010000010ec30000000000000000000000000000000000000000000000000000000000000000000002e8100
 -- 003:2100002d40002d40002d44102d44102556d52d4410296856296b56296b17047000257000257e102d40200c40000000002e81ef
--- 004:4a9000ca972056a720ca972a56a7aaca97ea56a76bca97ab000000000000000000000000000000000000000000000000ec01ef
+-- 004:4a9720ca972056a720ca972a56a7aaca97ea56a76bca97ab000000000000000000000000000000000000000000000000ec01ef
 -- 005:0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002e0100
 -- </TRACKS>
 
