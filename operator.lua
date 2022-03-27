@@ -38,35 +38,35 @@ LEVELS = {
     level_zero = {time = 30, max_messages = 5},
     level_one = {
         time = TIMEOUT,
-        max_messages = 15,
+        max_messages = 7,
         messages = {
             {
                 content = "Hello! I'm returning a call to my chauffer, he should be @receiver",
-                timestamp = 2
+                timestamp = 3
             }, {
                 content = "Could you connect me to the taxi company @receiver? There's a driver there who knows the city like the back of his hand",
                 solution = true,
-                timestamp = 4
+                timestamp = 20
             }, {
                 content = "I'm looking to buy myself one of those new spiffy cars. I heard @receiver was maybe selling one",
-                timestamp = 6
+                timestamp = 40
             }, {
                 content = "I can't with this heap of a car! Call @receiver for me, will'ya doll?",
-                timestamp = 8
+                timestamp = 52
             }
         }
     },
     level_two = {
         time = TIMEOUT,
-        max_messages = 15,
+        max_messages = 9,
         messages = {
             {
                 content = "Call the mine @receiver and tell the to get me the ragamuffin who colapsed half of my gold mine!",
-                timestamp = 2
+                timestamp = 5
             }, {
                 content = "Could you get me that delightful scotish man at @receiver? I've heard he can handle a grenade launcher well.",
                 solution = true,
-                timestamp = 4
+                timestamp = 20
             }
         }
     },
@@ -76,18 +76,18 @@ LEVELS = {
         messages = {
             {
                 content = "Hiya, we're trying to play chess over the phone. Call @receiver and tell him I want Pawn to F3.",
-                timestamp = 2
+                timestamp = 10
             }, {
                 content = "Hello, @receiver just called, we're playing chess. Pawn to E6.",
-                timestamp = 4
+                timestamp = 16
             },
             {
                 content = "I'm trying to reach @receiver. Pawn to G4.",
-                timestamp = 6
+                timestamp = 40
             }, {
                 content = "Yes! Call @receiver. Queen to H4! Checkmate!",
                 solution = true,
-                timestamp = 8
+                timestamp = 46
             }
         }
     },
@@ -174,7 +174,7 @@ CALLS = {}
 
 DISPATCH = nil
 
-TEXT_COLOR = 11
+TEXT_COLOR = 12
 TEXT_X_SHIFT = 25
 LINE_HEIGHT = 10
 
@@ -858,16 +858,14 @@ end
 
 function draw_receiving_call(message)
     if #message > 86 then
-        print(string.sub(message, 0, 43), 40, 110, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, 86), 40, 120, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 87, #message), 40, 130, TEXT_COLOR, false, 1,
-              true)
+        print(string.sub(message, 0, 43), 45, 105, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, 86), 45, 115, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 87, #message), 45, 125, TEXT_COLOR, false, 1, true)
     elseif #message > 43 then
-        print(string.sub(message, 0, 43), 40, 115, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, #message), 40, 125, TEXT_COLOR, false, 1,
-              true)
+        print(string.sub(message, 0, 43), 45, 115, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, #message), 45, 125, TEXT_COLOR, false, 1, true)
     else
-        print(message, 40, 120, 1, false, TEXT_COLOR, true)
+        print(message, 45, 125, TEXT_COLOR, false, 1, true)
     end
 end
 
@@ -948,7 +946,6 @@ function draw_timer()
 
 	spr(12, 200, 105, 5,1,0,0,4,4 )
 
-    print("Time Left", clock_x - 14, clock_y - 17, 3, false, 1, true)
     circ(clock_x, clock_y, clock_radius, 12)
     if (FRAME_COUNTER % 60 == 0) then SECONDS_PASSED = SECONDS_PASSED + 1 end
 
