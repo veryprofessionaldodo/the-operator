@@ -258,7 +258,7 @@ end
 
 function reset()
     -- reset state
-    CUR_STATE = STATES.SELECT_MENU
+    CUR_STATE = STATES.MAIN_MENU
 
     -- reset counters
     for _, level in pairs(LEVELS) do
