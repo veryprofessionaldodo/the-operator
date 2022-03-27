@@ -27,25 +27,58 @@ LEVELS = {
                 caller = "Shake Spear",
                 receiver = "BigZ",
                 content = "Hello World",
-                timestamp = 2,
-                processed = false
+                timestamp = 2
             }, {
                 caller = "Tom Segura",
                 receiver = "João Conde",
                 content = "Auuuch where is the hospital I played basketball",
-                timestamp = 4,
-                processed = false
+                timestamp = 4
             }, {
                 caller = "Slim Shady",
                 receiver = "Diogo Dores",
                 content = "Wazuuuuuuuuuup",
-                timestamp = 6,
-                processed = false
+                timestamp = 6
             }
         },
         missed = 0,
         interrupted = 0,
         wrong = 0
+    }
+}
+
+MESSAGE_POOL = {
+    {
+        caller = "John Doe #1",
+        receiver = "Mary Jane #1",
+        content = "Random one liner"
+    }, {
+        caller = "John Doe #2",
+        receiver = "Mary Jane #2",
+        content = "Random two liner"
+    }, {
+        caller = "John Doe #3",
+        receiver = "Mary Jane #3",
+        content = "Random three liner"
+    }, {
+        caller = "John Doe #4",
+        receiver = "Mary Jane #4",
+        content = "Random four liner"
+    }, {
+        caller = "John Doe #5",
+        receiver = "Mary Jane #5",
+        content = "Random five liner"
+    }, {
+        caller = "John Doe #6",
+        receiver = "Mary Jane #6",
+        content = "Random six liner"
+    }, {
+        caller = "John Doe #7",
+        receiver = "Mary Jane #7",
+        content = "Random seven liner"
+    }, {
+        caller = "John Doe #8",
+        receiver = "Mary Jane #8",
+        content = "Random eight liner"
     }
 }
 
@@ -257,7 +290,7 @@ end
 
 function update_messages()
     for _, message in pairs(MESSAGES) do
-        if message.timestamp == SECONDS_PASSED and not message.processed then
+        if message.timestamp == SECONDS_PASSED and message.processed == nil then
             src_knob = get_available_knob()
             src_knob.state = KNOB_STATE.INCOMING
             src_knob.pickup_timer = 30
@@ -380,15 +413,23 @@ end
 
 function setup_level() MESSAGES = generate_messages(LEVELS[CUR_STATE].messages) end
 
-function generate_messages(messages_meta)
+function generate_messages(mandatory_messages)
     local messages = {}
 
-    for _, meta in pairs(messages_meta) do
+    -- local indices = map(mandatory_messages, function(m)
+    --     return math.random(1, 10)
+    -- end)
+    -- table.sort(indices)
+
+    -- trace(indices[1] .. " " .. indices[2] .. " " .. indices[3]) 
+
+    for _, mandatory in pairs(mandatory_messages) do
         local message = {}
-        message.caller = meta.caller
-        message.content = meta.content
-        message.receiver = meta.receiver
-        message.timestamp = meta.timestamp
+        message.caller = mandatory.caller
+        message.content = mandatory.content
+        message.receiver = mandatory.receiver
+        message.timestamp = mandatory.timestamp
+        -- local message = copy(mandatory)
         table.insert(messages, message)
     end
 
@@ -688,6 +729,12 @@ end
 function filter(tbl, func)
     local newtbl = {}
     for i, v in pairs(tbl) do if func(v) then table.insert(newtbl, v) end end
+    return newtbl
+end
+
+function copy(tbl)
+    local newtbl = {}
+    for _, v in pairs(tbl) do table.insert(newtbl, v) end
     return newtbl
 end
 
