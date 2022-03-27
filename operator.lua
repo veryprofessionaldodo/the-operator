@@ -27,19 +27,19 @@ LEVELS = {
                 caller = "Shake Spear",
                 receiver = "BigZ",
                 content = "Hello World",
-                timestamp = 5,
+                timestamp = 2,
                 processed = false
             }, {
                 caller = "Tom Segura",
                 receiver = "João Conde",
                 content = "Auuuch where is the hospital I played basketball",
-                timestamp = 10,
+                timestamp = 4,
                 processed = false
             }, {
                 caller = "Slim Shady",
                 receiver = "Diogo Dores",
                 content = "Wazuuuuuuuuuup",
-                timestamp = 15,
+                timestamp = 6,
                 processed = false
             }
         }
@@ -80,6 +80,8 @@ CALL_STATE = {
 KNOB_WIDTH, KNOB_HEIGHT, KNOB_SCALE = 8, 8, 2
 KNOB_SELECTED, CALL_SELECTED, OPERATOR_KNOB = nil, nil, nil
 
+MISSED_CALLS = 0
+
 -- calls from knob to knob
 CALLS = {}
 
@@ -112,7 +114,7 @@ function init_knobs()
                 x = x,
                 y = y,
                 state = KNOB_STATE.OFF,
-                timer = 0
+                pickup_timer = 0
             }
             table.insert(knobs, knob)
         end
@@ -156,6 +158,14 @@ function update()
     for _, knob in pairs(KNOBS) do
         if knob.state ~= KNOB_STATE.INCOMING then
             knob.state = KNOB_STATE.OFF
+        else
+            if (FRAME_COUNTER % 60 == 0) then
+                knob.pickup_timer = knob.pickup_timer - 1
+                if knob.pickup_timer == 0 then
+                    MISSED_CALLS = MISSED_CALLS + 1
+                    knob.state = KNOB_STATE.OFF
+                end
+            end
         end
     end
 
@@ -169,33 +179,30 @@ function update()
                 call.src.state = KNOB_STATE.CONNECTED
                 call.dst.state = KNOB_STATE.CONNECTED
             end
-        else
-            call.src.state = KNOB_STATE.OFF
-            call.dst.state = KNOB_STATE.OFF
+            if (FRAME_COUNTER % 60 == 0) then
+                call.duration = call.duration - 1
+                if call.duration == 0 then
+                    call.state = CALL_STATE.FINISHED
+                    call.src.state = KNOB_STATE.OFF
+                    call.dst.state = KNOB_STATE.OFF
+                    for i = 1, #MESSAGES do
+                        if MESSAGES[i] == call.message then
+                            table.remove(MESSAGES, i)
+                            break
+                        end
+                    end
+                end
+            end
         end
-
-        -- if call.state ~= CALL_STATE.INTERRUPTED then
-        --     if call.src ~= OPERATOR_KNOB and call.dst ~= OPERATOR_KNOB then
-        --         call.src.state = KNOB_STATE.CONNECTED
-        --         call.dst.state = KNOB_STATE.CONNECTED
-        --     else
-        --         call.src.state = KNOB_STATE.DISPATCHING
-        --         call.dst.state = KNOB_STATE.DISPATCHING
-        --     end
-        -- end
     end
 
-    -- DEBUG: see if selected
-    -- if knob then knob.state = KNOB_STATE.INCOMING end
-    -- local knob = get_knob(LEVELS.ONE.CALLS[1].src)
-    -- knob.state = KNOB_STATE.INCOMING
     for _, message in pairs(MESSAGES) do
         if message.timestamp == SECONDS_PASSED and not message.processed then
             src_knob = get_available_knob()
             src_knob.state = KNOB_STATE.INCOMING
+            src_knob.pickup_timer = 10
 
             dst_knob = get_available_knob()
-            -- dst_knob.state = KNOB_STATE.DISPATCHING
 
             message.src = src_knob
             message.dst = dst_knob
@@ -312,10 +319,13 @@ function on_mouse_up(mx, my, md)
         table.insert(CALLS, {
             src = KNOB_SELECTED,
             dst = dst_knob,
-            state = CALL_STATE.ONGOING
+            state = CALL_STATE.ONGOING,
+            message = message,
+            duration = 5
         })
     else
         CALL_SELECTED.state = CALL_STATE.ONGOING
+        CALL_SELECTED.duration = 5
     end
 
     CALL_SELECTED, KNOB_SELECTED = nil, nil
@@ -360,9 +370,6 @@ function draw()
     draw_calls()
     draw_timer()
 
-    -- DEBUG
-    -- print(KNOB_SELECTED, 10, 50)
-
     -- drag knob line
     local mx, my, md = mouse()
     if md and KNOB_SELECTED ~= nil then
@@ -371,6 +378,8 @@ function draw()
     end
 
     if DISPATCH ~= nil then print(DISPATCH[1] .. DISPATCH[2], 100, 120, 1) end
+    print(MISSED_CALLS, 100, 100, 1)
+    print(#MESSAGES, 120, 100, 1)
 end
 
 function draw_switchboard()
@@ -396,7 +405,6 @@ end
 
 function draw_knobs()
     for i = 1, #KNOBS do
-        -- TODO: this blinking should be calculated based on state and timer of the knob
         draw_knob(KNOBS[i])
     end
     draw_knob(OPERATOR_KNOB)
@@ -427,9 +435,9 @@ end
 function draw_call(x0, y0, x1, y1) line(x0, y0, x1, y1, 1) end
 
 function draw_timer()
-    clock_x = 214
-    clock_y = 119
-    clock_radius = 10
+    local clock_x = 214
+    local clock_y = 119
+    local clock_radius = 10
 
     print("Time Left", clock_x - 14, clock_y - 17, 3, false, 1, true)
     circ(clock_x, clock_y, clock_radius, 1)
