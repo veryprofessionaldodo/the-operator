@@ -977,7 +977,6 @@ function draw_select_menu()
 end
 
 function draw_cutscene_zero_one()
-    rectb(0, 0, 240, 136, 2)
     text_height = 45
     print("Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
           TEXT_COLOR)
@@ -991,7 +990,6 @@ function draw_cutscene_zero_one()
 end
 
 function draw_cutscene_zero_two()
-    rectb(0, 0, 240, 136, 2)
     text_height = 40
     print("First of all, whenever you see a", TEXT_X_SHIFT, text_height,
           TEXT_COLOR)
@@ -1008,7 +1006,6 @@ function draw_cutscene_zero_two()
 end
 
 function draw_cutscene_zero_three()
-    rectb(0, 0, 240, 136, 2)
     text_height = 35
     print("After that you'll just have to grab", TEXT_X_SHIFT, text_height,
           TEXT_COLOR)
@@ -1027,7 +1024,6 @@ function draw_cutscene_zero_three()
 end
 
 function draw_cutscene_zero_four()
-    rectb(0, 0, 240, 136, 2)
     text_height = 55
     print("Alright, best way to learn it is", TEXT_X_SHIFT, text_height,
           TEXT_COLOR)
@@ -1038,7 +1034,6 @@ function draw_cutscene_zero_four()
 end
 
 function draw_cutscene_thief_one()
-    rectb(0, 0, 240, 136, 2)
     text_height = 35
     print("He-Hello? Yes, hello there dolly, I was", 5, text_height,
           TEXT_COLOR)
@@ -1056,7 +1051,6 @@ function draw_cutscene_thief_one()
 end
 
 function draw_cutscene_thief_two()
-    rectb(0, 0, 240, 136, 2)
     text_height = 45
     print("This made me think to myself:", 5, text_height,
           TEXT_COLOR)
@@ -1072,7 +1066,6 @@ function draw_cutscene_thief_two()
 end
 
 function draw_cutscene_thief_three()
-    rectb(0, 0, 240, 136, 2)
     text_height = 45
     print("I'm assuming that the silence means yes!", 5, text_height,
           TEXT_COLOR)
@@ -1086,7 +1079,6 @@ function draw_cutscene_thief_three()
 end
 
 function draw_cutscene_thief_four()
-    rectb(0, 0, 240, 136, 2)
     text_height = 55
     print("Just get me the channels", 5, text_height,
           TEXT_COLOR)
@@ -1097,9 +1089,46 @@ function draw_cutscene_thief_four()
           text_height + LINE_HEIGHT * 3, TEXT_COLOR)
 end
 
-function draw_cutscene_news() print("CUTSCENE NEWS") end
+function draw_cutscene_news()
+    print("BREAKING NEWS", 100, 75, TEXT_COLOR) 
+end
 
-function draw_cutscene_final() print("CUTSCENE FINAL") end
+function draw_cutscene_final() 
+    trace(LEVELS.level_one.chosen)
+    trace(LEVELS.level_one.solution)
+    if levels.level_one.solution == levels.level_one.chosen
+    and levels.level_two.solution == levels.level_two.chosen
+        -- and levels.level_three.solution == levels.level_three.chosen
+        -- and levels.level_four.solution == levels.level_four.chosen
+    then
+        draw_victory()
+    else 
+        draw_lost()
+
+
+end
+
+function draw_victory() 
+    text_height = 55
+    print("The robbery of the century just", 5, text_height,
+          TEXT_COLOR)
+    print("happened, you won't believe it!", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("A four men crew just robbed the", 5,
+          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("M-BES Zelment bank out of ", 5,
+          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("200 billion dollars like", 5,
+        text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("it was nothing!", 5,
+        text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("That's a lotta cabbage!", 5,
+    text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+end
+
+function draw_lost()
+    print("YOU LOSE", 100, 70, TEXT_COLOR) 
+    print("TRY AGAIN!", 100, 80, TEXT_COLOR) 
+end
 
 -- utils
 function has_value(tab, val)
