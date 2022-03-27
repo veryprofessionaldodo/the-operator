@@ -294,6 +294,8 @@ function update_messages()
     for _, message in pairs(MESSAGES) do
         if message.timestamp == SECONDS_PASSED and message.processed == nil then
             src_knob = get_available_knob()
+            if src_knob == nil then break end
+
             src_knob.state = KNOB_STATE.INCOMING
             src_knob.pickup_timer = 30
 
@@ -390,6 +392,7 @@ function get_available_knob()
                    not has_value(allocated_srcs, knob) and
                    not has_value(allocated_dsts, knob)
     end)
+    if #usable_knobs == 0 then return nil end
     local index = math.random(1, #usable_knobs)
     return usable_knobs[index]
 end
@@ -549,7 +552,7 @@ function on_mouse_up(mx, my, md)
             rope_segments = previous_rope_segments,
             message = message
         })
-        DISPATCH = message.dst.coords
+        DISPATCH = message
     elseif dst_knob ~= nil and dst_knob ~= OPERATOR_KNOB and CALL_SELECTED.dst ~=
         OPERATOR_KNOB and not is_same_node and not overlaps then
         local index = 1
@@ -643,7 +646,12 @@ function draw_game()
     draw_calls()
     draw_timer()
 
-    if DISPATCH ~= nil then print(DISPATCH[1] .. DISPATCH[2], 100, 120, 1) end
+    if DISPATCH ~= nil then
+        local coords = DISPATCH.dst.coords
+        local message = DISPATCH.content
+        print(coords[1] .. coords[2], 80, 120, 1)
+        print(message, 100, 120, 1)
+    end
     print(LEVELS[CUR_STATE].missed, 100, 100, 1)
     print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
     print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
