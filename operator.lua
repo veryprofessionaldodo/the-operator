@@ -478,6 +478,7 @@ function on_mouse_up(mx, my, md)
     else
         CALL_SELECTED.dst = dst_knob
         CALL_SELECTED.state = CALL_STATE.ONGOING
+        DISPATCH = nil
         CALL_SELECTED.duration = 5
     end
 
@@ -525,7 +526,6 @@ function draw()
     if DISPATCH ~= nil then print(DISPATCH[1] .. DISPATCH[2], 100, 120, 1) end
     print(LEVELS[CUR_STATE].missed, 100, 100, 1)
     print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
-    print(#CALLS, 20, 20, 3)
 end
 
 function draw_switchboard()
