@@ -579,11 +579,6 @@ function generate_messages(mandatory_messages)
         table.insert(messages, indices[i], message)
     end
 
-    -- DEBUG
-    -- for _, v in pairs(messages) do
-    --     trace(v.content)
-    -- end
-
     return messages
 end
 
@@ -720,7 +715,8 @@ function on_mouse_up(mx, my, md)
     end
 
     -- is connecting to operator, with a valid message
-    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB or CALL_SELECTED.src == OPERATOR_KNOB) and message ~= nil then
+    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB or
+        CALL_SELECTED.src == OPERATOR_KNOB) and message ~= nil then
         -- local previous_rope_segments = CALL_SELECTED.rope_segments
         CALL_SELECTED.src = KNOB_PIVOT
         CALL_SELECTED.dst = dst_knob
@@ -860,18 +856,18 @@ function draw_receiving_call(message)
     if #message > 86 then
         print(string.sub(message, 0, 43), 45, 105, TEXT_COLOR, false, 1, true)
         print(string.sub(message, 44, 86), 45, 115, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 87, #message), 45, 125, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 87, #message), 45, 125, TEXT_COLOR, false, 1,
+              true)
     elseif #message > 43 then
         print(string.sub(message, 0, 43), 45, 115, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, #message), 45, 125, TEXT_COLOR, false, 1, true)
+        print(string.sub(message, 44, #message), 45, 125, TEXT_COLOR, false, 1,
+              true)
     else
         print(message, 45, 120, TEXT_COLOR, false, 1, true)
     end
 end
 
-function draw_footer()
-		spr(464, 0, 100, 6, 2, 0, 0, 15, 3)
-end
+function draw_footer() spr(464, 0, 100, 6, 2, 0, 0, 15, 3) end
 
 function draw_switchboard()
     -- rectb(2, 2, (SWITCHBOARD.N_COLS * SWITCHBOARD.COL_SPACING) - 8,
@@ -882,7 +878,7 @@ function draw_switchboard()
     spr(7, 137, 0, 0, 1, 0, 0, 1, 15)
     spr(7, 170, 0, 0, 1, 0, 0, 1, 15)
     spr(7, 205, 0, 0, 1, 0, 0, 1, 15)
-    
+
     draw_header()
     draw_sidebar()
 
@@ -944,7 +940,7 @@ function draw_timer()
     local clock_y = 120
     local clock_radius = 10
 
-	spr(12, 200, 105, 5,1,0,0,4,4 )
+    spr(12, 200, 105, 5, 1, 0, 0, 4, 4)
 
     circ(clock_x, clock_y, clock_radius, 12)
     if (FRAME_COUNTER % 60 == 0) then SECONDS_PASSED = SECONDS_PASSED + 1 end
@@ -955,14 +951,13 @@ function draw_timer()
              round(clock_x + clock_radius * math.cos(line_increment)),
              round(clock_y + clock_radius * math.sin(line_increment)), 4)
     end
-    
-   
+
 end
 
-function draw_main_menu() 
-    print("The", 20, 40, 12, true, 2) 
+function draw_main_menu()
+    print("The", 20, 40, 12, true, 2)
     print("Operator", 20, 70, 12, true, 2)
-    spr(154, 130, 20, 1, 2,0,0, 5, 6)
+    spr(154, 130, 20, 1, 2, 0, 0, 5, 6)
 end
 
 function draw_select_menu()
@@ -974,10 +969,10 @@ function draw_select_menu()
 end
 
 function draw_old_timey_background()
-    local rand_x = math.random(-1,1)
-    local rand_y = math.random(-1,1)
+    local rand_x = math.random(-1, 1)
+    local rand_y = math.random(-1, 1)
     spr(256, rand_x, rand_y, 1, 3, 0, 0, 14, 10)
-end 
+end
 
 function draw_cutscene_zero_one()
     draw_old_timey_background()
@@ -1043,17 +1038,17 @@ end
 function draw_cutscene_thief_one()
     draw_old_timey_background()
     text_height = 35
-    print("He-Hello? Yes, hello there dolly, I was", 5, text_height,
-          TEXT_COLOR)
-    print("wondering if you could help me? Look here,", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
+    print("He-Hello? Yes, hello there dolly, I was", 5, text_height, TEXT_COLOR)
+    print("wondering if you could help me? Look here,", 5,
+          text_height + LINE_HEIGHT, TEXT_COLOR)
     print("I'm currently a bit low on the dough, if you", 5,
           text_height + LINE_HEIGHT * 2, TEXT_COLOR)
     print("catch my drift. And for a while I've been", 5,
           text_height + LINE_HEIGHT * 3, TEXT_COLOR)
     print("thinking about, you know, getting some", 5,
           text_height + LINE_HEIGHT * 4, TEXT_COLOR)
-    print("*help* from the bank. Problem is,", 5,
-          text_height + LINE_HEIGHT * 5, TEXT_COLOR)
+    print("*help* from the bank. Problem is,", 5, text_height + LINE_HEIGHT * 5,
+          TEXT_COLOR)
     print("ain't easy finding a crew in this economy.", 5,
           text_height + LINE_HEIGHT * 6, TEXT_COLOR)
 end
@@ -1061,87 +1056,80 @@ end
 function draw_cutscene_thief_two()
     draw_old_timey_background()
     text_height = 45
-    print("This made me think to myself:", 5, text_height,
+    print("This made me think to myself:", 5, text_height, TEXT_COLOR)
+    print("who better to find the mugs", 5, text_height + LINE_HEIGHT,
           TEXT_COLOR)
-    print("who better to find the mugs", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("I need than an esteemed operator", 5,
-          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("like you? Sorry to entangle you,", 5,
-          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("I need than an esteemed operator", 5, text_height + LINE_HEIGHT * 2,
+          TEXT_COLOR)
+    print("like you? Sorry to entangle you,", 5, text_height + LINE_HEIGHT * 3,
+          TEXT_COLOR)
     print("with this, but whaddya say, hun?", 5, text_height + LINE_HEIGHT * 4,
           TEXT_COLOR)
-    print("--Pause--", 5, text_height + LINE_HEIGHT * 5,
-    TEXT_COLOR)
+    print("--Pause--", 5, text_height + LINE_HEIGHT * 5, TEXT_COLOR)
 end
 
 function draw_cutscene_thief_three()
     draw_old_timey_background()
     text_height = 45
-    print("I'm assuming that the silence means yes!", 5, text_height,
+    print("I'm assuming that the silence means yes!", 5, text_height, TEXT_COLOR)
+    print("Great! You're really the bee's knees!", 5, text_height + LINE_HEIGHT,
           TEXT_COLOR)
-    print("Great! You're really the bee's knees!", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
     print("So, I'm in need of a getaway driver,", 5,
           text_height + LINE_HEIGHT * 2, TEXT_COLOR)
     print("a demolitions expert, a strategist", 5,
           text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("and an arms dealer.", 5, text_height + LINE_HEIGHT * 4,
-          TEXT_COLOR)
+    print("and an arms dealer.", 5, text_height + LINE_HEIGHT * 4, TEXT_COLOR)
 end
 
 function draw_cutscene_thief_four()
     draw_old_timey_background()
     text_height = 55
-    print("Just get me the channels", 5, text_height,
+    print("Just get me the channels", 5, text_height, TEXT_COLOR)
+    print("on which I can contact them,", 5, text_height + LINE_HEIGHT,
           TEXT_COLOR)
-    print("on which I can contact them,", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("I'll handle the rest!", 5,
-          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("Talk to you soon, I hope!", 5,
-          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("I'll handle the rest!", 5, text_height + LINE_HEIGHT * 2, TEXT_COLOR)
+    print("Talk to you soon, I hope!", 5, text_height + LINE_HEIGHT * 3,
+          TEXT_COLOR)
 end
 
 function draw_cutscene_news()
     draw_old_timey_background()
-    print("BREAKING NEWS", 100, 75, TEXT_COLOR) 
+    print("BREAKING NEWS", 100, 75, TEXT_COLOR)
 end
 
-function draw_cutscene_final() 
+function draw_cutscene_final()
     draw_old_timey_background()
-    trace(LEVELS.level_one.chosen)
-    trace(LEVELS.level_one.solution)
-    if LEVELS.level_one.solution == LEVELS.level_one.chosen
-    and LEVELS.level_two.solution == LEVELS.level_two.chosen
-    then
+
+    if LEVELS.level_one.solution == LEVELS.level_one.chosen and
+        LEVELS.level_two.solution == LEVELS.level_two.chosen then
         draw_victory()
         music(2)
-    else 
+    else
         draw_lost()
         music(0)
     end
 
-
 end
 
-function draw_victory() 
+function draw_victory()
     text_height = 55
-    print("The robbery of the century just", 5, text_height,
+    print("The robbery of the century just", 5, text_height, TEXT_COLOR)
+    print("happened, you won't believe it!", 5, text_height + LINE_HEIGHT,
           TEXT_COLOR)
-    print("happened, you won't believe it!", 5, text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("A four men crew just robbed the", 5,
-          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("M-BES Zelment bank out of ", 5,
-          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("200 billion dollars like", 5,
-        text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("it was nothing!", 5,
-        text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("That's a lotta cabbage!", 5,
-    text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("A four men crew just robbed the", 5, text_height + LINE_HEIGHT * 2,
+          TEXT_COLOR)
+    print("M-BES Zelment bank out of ", 5, text_height + LINE_HEIGHT * 3,
+          TEXT_COLOR)
+    print("200 billion dollars like", 5, text_height + LINE_HEIGHT * 3,
+          TEXT_COLOR)
+    print("it was nothing!", 5, text_height + LINE_HEIGHT * 3, TEXT_COLOR)
+    print("That's a lotta cabbage!", 5, text_height + LINE_HEIGHT * 3,
+          TEXT_COLOR)
 end
 
 function draw_lost()
-    print("YOU LOSE", 100, 70, TEXT_COLOR) 
-    print("TRY AGAIN!", 100, 80, TEXT_COLOR) 
+    print("YOU LOSE", 100, 70, TEXT_COLOR)
+    print("TRY AGAIN!", 100, 80, TEXT_COLOR)
 end
 
 -- utils
