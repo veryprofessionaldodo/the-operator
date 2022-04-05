@@ -12,6 +12,7 @@ package.path = package.path..
                 
 require "levels"
 require "draw/draw-game"
+require "draw/draw-cutscenes"
 require "utils"
 require "state-machine"
 require "macros"
