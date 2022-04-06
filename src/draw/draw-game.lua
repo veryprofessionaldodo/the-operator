@@ -4,7 +4,6 @@ function draw_game()
     draw_footer()
     draw_knobs()
     draw_calls()
-    draw_timer()
 
     if DISPATCH ~= nil then
         local coords = DISPATCH.dst.coords
@@ -12,30 +11,33 @@ function draw_game()
         -- print(coords[1] .. coords[2], 80, 120, 1)
         draw_receiving_call(message)
     end
-    -- print(LEVELS[CUR_STATE].missed, 100, 100, 1)
-    -- print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
-    -- print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
+
+    if has_value(PLAYABLE_STATES, CUR_STATE) and CUR_STATE ~= STATES.CALL_THIEF then
+        print(LEVELS[CUR_STATE].missed, 100, 100, 1)
+        print(LEVELS[CUR_STATE].interrupted, 120, 100, 1)
+        print(LEVELS[CUR_STATE].wrong, 140, 100, 1)
+    end
 
     -- local coords = LEVELS[CUR_STATE].solution
     -- if coords ~= nil then print(coords[1] .. coords[2], 80, 100, 1) end
 end
 
 function draw_receiving_call(message)
+    local three_lines_height = 108
+    local two_lines_height = 112
     if #message > 86 then
-        print(string.sub(message, 0, 43), 45, 105, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, 86), 45, 115, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 87, #message), 45, 125, TEXT_COLOR, false, 1,
-              true)
+        text_shadow(string.sub(message, 0, 43), three_lines_height)
+        text_shadow(string.sub(message, 44, 86), three_lines_height + MESSAGE_HEIGHT)
+        text_shadow(string.sub(message, 87, #message), three_lines_height + MESSAGE_HEIGHT * 2)
     elseif #message > 43 then
-        print(string.sub(message, 0, 43), 45, 115, TEXT_COLOR, false, 1, true)
-        print(string.sub(message, 44, #message), 45, 125, TEXT_COLOR, false, 1,
-              true)
+        text_shadow(string.sub(message, 0, 43), two_lines_height)
+        text_shadow(string.sub(message, 44, #message), two_lines_height + MESSAGE_HEIGHT)
     else
-        print(message, 45, 120, TEXT_COLOR, false, 1, true)
+        text_shadow(message, 116)
     end
 end
 
-function draw_footer() spr(464, 0, 100, 6, 2, 0, 0, 15, 3) end
+function draw_footer() spr(464, 0, 100, 6, 2, 0, 0, 14, 3) end
 
 function draw_switchboard()
     -- rectb(2, 2, (SWITCHBOARD.N_COLS * SWITCHBOARD.COL_SPACING) - 8,
@@ -99,11 +101,11 @@ function draw_call(call)
         current_point = call.rope_segments[i]
         next_point = call.rope_segments[i + 1]
         line(current_point.x + KNOB_WIDTH, current_point.y + KNOB_HEIGHT,
-             next_point.x + KNOB_WIDTH, next_point.y + KNOB_HEIGHT, 1)
+            next_point.x + KNOB_WIDTH, next_point.y + KNOB_HEIGHT, 1)
     end
 end
 
-function draw_timer()
+function draw_timer(level_time)
     local clock_x = 215
     local clock_y = 120
     local clock_radius = 10
@@ -113,11 +115,11 @@ function draw_timer()
     circ(clock_x, clock_y, clock_radius, 12)
     if (FRAME_COUNTER % 60 == 0) then SECONDS_PASSED = SECONDS_PASSED + 1 end
 
-    for i = 0, SECONDS_PASSED, 0.3 do
-        line_increment = deg_to_rad(-90 + i * 6)
+    for i = 0, SECONDS_PASSED, 0.01 do
+        line_increment = deg_to_rad(-90 + (i * 6 / (level_time / 60)))
         line(clock_x, clock_y,
-             round(clock_x + clock_radius * math.cos(line_increment)),
-             round(clock_y + clock_radius * math.sin(line_increment)), 4)
+            round(clock_x + clock_radius * math.cos(line_increment)),
+            round(clock_y + clock_radius * math.sin(line_increment)), 4)
     end
 
 end

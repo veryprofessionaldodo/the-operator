@@ -1,7 +1,20 @@
 
 TIMEOUT = 60
 LEVELS = {
-    level_zero = {time = 30, max_messages = 5},
+    level_zero = {
+        time = 50,
+        max_messages = 10,
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
+    },
+    call_thief = {
+        time = 4,
+        max_messages = 1,
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
+    },
     level_one = {
         time = TIMEOUT,
         max_messages = 7,
@@ -20,7 +33,10 @@ LEVELS = {
                 content = "I can't with this heap of a car! Call @receiver for me, will'ya doll?",
                 timestamp = 52
             }
-        }
+        },
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
     },
     level_two = {
         time = TIMEOUT,
@@ -34,7 +50,10 @@ LEVELS = {
                 solution = true,
                 timestamp = 20
             }
-        }
+        },
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
     },
     level_three = {
         time = TIMEOUT,
@@ -55,7 +74,10 @@ LEVELS = {
                 solution = true,
                 timestamp = 46
             }
-        }
+        },
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
     },
     level_four = {
         time = TIMEOUT,
@@ -72,7 +94,10 @@ LEVELS = {
                 solution = true,
                 timestamp = 6
             }
-        }
+        },
+        missed = 0,
+        interrupted = 0,
+        wrong = 0
     }
 }
 

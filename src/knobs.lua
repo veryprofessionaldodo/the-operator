@@ -20,7 +20,7 @@ function init_knobs()
     end
 
     -- add operator knob
-    OPERATOR_KNOB = {x = 10, y = 115, state = KNOB_STATE.OFF, timer = 0}
+    OPERATOR_KNOB = {x = 8, y = 108, state = KNOB_STATE.OFF, timer = 0}
 
     return knobs
 end

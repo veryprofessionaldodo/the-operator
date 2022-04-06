@@ -1,127 +1,95 @@
 
 function draw_old_timey_background()
-    local rand_x = math.random(-1, 1)
-    local rand_y = math.random(-1, 1)
-    spr(256, rand_x, rand_y, 1, 3, 0, 0, 14, 10)
+    SCREEN_SHAKE_COUNTER = SCREEN_SHAKE_COUNTER + 0.1 * 3
+    local x = math.sin(SCREEN_SHAKE_COUNTER) + 0.5
+    local y = math.cos(SCREEN_SHAKE_COUNTER) + 0.5
+
+    spr(256, x, y, 1, 3, 0, 0, 14, 10)
+
+    for i=1,50 do
+      pix(math.random(5,234),math.random(5,130),0)
+    end
 end
 
 function draw_cutscene_zero_one()
     draw_old_timey_background()
-    text_height = 45
-    print("Miss Nicole Tangle, am I correct?", TEXT_X_SHIFT, text_height,
-          TEXT_COLOR)
-    print("What's shaken?", TEXT_X_SHIFT, text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("Welcome here to your first training", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("on how to operate this ritzie", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("new switchboard!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 4,
-          TEXT_COLOR)
+    text_height = 47
+    center_text("Miss Nicole Tangle, am I correct?", text_height)
+    center_text("What's shaken?", text_height + LINE_HEIGHT)
+    center_text("Welcome here to your first", text_height + LINE_HEIGHT * 2)
+    center_text("training on how to operate this", text_height + LINE_HEIGHT * 3)
+    center_text("ritzie new switchboard!", text_height + LINE_HEIGHT * 4)
 end
 
 function draw_cutscene_zero_two()
     draw_old_timey_background()
-    text_height = 40
-    print("First of all, whenever you see a", TEXT_X_SHIFT, text_height,
-          TEXT_COLOR)
-    print("blinking green knob, that means", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("you've got a call!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2,
-          TEXT_COLOR)
-    print("If there's no cable connected to", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("that knob, just grab a free one", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 4, TEXT_COLOR)
-    print("on your board and put'it there!", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 5, TEXT_COLOR)
+    text_height = 47
+    center_text("Firstly, if you see a blinking", text_height)
+    center_text("green plug, you've got a call!", text_height + LINE_HEIGHT)
+    center_text("If there's no cable connected to", text_height + LINE_HEIGHT * 2)
+    center_text("that knob, just grab a free one", text_height + LINE_HEIGHT * 3)
+    center_text("on your board and put'it there!", text_height + LINE_HEIGHT * 4)
 end
 
 function draw_cutscene_zero_three()
     draw_old_timey_background()
-    text_height = 35
-    print("After that you'll just have to grab", TEXT_X_SHIFT, text_height,
-          TEXT_COLOR)
-    print("the other end of the cable and", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("connect it to the CR knob at the", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("bottom of your desk!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 3,
-          TEXT_COLOR)
-    print("A letter-number combination will", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 4, TEXT_COLOR)
-    print("appear, which is the knob where", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 5, TEXT_COLOR)
-    print("you will now redirect the call to.", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT * 6, TEXT_COLOR)
+    text_height = 42
+    center_text("Then, just grab the other end", text_height)
+    center_text("of the cable and connect it to", text_height + LINE_HEIGHT)
+    center_text("the plug on your desk!", text_height + LINE_HEIGHT * 2)
+    center_text("A caller will then tell you", text_height + LINE_HEIGHT * 3)
+    center_text("the channel to which you have", text_height + LINE_HEIGHT * 4)
+    center_text("to redirect the call to.", text_height + LINE_HEIGHT * 5)
 end
 
 function draw_cutscene_zero_four()
     draw_old_timey_background()
-    text_height = 55
-    print("Alright, best way to learn it is", TEXT_X_SHIFT, text_height,
-          TEXT_COLOR)
-    print("to do it! So get on with it!", TEXT_X_SHIFT,
-          text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("Go chase yourself!", TEXT_X_SHIFT, text_height + LINE_HEIGHT * 2,
-          TEXT_COLOR)
+    text_height = 57
+    center_text("Alright, best way to learn it is", text_height)
+    center_text("to do it! So get on with it!", text_height + LINE_HEIGHT)
+    center_text("Go chase yourself!", text_height + LINE_HEIGHT * 2)
 end
 
 function draw_cutscene_thief_one()
-    draw_old_timey_background()
-    text_height = 35
-    print("He-Hello? Yes, hello there dolly, I was", 5, text_height, TEXT_COLOR)
-    print("wondering if you could help me? Look here,", 5,
-          text_height + LINE_HEIGHT, TEXT_COLOR)
-    print("I'm currently a bit low on the dough, if you", 5,
-          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("catch my drift. And for a while I've been", 5,
-          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("thinking about, you know, getting some", 5,
-          text_height + LINE_HEIGHT * 4, TEXT_COLOR)
-    print("*help* from the bank. Problem is,", 5, text_height + LINE_HEIGHT * 5,
-          TEXT_COLOR)
-    print("ain't easy finding a crew in this economy.", 5,
-          text_height + LINE_HEIGHT * 6, TEXT_COLOR)
+    cls()
+    draw_game()
+    text_height = 108
+    text_shadow("He-Hello? Yes, hello there dolly!", text_height)
+    text_shadow("No, no! No need to connect me anywhere, I'm", text_height + MESSAGE_HEIGHT)
+    text_shadow("right where I want to be!", text_height + MESSAGE_HEIGHT * 2)
 end
 
 function draw_cutscene_thief_two()
-    draw_old_timey_background()
-    text_height = 45
-    print("This made me think to myself:", 5, text_height, TEXT_COLOR)
-    print("who better to find the mugs", 5, text_height + LINE_HEIGHT,
-          TEXT_COLOR)
-    print("I need than an esteemed operator", 5, text_height + LINE_HEIGHT * 2,
-          TEXT_COLOR)
-    print("like you? Sorry to entangle you,", 5, text_height + LINE_HEIGHT * 3,
-          TEXT_COLOR)
-    print("with this, but whaddya say, hun?", 5, text_height + LINE_HEIGHT * 4,
-          TEXT_COLOR)
-    print("--Pause--", 5, text_height + LINE_HEIGHT * 5, TEXT_COLOR)
+    draw_game()
+    text_height = 108
+    text_shadow("I'm gonna be honest, I'm a bit low on the", text_height)
+    text_shadow("dough right now. So, I've been thinking about,", text_height + MESSAGE_HEIGHT)
+    text_shadow("you know, getting some *help* from the bank.", text_height + MESSAGE_HEIGHT * 2)
 end
 
 function draw_cutscene_thief_three()
-    draw_old_timey_background()
-    text_height = 45
-    print("I'm assuming that the silence means yes!", 5, text_height, TEXT_COLOR)
-    print("Great! You're really the bee's knees!", 5, text_height + LINE_HEIGHT,
-          TEXT_COLOR)
-    print("So, I'm in need of a getaway driver,", 5,
-          text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("a demolitions expert, a strategist", 5,
-          text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("and an arms dealer.", 5, text_height + LINE_HEIGHT * 4, TEXT_COLOR)
+    draw_game()
+    text_height = 108
+    text_shadow("This made me think to myself: who better to", text_height)
+    text_shadow("find the mugs I need, than an esteemed", text_height + MESSAGE_HEIGHT)
+    text_shadow("operator like you? Whaddya say, hun?", text_height + MESSAGE_HEIGHT * 2)
 end
 
 function draw_cutscene_thief_four()
-    draw_old_timey_background()
-    text_height = 55
-    print("Just get me the channels", 5, text_height, TEXT_COLOR)
-    print("on which I can contact them,", 5, text_height + LINE_HEIGHT,
-          TEXT_COLOR)
-    print("I'll handle the rest!", 5, text_height + LINE_HEIGHT * 2, TEXT_COLOR)
-    print("Talk to you soon, I hope!", 5, text_height + LINE_HEIGHT * 3,
-          TEXT_COLOR)
+    draw_game()
+    text_height = 108
+    text_shadow("I'm assuming that the silence means yes! Great!", text_height)
+    text_shadow("I'm in need of a getaway driver, a demolitions", text_height + MESSAGE_HEIGHT)
+    text_shadow("expert, a strategist and an arms dealer.", text_height + MESSAGE_HEIGHT * 2)
 end
+
+function draw_cutscene_thief_five()
+      draw_game()
+      text_height = 108
+      text_shadow("Just get me the channels on which I can", text_height)
+      text_shadow("contact them, I'll handle the rest!", text_height + MESSAGE_HEIGHT)
+      text_shadow("Talk to you soon, I hope!", text_height + MESSAGE_HEIGHT * 2)
+  end
 
 function draw_cutscene_news()
     draw_old_timey_background()
@@ -140,6 +108,13 @@ function draw_cutscene_final()
         music(0)
     end
 
+end
+
+function draw_end_level()
+    draw_game()
+
+    spr(352, 70, 40, 5, 3, 0, 0, 4, 2)
+    print("DAY'S OVER!", 90, 62, 0)
 end
 
 function draw_victory()

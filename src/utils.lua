@@ -49,3 +49,25 @@ function generate_col()
 end
 
 function generate_row() return math.random(1, SWITCHBOARD.N_ROWS) end
+
+function center_text(msg, height)
+    x = (SCREEN_WIDTH/2) - (#msg*2.65)
+    print(msg, x, height, TEXT_COLOR)
+end
+
+function text_shadow(msg, height)
+    print(msg, MESSAGE_X, height, 12, false, 1, true)
+    print(msg, MESSAGE_X + 1, height + 1, 0, false, 1, true)
+end
+
+function sleep(time)
+    if (FRAME_COUNTER % 60 == 0) then SECONDS_PASSED = SECONDS_PASSED + 1 end
+
+    if(SECONDS_PASSED == time) then
+        update_state_machine()
+    end
+end
+
+function play_call_sfx()
+    if (FRAME_COUNTER % 60 == 0) then sfx(13, 60, 18, 3, 6) end
+end

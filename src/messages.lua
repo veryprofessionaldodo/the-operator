@@ -10,15 +10,17 @@ function generate_messages(mandatory_messages)
         table.insert(messages, message)
     end
 
-    -- guarantee they appears in the first 10
-    local limit = math.min(#messages, 10)
-    local indices = map(mandatory_messages,
-                        function(_m) return math.random(1, limit) end)
-    indices = unique_indices(indices)
+    if mandatory_messages then
+        -- guarantee they appears in the first 10
+        local limit = math.min(#messages, 10)
+        local indices = map(mandatory_messages,
+                            function(_m) return math.random(1, limit) end)
+        indices = unique_indices(indices)
 
-    for i, message_spec in pairs(mandatory_messages) do
-        local message = build_message(message_spec)
-        table.insert(messages, indices[i], message)
+        for i, message_spec in pairs(mandatory_messages) do
+            local message = build_message(message_spec)
+            table.insert(messages, indices[i], message)
+        end
     end
 
     return messages

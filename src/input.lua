@@ -87,8 +87,7 @@ function on_mouse_up(mx, my, md)
     end)[1]
 
     -- incorrect connection with operator, ignore
-    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and message ==
-        nil then
+    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB) and (message == nil and CUR_STATE ~= STATES.CALL_THIEF)  then
         CALL_SELECTED.src = KNOB_PIVOT
         CALL_SELECTED.dst = dst_knob
 
@@ -98,8 +97,7 @@ function on_mouse_up(mx, my, md)
     end
 
     -- is connecting to operator, with a valid message
-    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB or
-        CALL_SELECTED.src == OPERATOR_KNOB) and message ~= nil then
+    if (dst_knob == OPERATOR_KNOB or KNOB_PIVOT == OPERATOR_KNOB or CALL_SELECTED.src == OPERATOR_KNOB) and (message ~= nil or CUR_STATE == STATES.CALL_THIEF)  then
         -- local previous_rope_segments = CALL_SELECTED.rope_segments
         CALL_SELECTED.src = KNOB_PIVOT
         CALL_SELECTED.dst = dst_knob
