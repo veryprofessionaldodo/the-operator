@@ -1,5 +1,5 @@
 
-TIMEOUT = 60
+TIMEOUT = 90
 LEVELS = {
     level_zero = {
         time = 50,
@@ -9,7 +9,7 @@ LEVELS = {
         wrong = 0
     },
     call_thief = {
-        time = 4,
+        time = 3,
         max_messages = 1,
         missed = 0,
         interrupted = 0,

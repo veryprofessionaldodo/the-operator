@@ -40,6 +40,8 @@ PLAYABLE_STATES = {STATES.LEVEL_ZERO, STATES.LEVEL_ONE, STATES.LEVEL_TWO, STATES
 
 END_LEVEL_STATES = {STATES.END_LEVEL_ZERO, STATES.END_LEVEL_ONE, STATES.END_LEVEL_TWO, STATES.END_LEVEL_THREE, STATES.END_LEVEL_FOUR}
 
+SELECT_MENU_STATES = {STATES.SELECT_MENU_1, STATES.SELECT_MENU_2, STATES.SELECT_MENU_3, STATES.SELECT_MENU_4}
+
 CUR_STATE = STATES.MAIN_MENU
 
 SELECT_MENU = {selected = 0, options = {}}
@@ -63,7 +65,6 @@ function update_state_machine()
         CUR_STATE = STATES.LEVEL_ZERO
     elseif CUR_STATE == STATES.LEVEL_ZERO then
         music(-1)
-        SECONDS_PASSED = 0
         CUR_STATE = STATES.END_LEVEL_ZERO
     elseif CUR_STATE == STATES.END_LEVEL_ZERO then
         music(1)
@@ -79,19 +80,16 @@ function update_state_machine()
     elseif CUR_STATE == STATES.CUTSCENE_THIEF_4 then
         CUR_STATE = STATES.CUTSCENE_THIEF_5
     elseif CUR_STATE == STATES.CUTSCENE_THIEF_5 then
-        -- TODO: Create function for this
-        KNOBS = init_knobs()
-        CALLS = init_calls()
         music(3)
+        restart_level_vars()
         CUR_STATE = STATES.LEVEL_ONE
     elseif CUR_STATE == STATES.LEVEL_ONE then
         CUR_STATE = STATES.END_LEVEL_ONE
     elseif CUR_STATE == STATES.END_LEVEL_ONE then
         CUR_STATE = STATES.SELECT_MENU_1
     elseif CUR_STATE == STATES.SELECT_MENU_1 then
-        KNOBS = init_knobs()
-        CALLS = init_calls()
         music(3)
+        restart_level_vars()
         LEVELS.level_one.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
         CUR_STATE = STATES.LEVEL_TWO
     elseif CUR_STATE == STATES.LEVEL_TWO then
@@ -99,30 +97,27 @@ function update_state_machine()
     elseif CUR_STATE == STATES.END_LEVEL_TWO then
         CUR_STATE = STATES.SELECT_MENU_2
     elseif CUR_STATE == STATES.SELECT_MENU_2 then
-        LEVELS.level_two.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
-        KNOBS = init_knobs()
-        CALLS = init_calls()
         music(3)
+        restart_level_vars()
+        LEVELS.level_two.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
         CUR_STATE = STATES.LEVEL_THREE
     elseif CUR_STATE == STATES.LEVEL_THREE then
         CUR_STATE = STATES.END_LEVEL_THREE
     elseif CUR_STATE == STATES.END_LEVEL_THREE then
         CUR_STATE = STATES.SELECT_MENU_3
     elseif CUR_STATE == STATES.SELECT_MENU_3 then
-        LEVELS.level_three.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
-        KNOBS = init_knobs()
-        CALLS = init_calls()
         music(3)
+        restart_level_vars()
+        LEVELS.level_three.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
         CUR_STATE = STATES.LEVEL_FOUR
     elseif CUR_STATE == STATES.LEVEL_FOUR then
         CUR_STATE = STATES.END_LEVEL_FOUR
     elseif CUR_STATE == STATES.END_LEVEL_FOUR then
         CUR_STATE = STATES.SELECT_MENU_4
     elseif CUR_STATE == STATES.SELECT_MENU_4 then
-        LEVELS.level_four.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
-        KNOBS = init_knobs()
-        CALLS = init_calls()
         music(3)
+        restart_level_vars()
+        LEVELS.level_four.chosen = SELECT_MENU.options[SELECT_MENU.selected + 1]
         CUR_STATE = STATES.CUTSCENE_NEWS
     elseif CUR_STATE == STATES.CUTSCENE_NEWS then
         CUR_STATE = STATES.CUTSCENE_FINAL

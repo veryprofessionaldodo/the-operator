@@ -38,18 +38,21 @@ function update()
         update_ropes()
         update_knobs()
         update_calls()
-        update_messages()
-
+        
         if CUR_STATE ~= STATES.CALL_THIEF then
+            update_messages()
             -- Level's time is over
-            if SECONDS_PASSED == LEVELS[CUR_STATE].time then update_state_machine()end
+            if SECONDS_PASSED == LEVELS[CUR_STATE].time then
+                SECONDS_PASSED = 0
+                update_state_machine()
+            end
         else
             -- Thief's call was connected
             if CALLS[1].state == CALL_STATE.DISPATCHING then
                 update_state_machine()
             end
         end
-    elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
+    elseif has_value(SELECT_MENU_STATES, CUR_STATE) then
         update_select_menu()
     elseif has_value(END_LEVEL_STATES, CUR_STATE) then
         for _, knob in pairs(KNOBS) do
@@ -96,7 +99,7 @@ function draw()
         draw_cutscene_thief_four()
     elseif (CUR_STATE == STATES.CUTSCENE_THIEF_5) then
         draw_cutscene_thief_five()
-    elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
+    elseif has_value(SELECT_MENU_STATES, CUR_STATE) then
         draw_select_menu()
     elseif has_value(END_LEVEL_STATES, CUR_STATE) then
         draw_end_level()
@@ -116,7 +119,11 @@ end
 
 function setup_level()
     MESSAGES = generate_messages(LEVELS[CUR_STATE].messages)
-    SECONDS_PASSED = 0
+end
+
+function restart_level_vars()
+    KNOBS = init_knobs()
+    CALLS = init_calls()
 end
 
 function reset()
@@ -274,10 +281,6 @@ init()
 -- 113:cccccccccccccccccccccccccccccccccccccccccccccccc4444444411111111
 -- 114:cccccccccccccccccccccccccccccccccccccccccccccccc4444444411111111
 -- 115:cccccc41cccccc41cccccc41cccccc41cccccc41ccccc4414444441111111115
--- 136:0000011100001122000112240011224400122444001244440012444400122444
--- 137:1110000022110000422110004422110044422100444421004444210044422100
--- 152:00112244000112240000112200000111000000000000ddd000000d000000ddd0
--- 153:4422110042211000221100001110000000000000de0d0000dded0000d0dd0000
 -- 208:0000444400044fff0114ff220411f22244f122224ff222224f2222224f222222
 -- 209:44440000fff4110022ff1400222114402222ff4422222ff4222222f4222222f4
 -- 210:0000000000000fff0000fff2000fff24000ff244000f2444000f2444000f2444

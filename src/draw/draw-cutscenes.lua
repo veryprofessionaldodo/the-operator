@@ -93,47 +93,80 @@ function draw_cutscene_thief_five()
 
 function draw_cutscene_news()
     draw_old_timey_background()
-    print("BREAKING NEWS", 100, 75, TEXT_COLOR)
+    center_text("BREAKING NEWS", 66)
 end
 
 function draw_cutscene_final()
     draw_old_timey_background()
 
-    if LEVELS.level_one.solution == LEVELS.level_one.chosen and
-        LEVELS.level_two.solution == LEVELS.level_two.chosen then
+    if LEVELS.level_three.solution ~= LEVELS.level_three.chosen then -- Wrong strategist
+        draw_ending_strategist()
+    elseif LEVELS.level_four.solution ~= LEVELS.level_four.chosen then -- Wrong arms dealer
+        draw_ending_arms_dealer()
+    elseif LEVELS.level_two.solution ~= LEVELS.level_two.chosen then -- Wrong demolition's expert
+        draw_ending_demolition_expert()
+    elseif LEVELS.level_one.solution ~= LEVELS.level_one.chosen then -- Wrong getaway driver
+        draw_ending_getaway_driver()
+    else
         draw_victory()
         music(2)
-    else
-        draw_lost()
-        music(0)
     end
 
 end
 
 function draw_end_level()
     draw_game()
-
     spr(352, 70, 40, 5, 3, 0, 0, 4, 2)
     print("DAY'S OVER!", 90, 62, 0)
 end
 
 function draw_victory()
     text_height = 55
-    print("The robbery of the century just", 5, text_height, TEXT_COLOR)
-    print("happened, you won't believe it!", 5, text_height + LINE_HEIGHT,
-          TEXT_COLOR)
-    print("A four men crew just robbed the", 5, text_height + LINE_HEIGHT * 2,
-          TEXT_COLOR)
-    print("M-BES Zelment bank out of ", 5, text_height + LINE_HEIGHT * 3,
-          TEXT_COLOR)
-    print("200 billion dollars like", 5, text_height + LINE_HEIGHT * 3,
-          TEXT_COLOR)
-    print("it was nothing!", 5, text_height + LINE_HEIGHT * 3, TEXT_COLOR)
-    print("That's a lotta cabbage!", 5, text_height + LINE_HEIGHT * 3,
-          TEXT_COLOR)
+    center_text("The robbery of the century just", text_height)
+    center_text("happened, you won't believe it!", text_height + LINE_HEIGHT)
+    center_text("A four men crew just robbed the", text_height + LINE_HEIGHT * 2)
+    center_text("M-BES Zelment bank out of ", text_height + LINE_HEIGHT * 3)
+    center_text("200 billion dollars like", text_height + LINE_HEIGHT * 4)
+    center_text("it was nothing!", text_height + LINE_HEIGHT * 5)
+    center_text("That's a lotta cabbage!", text_height + LINE_HEIGHT * 6)
 end
 
-function draw_lost()
-    print("YOU LOSE", 100, 70, TEXT_COLOR)
-    print("TRY AGAIN!", 100, 80, TEXT_COLOR)
+function draw_ending_strategist()
+    text_height = 50
+    center_text("A..grocery store was just robbed?", text_height)
+    center_text("Four armed men just stole some", text_height + LINE_HEIGHT)
+    center_text("... pears and apples?", text_height + LINE_HEIGHT * 2)
+    center_text("I'm not sure what their strategy", text_height + LINE_HEIGHT * 3)
+    center_text("was, but they definitely got", text_height + LINE_HEIGHT * 4)
+    center_text("the wrong green!", text_height + LINE_HEIGHT * 5)
+end
+
+function draw_ending_arms_dealer()
+    text_height = 50
+    center_text("Four goons just tried to rob", text_height)
+    center_text("the M-BES Bezelement bank! But", text_height + LINE_HEIGHT)
+    center_text("thankfully the bank security was", text_height + LINE_HEIGHT * 2)
+    center_text("able to subdue them easily! Phew!", text_height + LINE_HEIGHT * 3)
+    center_text("They were trying to get into", text_height + LINE_HEIGHT * 4)
+    center_text("the vault with some water guns!", text_height + LINE_HEIGHT * 5)
+end
+
+function draw_ending_demolition_expert()
+    text_height = 50
+    center_text("WOW! A huge explosion just", text_height)
+    center_text("shook the M-BES Zelment bank!", text_height + LINE_HEIGHT)
+    center_text("We are getting told that the", text_height + LINE_HEIGHT * 2)
+    center_text("whole vault was destroyed!", text_height + LINE_HEIGHT * 3)
+    center_text("Not a single dime left to tell", text_height + LINE_HEIGHT * 4)
+    center_text("the story!", text_height + LINE_HEIGHT * 5)
+end
+
+function draw_ending_demolition_expert()
+    text_height = 50
+    center_text("Applesauce! The M-BES Zelment just", text_height)
+    center_text("got out of a sticky situation!", text_height + LINE_HEIGHT)
+    center_text("Three goons tryed to rob the bank", text_height + LINE_HEIGHT * 2)
+    center_text("but they were stopped by a police", text_height + LINE_HEIGHT * 3)
+    center_text("officer posing as their", text_height + LINE_HEIGHT * 4)
+    center_text("getaway driver!", text_height + LINE_HEIGHT * 5)
 end

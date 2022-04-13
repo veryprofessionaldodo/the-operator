@@ -131,9 +131,24 @@ function draw_main_menu()
 end
 
 function draw_select_menu()
-    print("Select one with arrows", 0, 10, 1)
+    draw_old_timey_background()
+
+    if CUR_STATE == STATES.SELECT_MENU_1 then -- Getaway driver
+        center_text("So dolly, who do you think would", 40)
+        center_text("make the best getaway driver?", 40 + LINE_HEIGHT)
+    elseif CUR_STATE == STATES.SELECT_MENU_2 then -- Demolition's expert
+        center_text("Hello again! Who should be", 40)
+        center_text("my demolition's expert?", 40 + LINE_HEIGHT)
+    elseif CUR_STATE == STATES.SELECT_MENU_3 then -- Strategist
+        center_text("I'm sensing you found a great", 40)
+        center_text("strategist for me! Who is it?", 40 + LINE_HEIGHT)
+    elseif CUR_STATE == STATES.SELECT_MENU_4 then -- Arms dealer
+        center_text("Ah! Last, but not the least!", 40)
+        center_text("Who's my new arms dealer?", 40 + LINE_HEIGHT)
+    end
+
     for i, option in pairs(SELECT_MENU.options) do
-        if i == SELECT_MENU.selected + 1 then print(">", 110, 25 * i, 1) end
-        print(option, 120, 25 * i, 1)
+        if i == SELECT_MENU.selected + 1 then print(">", 110, 65 + ((i-1)*17), TEXT_COLOR) end
+        print(option, 120, 65 + ((i-1)*17), TEXT_COLOR)
     end
 end

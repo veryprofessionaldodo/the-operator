@@ -67,7 +67,3 @@ function sleep(time)
         update_state_machine()
     end
 end
-
-function play_call_sfx()
-    if (FRAME_COUNTER % 60 == 0) then sfx(13, 60, 18, 3, 6) end
-end
