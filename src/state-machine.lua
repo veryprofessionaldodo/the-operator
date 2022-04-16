@@ -1,4 +1,3 @@
-
 STATES = {
     MAIN_MENU = 'main_menu',
     CUTSCENE_ZERO_1 = 'cutscene_zero_1',
@@ -24,11 +23,11 @@ SKIPPABLE_STATES = {
     STATES.CUTSCENE_NEWS, STATES.CUTSCENE_FINAL
 }
 
-PLAYABLE_STATES = {STATES.LEVEL_ONE, STATES.LEVEL_TWO}
+PLAYABLE_STATES = { STATES.LEVEL_ONE, STATES.LEVEL_TWO }
 
 CUR_STATE = STATES.MAIN_MENU
 
-SELECT_MENU = {selected = 0, options = {}}
+SELECT_MENU = { selected = 0, options = {} }
 
 function update_state_machine()
     -- stops all SFX

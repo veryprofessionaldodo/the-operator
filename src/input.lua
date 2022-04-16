@@ -1,4 +1,3 @@
-
 function update_mouse()
     local mx, my, md = mouse()
 
@@ -11,7 +10,7 @@ function update_mouse()
                 if CALL_SELECTED.state == CALL_STATE.ONGOING then
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
-                                                        .interrupted + 1
+                        .interrupted + 1
                     sfx(17, 40, -1, 3, 15)
                 end
                 KNOB_PIVOT = CALL_SELECTED.dst
@@ -20,7 +19,7 @@ function update_mouse()
                 if CALL_SELECTED.state == CALL_STATE.ONGOING then
                     CALL_SELECTED.state = CALL_STATE.UNUSED
                     LEVELS[CUR_STATE].interrupted = LEVELS[CUR_STATE]
-                                                        .interrupted + 1
+                        .interrupted + 1
                     sfx(17, 40, -1, 3, 15)
                 end
                 KNOB_PIVOT = CALL_SELECTED.src
@@ -56,14 +55,14 @@ function on_mouse_up(mx, my, md)
     end
 
     local selected_src = KNOB_PIVOT.x == CALL_SELECTED.dst.x and KNOB_PIVOT.y ==
-                             CALL_SELECTED.dst.y
+        CALL_SELECTED.dst.y
     local selected_dst = KNOB_PIVOT.x == CALL_SELECTED.src.x and KNOB_PIVOT.y ==
-                             CALL_SELECTED.src.y
+        CALL_SELECTED.src.y
     -- it can't be the same as the current source or destination
     local is_same_node = (dst_knob.x == CALL_SELECTED.src.x and dst_knob.y ==
-                             CALL_SELECTED.src.y) or
-                             (dst_knob.x == CALL_SELECTED.dst.x and dst_knob.y ==
-                                 CALL_SELECTED.dst.y)
+        CALL_SELECTED.src.y) or
+        (dst_knob.x == CALL_SELECTED.dst.x and dst_knob.y ==
+            CALL_SELECTED.dst.y)
 
     if is_same_node then
         reset_call_segments(CALL_SELECTED)
@@ -73,7 +72,7 @@ function on_mouse_up(mx, my, md)
 
     local overlaps = #filter(CALLS, function(call)
         return call.state ~= CALL_STATE.INTERRUPTED and
-                   (call.src == dst_knob or call.dst == dst_knob)
+            (call.src == dst_knob or call.dst == dst_knob)
     end) > 0
 
     if overlaps then

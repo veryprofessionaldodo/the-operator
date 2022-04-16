@@ -41,7 +41,7 @@ function generate_unique_coord(coords)
     local row = generate_row()
     while has_value(rows, row) do row = generate_row() end
 
-    return {col, row}
+    return { col, row }
 end
 
 function generate_col()

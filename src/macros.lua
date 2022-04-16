@@ -1,4 +1,3 @@
-
 SWITCHBOARD = {
     X = 10,
     Y = 10,

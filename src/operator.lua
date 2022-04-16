@@ -3,13 +3,13 @@
 -- desc:   RetroJam 2022 organized by IEEE UP SB
 -- script: lua
 
--- This adds a new path to the default Lua/TIC-80(?) path. 
+-- This adds a new path to the default Lua/TIC-80(?) path.
 -- In order to run the game locally you have to add:
 --      ";complete/path/to/directory/?.lua"
 -- to the package.path variable below
-package.path = package.path..
-                ";C:/Users/diogo/AppData/Roaming/com.nesbox.tic/TIC-80/retro-jam-2022/src/?.lua"
-                
+package.path = package.path ..
+    ";C:/Users/diogo/AppData/Roaming/com.nesbox.tic/TIC-80/retro-jam-2022/src/?.lua"
+
 require "levels"
 require "draw/draw-game"
 require "draw/draw-cutscenes"
@@ -42,7 +42,7 @@ function update()
 
         -- timeout go next
         if SECONDS_PASSED == TIMEOUT then update_state_machine() end
-    elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
+    elseif has_value({ STATES.SELECT_MENU_1, STATES.SELECT_MENU_2 }, CUR_STATE) then
         update_select_menu()
     end
 end
@@ -71,7 +71,7 @@ function draw()
         draw_cutscene_thief_three()
     elseif (CUR_STATE == STATES.CUTSCENE_THIEF_4) then
         draw_cutscene_thief_four()
-    elseif has_value({STATES.SELECT_MENU_1, STATES.SELECT_MENU_2}, CUR_STATE) then
+    elseif has_value({ STATES.SELECT_MENU_1, STATES.SELECT_MENU_2 }, CUR_STATE) then
         draw_select_menu()
     elseif (CUR_STATE == STATES.CUTSCENE_NEWS) then
         draw_cutscene_news()
@@ -108,8 +108,8 @@ function reset()
 end
 
 function reset_call_segments(call)
-    call.rope_segments[1] = {x = call.src.x, y = call.src.y}
-    call.rope_segments[#call.rope_segments] = {x = call.dst.x, y = call.dst.y}
+    call.rope_segments[1] = { x = call.src.x, y = call.src.y }
+    call.rope_segments[#call.rope_segments] = { x = call.dst.x, y = call.dst.y }
 end
 
 -- starts the game

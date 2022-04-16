@@ -1,4 +1,3 @@
-
 function generate_messages(mandatory_messages)
     local messages = {}
 
@@ -13,7 +12,7 @@ function generate_messages(mandatory_messages)
     -- guarantee they appears in the first 10
     local limit = math.min(#messages, 10)
     local indices = map(mandatory_messages,
-                        function(_m) return math.random(1, limit) end)
+        function(_m) return math.random(1, limit) end)
     indices = unique_indices(indices)
 
     for i, message_spec in pairs(mandatory_messages) do
@@ -39,14 +38,14 @@ function update_messages()
             message.src = src_knob
             message.dst = dst_knob
             message.content = message.content:gsub("@receiver",
-                                                   dst_knob.coords[1] ..
-                                                       dst_knob.coords[2])
+                dst_knob.coords[1] ..
+                dst_knob.coords[2])
             message.processed = true
 
             if message.solution then
                 LEVELS[CUR_STATE].solution = message.dst.coords
                 local first_option = LEVELS[CUR_STATE].solution
-                local second_option = generate_unique_coord({first_option})
+                local second_option = generate_unique_coord({ first_option })
                 local third_option = generate_unique_coord({
                     first_option, second_option
                 })

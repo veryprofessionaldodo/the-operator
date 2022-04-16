@@ -1,4 +1,3 @@
-
 function init_knobs()
     local knobs = {}
 
@@ -8,7 +7,7 @@ function init_knobs()
             local x = SWITCHBOARD.X + (j * SWITCHBOARD.COL_SPACING)
             local y = SWITCHBOARD.Y + (i * SWITCHBOARD.ROW_SPACING)
             local knob = {
-                coords = {string.char(ASCII_UPPER_A + j), i + 1},
+                coords = { string.char(ASCII_UPPER_A + j), i + 1 },
                 x = x,
                 y = y,
                 state = KNOB_STATE.OFF,
@@ -20,7 +19,7 @@ function init_knobs()
     end
 
     -- add operator knob
-    OPERATOR_KNOB = {x = 10, y = 115, state = KNOB_STATE.OFF, timer = 0}
+    OPERATOR_KNOB = { x = 10, y = 115, state = KNOB_STATE.OFF, timer = 0 }
 
     return knobs
 end
@@ -52,13 +51,13 @@ end
 
 function get_available_knob()
     local allocated_srcs = map(MESSAGES,
-                               function(message) return message.src end)
+        function(message) return message.src end)
     local allocated_dsts = map(MESSAGES,
-                               function(message) return message.dst end)
+        function(message) return message.dst end)
     local usable_knobs = filter(KNOBS, function(knob)
         return knob.state == KNOB_STATE.OFF and
-                   not has_value(allocated_srcs, knob) and
-                   not has_value(allocated_dsts, knob)
+            not has_value(allocated_srcs, knob) and
+            not has_value(allocated_dsts, knob)
     end)
     if #usable_knobs == 0 then return nil end
     local index = math.random(1, #usable_knobs)
@@ -68,14 +67,14 @@ end
 function get_hovered_knob(mx, my)
     -- check if its hovering the operator knob
     if contains(OPERATOR_KNOB.x, OPERATOR_KNOB.y,
-                OPERATOR_KNOB.x + KNOB_WIDTH * KNOB_SCALE,
-                OPERATOR_KNOB.y + KNOB_HEIGHT * KNOB_SCALE, mx, my) then
+        OPERATOR_KNOB.x + KNOB_WIDTH * KNOB_SCALE,
+        OPERATOR_KNOB.y + KNOB_HEIGHT * KNOB_SCALE, mx, my) then
         return OPERATOR_KNOB
     end
 
     local ranges = filter(KNOBS, function(knob)
         return contains(knob.x, knob.y, knob.x + KNOB_WIDTH * KNOB_SCALE,
-                        knob.y + KNOB_HEIGHT * KNOB_SCALE, mx, my)
+            knob.y + KNOB_HEIGHT * KNOB_SCALE, mx, my)
     end)
 
     return ifthenelse(#ranges > 0, ranges[1], nil)

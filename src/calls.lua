@@ -1,4 +1,3 @@
-
 function init_calls()
     local calls = {}
 

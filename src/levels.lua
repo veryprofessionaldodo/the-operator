@@ -1,7 +1,6 @@
-
 TIMEOUT = 60
 LEVELS = {
-    level_zero = {time = 30, max_messages = 5},
+    level_zero = { time = 30, max_messages = 5 },
     level_one = {
         time = TIMEOUT,
         max_messages = 7,
@@ -77,21 +76,21 @@ LEVELS = {
 }
 
 MESSAGE_POOL = {
-    {content = "Hiya sweet-cheeks, connect me to line @receiver, pronto!"},
-    {content = "Hello, could you reach @receiver for me?"},
-    {content = "Get @receiver for me, will ya?"},
-    {content = "...rt...ng...a...@receiver...ps?"},
-    {content = "I just wanna give @receiver a piece of my mind!"}, {
+    { content = "Hiya sweet-cheeks, connect me to line @receiver, pronto!" },
+    { content = "Hello, could you reach @receiver for me?" },
+    { content = "Get @receiver for me, will ya?" },
+    { content = "...rt...ng...a...@receiver...ps?" },
+    { content = "I just wanna give @receiver a piece of my mind!" }, {
         content = "Is this thing working? Oh I can never get this to work... Hello? Deary? @receiver?"
-    }, {content = "Can I talk to @receiver, please?"},
-    {content = "Dolly? Yes, get me to @receiver."}, {content = "@receiver"},
-    {content = "Can-a a you-a connect-a me-a to @receiver?"},
-    {content = "I need to talk to @receiver, make it quick"},
-    {content = "It'd be swell if I could call @receiver."},
-    {content = "Get me @receiver, savvy?"},
-    {content = "I can't with this no more, just call @receiver!"}, {
+    }, { content = "Can I talk to @receiver, please?" },
+    { content = "Dolly? Yes, get me to @receiver." }, { content = "@receiver" },
+    { content = "Can-a a you-a connect-a me-a to @receiver?" },
+    { content = "I need to talk to @receiver, make it quick" },
+    { content = "It'd be swell if I could call @receiver." },
+    { content = "Get me @receiver, savvy?" },
+    { content = "I can't with this no more, just call @receiver!" }, {
         content = "Why do you grifters take so much time to do everything? Connect me with @receiver, woman!"
-    }, {content = "Darling, I'd like to talk to @receiver, ok?"}
+    }, { content = "Darling, I'd like to talk to @receiver, ok?" }
 }
 
 MESSAGES = {}
