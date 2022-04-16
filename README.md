@@ -1,6 +1,8 @@
 # The Operator 📞
 
-Our 1st place entry for IEEE University of Porto Student Branch 2022 Retro Jam was 'The Operator', a game made in ~~48~~ 47 hours (We'll never forgive you, summer solstice) for the TIC-80 fantasy console by a team of five software engineers. The jam's theme was ENTANGLEMENT.
+**Try it [here](https://zepedrob16.itch.io/the-operator)**
+
+Our 1st place entry for IEEE University of Porto Student Branch 2022 Retro Jam was **'The Operator'**, a game made in ~~48~~ 47 hours (we'll never forgive you, summer solstice) for the **[TIC-80 fantasy console](https://tic80.com/)** by a team of five software engineers. The jam's theme was **ENTANGLEMENT**.
 See all jam entries on its [itch.io page](https://itch.io/jam/retro-jam-2022/entries).
 
 ## About the game
